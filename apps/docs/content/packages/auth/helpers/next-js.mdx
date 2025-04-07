@@ -1,0 +1,78 @@
+# Next.js 
+
+The package provides a production-ready helper for Next.js. It provides a type-safe way to handle authentication in your Next.js application.
+
+## Setup
+
+1. **Install the package**
+
+```bash
+pnpm install @repo/auth
+```
+
+2. **Create the API routes**
+
+```ts
+// apps/api/auth/[...all]/route.ts
+
+import { authHandler } from "@repo/auth/helpers/next-js/api";
+
+export const { GET, POST } = authHandler();
+```
+
+3. (Optional) **Protect the routes**
+
+```ts
+// apps/middleware.ts (or any other middleware file)
+
+import { NextResponse } from "next/server";
+import { withAuthMiddleware } from "@repo/auth/helpers/next-js/middleware";
+
+export default withAuthMiddleware(
+  {
+    publicRoutes: ["/sign-in", "/sign-up"],
+    redirectTo: "/sign-in",
+  },
+  (req) => {
+    // Custom middleware called after the auth middleware has run
+    return NextResponse.next();
+  }
+);
+
+// Routes Middleware should not run on
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+};
+```
+
+## Development
+
+### Handler
+
+The package provides a `authHandler` function that can be used to handle authentication requests.
+
+```ts
+// apps/api/auth/[...all]/route.ts
+
+import { authHandler } from "@repo/auth/helpers/next-js/api";
+
+export const { GET, POST } = authHandler();
+```
+
+### Middleware
+
+The package provides a `withAuthMiddleware` function that can be used to protect routes.
+
+```ts
+// apps/middleware.ts (or any other middleware file)
+
+import { withAuthMiddleware } from "@repo/auth/helpers/next-js/middleware";
+
+export default withAuthMiddleware({
+  publicRoutes: ["/api/auth/callback"],
+  redirectTo: "/login",
+}, (req) => {
+  // Custom middleware called after the auth middleware has run
+  return NextResponse.next();
+});
+```
