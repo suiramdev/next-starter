@@ -1,0 +1,21 @@
+# React
+
+This package offers a production-ready React helper that provides type-safe authentication handling for your React applications.
+
+## Development
+
+### Client-Side 
+
+The `authClient` utility enables type-safe authentication flows in your React application, managing user sessions, authentication states, and API interactions.
+
+```tsx
+import { authClient } from "@repo/auth/helpers/react/";
+```
+
+#### useSession
+
+The `useSession` hook manages authentication state in your React components, returning the current session status and user information in a type-safe manner.
+
+```tsx
+const { session, isLoading } = useSession();
+```
