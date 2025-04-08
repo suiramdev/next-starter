@@ -1,4 +1,5 @@
 import { createAuthClient } from "better-auth/react";
+// import { env } from "@repo/env";
 
 /**
  * This is the client for the auth service.
@@ -6,4 +7,6 @@ import { createAuthClient } from "better-auth/react";
  *
  * @see https://www.better-auth.com/docs/concepts/client
  */
-export const authClient = createAuthClient();
+export const authClient = createAuthClient({
+  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_BASE_URL,
+});
