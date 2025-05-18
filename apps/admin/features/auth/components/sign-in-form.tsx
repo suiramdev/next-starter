@@ -1,65 +1,17 @@
 "use client";
 
-import { z } from "zod";
 import Link from "next/link";
 import { cn } from "@repo/ui/lib/utils";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@repo/ui/registry/new-york-v4/ui/form";
-import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
-import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
-import { authClient } from "@repo/auth/helpers/react/client";
+import { SignInForm as Form } from "@repo/auth/helpers/react/components/forms/sign-in-form";
 import { useRouter } from "next/navigation";
-
-export const signInFormSchema = z.object({
-  email: z.string().email(),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long" }),
-});
 
 type SignInFormProps = React.ComponentPropsWithoutRef<"div">;
 
 export function SignInForm({ className, ...props }: SignInFormProps) {
   const navigate = useRouter();
-  const form = useForm<z.infer<typeof signInFormSchema>>({
-    resolver: zodResolver(signInFormSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
 
-  const onSubmit = async (values: z.infer<typeof signInFormSchema>) => {
-    await authClient.signIn.email({
-      email: values.email,
-      password: values.password,
-      fetchOptions: {
-        onError: ({ error }) => {
-          if (error.code === "INVALID_EMAIL_OR_PASSWORD") {
-            form.setError("root.serverError", {
-              message: "Invalid email or password",
-            });
-            form.resetField("password");
-          } else {
-            form.setError("root.serverError", {
-              ...error,
-              message: error.message ?? "Something went wrong, please try again",
-            });
-          }
-        },
-        onSuccess: () => {
-          navigate.push("/");
-        },
-      },
-    });
+  const onSuccess = () => {
+    navigate.push("/");
   };
 
   return (
@@ -77,59 +29,7 @@ export function SignInForm({ className, ...props }: SignInFormProps) {
             </Link>
           </div>
         </div>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="your@email.com"
-                          required
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          id="password"
-                          type="password"
-                          required
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {form.formState.errors.root?.serverError && (
-                  <FormMessage>
-                    {form.formState.errors.root.serverError.message}
-                  </FormMessage>
-                )}
-              </div>
-              <Button type="submit" className="w-full">
-                Sign in
-              </Button>
-            </div>
-          </form>
-        </Form>
+        <Form onSuccess={onSuccess} />
       </div>
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary  ">
         By signing in, you agree to our <a href="#">Terms of Service</a> and{" "}
