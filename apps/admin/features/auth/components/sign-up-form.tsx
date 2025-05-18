@@ -61,11 +61,12 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
         onError: ({ error }) => {
           if (error.code === "USER_ALREADY_EXISTS") {
             form.setError("email", {
-              message: "Email already exists",
+              message: "This email is already in use",
             });
           } else {
             form.setError("root.serverError", {
-              message: error.message,
+              ...error,
+              message: error.message ?? "Something went wrong, please try again",
             });
           }
 
@@ -171,6 +172,11 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
                   </FormItem>
                 )}
               />
+              {form.formState.errors.root?.serverError && (
+                <FormMessage>
+                  {form.formState.errors.root.serverError.message}
+                </FormMessage>
+              )}
             </div>
             <Button
               type="submit"
@@ -179,11 +185,6 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             >
               Sign up
             </Button>
-            {form.formState.errors.root?.serverError && (
-              <FormMessage>
-                {form.formState.errors.root.serverError.message}
-              </FormMessage>
-            )}
           </div>
         </form>
       </Form>
