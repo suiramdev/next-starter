@@ -44,13 +44,14 @@ export function SignInForm({ className, ...props }: SignInFormProps) {
       fetchOptions: {
         onError: ({ error }) => {
           if (error.code === "INVALID_EMAIL_OR_PASSWORD") {
-            form.setError("email", {
-              message: "Invalid credentials",
+            form.setError("root.serverError", {
+              message: "Invalid email or password",
             });
             form.resetField("password");
           } else {
             form.setError("root.serverError", {
-              message: error.message,
+              ...error,
+              message: error.message ?? "Something went wrong, please try again",
             });
           }
         },
@@ -117,15 +118,15 @@ export function SignInForm({ className, ...props }: SignInFormProps) {
                     </FormItem>
                   )}
                 />
+                {form.formState.errors.root?.serverError && (
+                  <FormMessage>
+                    {form.formState.errors.root.serverError.message}
+                  </FormMessage>
+                )}
               </div>
               <Button type="submit" className="w-full">
                 Sign in
               </Button>
-              {form.formState.errors.root?.serverError && (
-                <FormMessage>
-                  {form.formState.errors.root.serverError.message}
-                </FormMessage>
-              )}
             </div>
           </form>
         </Form>
