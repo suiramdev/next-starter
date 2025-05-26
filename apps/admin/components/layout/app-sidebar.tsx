@@ -16,6 +16,7 @@ import { LayoutDashboardIcon } from "@repo/ui/registry/admin/icons/layout-dashbo
 import { SettingsIcon } from "@repo/ui/registry/admin/icons/settings";
 import { NavUser } from "./nav-user";
 import { authClient } from "@repo/auth/helpers/react/client";
+import { UsersIcon } from "@repo/ui/registry/admin/icons/users";
 
 export type SidebarItem = {
   label: string;
@@ -24,11 +25,16 @@ export type SidebarItem = {
   items?: SidebarItem[];
 };
 
-const items: SidebarItem[] = [
+export const items: SidebarItem[] = [
   {
     label: "Dashboard",
     icon: <LayoutDashboardIcon />,
-    href: "/dashboard",
+    href: "/",
+  },
+  {
+    label: "Users",
+    icon: <UsersIcon />,
+    href: "/users",
   },
 ];
 
