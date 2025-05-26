@@ -10,7 +10,7 @@ export default withAuthMiddleware(
     // Custom middleware to redirect the user to the dashboard page if they are authenticated
     // on authentication routes or root route
     if (req.nextUrl.pathname === "/") {
-      return NextResponse.rewrite(new URL("/dashboard", req.url));
+      return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
     return NextResponse.next();

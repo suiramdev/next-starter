@@ -4,6 +4,9 @@ import {
   SidebarProvider,
 } from "@repo/ui/registry/new-york-v4/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
+import { SidebarTrigger } from "@repo/ui/registry/new-york-v4/ui/sidebar";
+import { Separator } from "@repo/ui/registry/new-york-v4/ui/separator";
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,7 +22,21 @@ export default function DashboardLayout({
     <>
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset>{children}</SidebarInset>
+        <SidebarInset>
+          <header className="group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear">
+            <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+              <SidebarTrigger className="-ml-1" />
+              <Separator
+                orientation="vertical"
+                className="mx-2 data-[orientation=vertical]:h-4"
+              />
+              <Breadcrumbs />
+            </div>
+          </header>
+          <div className="flex flex-1 flex-col gap-4 px-4 py-4 md:gap-6 md:px-6 md:py-6">
+            {children}
+          </div>
+        </SidebarInset>
       </SidebarProvider>
     </>
   );
