@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import {
+  TableToolbar,
   Table,
   TableHeader,
   TableBody,
   TableRow,
   TableHead,
   TableCell,
+  TableControls,
 } from "@repo/ui/registry/admin/ui/table";
 import {
   useReactTable,
@@ -27,6 +29,7 @@ import { MoreHorizontalIcon } from "@repo/ui/registry/admin/icons/more-horizonta
 import { PencilIcon } from "@repo/ui/registry/admin/icons/pencil";
 import { TrashIcon } from "@repo/ui/registry/admin/icons/trash";
 import Link from "next/link";
+import { PlusIcon } from "@repo/ui/registry/admin/icons/plus";
 
 export type User = {
   id: string;
@@ -47,9 +50,8 @@ export function UsersTable({ users }: { users: User[] }) {
   const columns: ColumnDef<User>[] = [
     {
       id: "select",
-      meta: { className: "w-8" },
       header: ({ table }) => (
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-start">
           <Checkbox
             checked={
               table.getIsAllPageRowsSelected() ||
@@ -63,7 +65,7 @@ export function UsersTable({ users }: { users: User[] }) {
         </div>
       ),
       cell: ({ row }) => (
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-start">
           <Checkbox
             checked={row.getIsSelected()}
             disabled={!row.getCanSelect()}
@@ -93,6 +95,10 @@ export function UsersTable({ users }: { users: User[] }) {
       accessorKey: "email",
     },
     {
+      header: "Role",
+      accessorKey: "role",
+    },
+    {
       id: "actions",
       meta: { className: "text-right" },
       cell: ({ row }) => {
@@ -108,7 +114,7 @@ export function UsersTable({ users }: { users: User[] }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
-                <Link href={`/users/${user.id}`}>
+                <Link href={`/users/${user.id}`} className="cursor-pointer">
                   <PencilIcon className="mr-2 h-4 w-4" />
                   Edit
                 </Link>
@@ -137,48 +143,57 @@ export function UsersTable({ users }: { users: User[] }) {
   });
 
   return (
-    <Table>
-      <TableHeader>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <TableHead
-                key={header.id}
-                className={
-                  typeof header.column.columnDef.meta?.className === "string"
-                    ? header.column.columnDef.meta.className
-                    : undefined
-                }
-              >
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-              </TableHead>
-            ))}
-          </TableRow>
-        ))}
-      </TableHeader>
-      <TableBody>
-        {table.getRowModel().rows.map((row) => (
-          <TableRow key={row.id}>
-            {row.getVisibleCells().map((cell) => (
-              <TableCell
-                key={cell.id}
-                className={
-                  typeof cell.column.columnDef.meta?.className === "string"
-                    ? cell.column.columnDef.meta.className
-                    : undefined
-                }
-              >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <div className="flex flex-col gap-4">
+      <TableToolbar table={table}>
+        <Button variant="outline" size="sm">
+          <PlusIcon />
+          Add User
+        </Button>
+      </TableToolbar>
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead
+                  key={header.id}
+                  className={
+                    typeof header.column.columnDef.meta?.className === "string"
+                      ? header.column.columnDef.meta.className
+                      : undefined
+                  }
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.map((row) => (
+            <TableRow key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <TableCell
+                  key={cell.id}
+                  className={
+                    typeof cell.column.columnDef.meta?.className === "string"
+                      ? cell.column.columnDef.meta.className
+                      : undefined
+                  }
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <TableControls table={table} />
+    </div>
   );
 }
