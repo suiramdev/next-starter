@@ -19,6 +19,7 @@
     "@repo/auth": "workspace:^",
     "@repo/env": "workspace:^",
     "@repo/ui": "workspace:*",
+    "@tanstack/react-table": "^8.21.3",
     "next": "^15.2.0",
     "pg": "^8.14.1",
     "react": "^19.0.0",
