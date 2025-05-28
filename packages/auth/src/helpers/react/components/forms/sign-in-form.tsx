@@ -9,7 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@repo/ui/registry/new-york-v4/ui/form";
-import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
+import { Button } from "@repo/ui/registry/admin/ui/button";
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
 import { authClient } from "@/helpers/react/client";
 
@@ -48,7 +48,8 @@ export function SignInForm({ onSuccess, onError, ...props }: SignInFormProps) {
           } else {
             form.setError("root.serverError", {
               ...error,
-              message: error.message ?? "Something went wrong, please try again",
+              message:
+                error.message ?? "Something went wrong, please try again",
             });
           }
 
