@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { QueryProvider } from "@/components/query";
 import {
   SidebarInset,
   SidebarProvider,
@@ -19,7 +20,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <QueryProvider>
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
@@ -38,6 +39,6 @@ export default function DashboardLayout({
           </div>
         </SidebarInset>
       </SidebarProvider>
-    </>
+    </QueryProvider>
   );
 }

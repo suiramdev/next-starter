@@ -8,6 +8,13 @@
       "when": 1742569526142,
       "tag": "0000_chubby_sally_floyd",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1748438452953,
+      "tag": "0001_pink_the_watchers",
+      "breakpoints": true
     }
   ]
 }
