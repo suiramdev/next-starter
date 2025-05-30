@@ -3,29 +3,33 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { authClient } from "@repo/auth/helpers/react/client";
-import { User } from "@repo/auth";
+import type { User } from "@repo/auth";
 import { ControlledTable } from "@repo/ui/registry/admin/ui/controlled-table";
 import {
   useReactTable,
   getCoreRowModel,
-  ColumnDef,
+  type ColumnDef,
 } from "@tanstack/react-table";
 import { Checkbox } from "@repo/ui/registry/new-york-v4/ui/checkbox";
 import { Button } from "@repo/ui/registry/admin/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuLabel,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/dropdown-menu";
 import { MoreHorizontalIcon } from "@repo/ui/registry/admin/icons/more-horizontal";
 import { PencilIcon } from "@repo/ui/registry/admin/icons/pencil";
 import { TrashIcon } from "@repo/ui/registry/admin/icons/trash";
+import { BanIcon } from "@repo/ui/registry/admin/icons/ban";
 import Link from "next/link";
 import { PlusIcon } from "@repo/ui/registry/admin/icons/plus";
 import { Badge } from "@repo/ui/registry/new-york-v4/ui/badge";
 import { cn } from "@repo/ui/lib/utils";
 import { AddUserDialog, AddUserDialogTrigger } from "./add-user-dialog";
+import { BanUserDialog } from "./ban-user-dialog";
+import { DeleteUserDialog } from "./delete-user-dialog";
 
 const columns: ColumnDef<User>[] = [
   {
@@ -77,7 +81,9 @@ const columns: ColumnDef<User>[] = [
     accessorKey: "email_verifier",
     cell: ({ getValue }) => {
       const isEmailVerified = getValue() as boolean;
-      const color = isEmailVerified ? "bg-blue-500 text-white dark:bg-blue-600" : "bg-gray-500 text-white dark:bg-gray-600";
+      const color = isEmailVerified
+        ? "bg-blue-500 text-white dark:bg-blue-600"
+        : "bg-gray-500 text-white dark:bg-gray-600";
 
       return (
         <Badge variant="secondary" className={cn("capitalize", color)}>
@@ -105,29 +111,55 @@ const columns: ColumnDef<User>[] = [
     id: "actions",
     meta: { className: "text-right" },
     cell: ({ row }) => {
+      // This is a workaround to avoid the dialogs from closing when the user clicks on the dropdown menu items
+      const [isBanDialogOpen, setIsBanDialogOpen] = useState(false);
+      const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
       const user = row.original;
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MoreHorizontalIcon className="h-4 w-4" />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild>
-              <Link href={`/users/${user.id}`} className="cursor-pointer">
-                <PencilIcon className="mr-2 h-4 w-4" />
-                Edit
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive">
-              <TrashIcon className="mr-2 h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreHorizontalIcon className="h-4 w-4" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem asChild>
+                <Link href={`/users/${user.id}`} className="cursor-pointer">
+                  <PencilIcon className="mr-2 h-4 w-4" />
+                  Edit
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                className="cursor-pointer"
+                onClick={() => setIsBanDialogOpen(true)}
+              >
+                <BanIcon className="mr-2 h-4 w-4" />
+                Ban
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                className="cursor-pointer"
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
+                <TrashIcon className="mr-2 h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <BanUserDialog
+            open={isBanDialogOpen}
+            onOpenChange={setIsBanDialogOpen}
+          />
+          <DeleteUserDialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+          />
+        </>
       );
     },
   },
@@ -165,7 +197,7 @@ export function UsersTable() {
     <ControlledTable
       table={table}
       loading={isLoading}
-      toolbar={(
+      toolbar={
         <AddUserDialog>
           <AddUserDialogTrigger asChild>
             <Button variant="outline" size="sm">
@@ -174,7 +206,7 @@ export function UsersTable() {
             </Button>
           </AddUserDialogTrigger>
         </AddUserDialog>
-      )}
+      }
     />
   );
 }
