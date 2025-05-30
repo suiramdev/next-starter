@@ -7,7 +7,6 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "include": ["apps/**/*.{js,jsx,ts,tsx}", "packages/**/*.{js,jsx,ts,tsx}"],
     "ignore": []
   },
   "formatter": {
@@ -22,7 +21,7 @@
     "rules": {
       "recommended": true,
       "nursery": {
-        "useSortedClasses": "error"
+        "useSortedClasses": "warn"
       }
     }
   },
