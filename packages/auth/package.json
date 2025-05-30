@@ -4,6 +4,7 @@
   "private": true,
   "exports": {
     ".": "./src/index.ts",
+    "./permissions": "./src/permissions.ts",
     "./helpers/next-js/*": "./src/helpers/next-js/*.ts",
     "./helpers/react/*": "./src/helpers/react/*.ts",
     "./helpers/react/components/forms/*": "./src/helpers/react/components/forms/*.tsx"

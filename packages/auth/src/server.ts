@@ -4,6 +4,7 @@ import { admin } from "better-auth/plugins";
 import { db } from "@repo/db";
 import * as authSchema from "@repo/db/schema/auth";
 import { env } from "@repo/env";
+import { ac, roles } from "./permissions";
 
 /**
  * This is the auth service.
@@ -25,5 +26,10 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [admin()],
+  plugins: [
+    admin({
+      ac,
+      roles, 
+    })
+  ],
 });
