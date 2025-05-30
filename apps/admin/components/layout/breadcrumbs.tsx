@@ -24,6 +24,10 @@ function isUUID(segment: string) {
   );
 }
 
+function isUserId(segment: string) {
+  return /^[a-zA-Z0-9]{32}$/.test(segment);
+}
+
 // Helper to detect if a segment is a number
 function isNumeric(segment: string) {
   return /^\d+$/.test(segment);
@@ -31,7 +35,7 @@ function isNumeric(segment: string) {
 
 // Helper to detect if a segment is a parameter
 function isParameterSegment(segment: string) {
-  return isUUID(segment) || isNumeric(segment);
+  return isUUID(segment) || isNumeric(segment) || isUserId(segment);
 }
 
 // Helper function for rendering breadcrumb content

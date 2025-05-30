@@ -8,7 +8,9 @@
     "./helpers/react/*": "./src/helpers/react/*.ts",
     "./helpers/react/components/forms/*": "./src/helpers/react/components/forms/*.tsx"
   },
-  "scripts": {},
+  "scripts": {
+    "auth:generate": "npx @better-auth/cli generate --config ./src/server.ts --output ../db/src/schema/auth.ts -y"
+  },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
     "@repo/db": "workspace:^",
@@ -22,6 +24,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@better-auth/cli": "^1.2.8",
     "@repo/typescript-config": "workspace:^",
     "@types/react": "^19.0.12",
     "eslint": "^9.21.0",

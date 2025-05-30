@@ -14,12 +14,14 @@
       "dependsOn": ["^check-types"]
     },
     "dev": {
-      "dependsOn": ["^db:studio"],
       "cache": false,
       "persistent": true
     },
+    "auth:generate": {
+      "dependsOn": ["^auth:generate"]
+    },
     "db:generate": {
-      "dependsOn": ["^db:generate"]
+      "dependsOn": ["^auth:generate", "^db:generate"]
     },
     "db:migrate": {
       "dependsOn": ["^db:migrate"]

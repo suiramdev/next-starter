@@ -12,7 +12,6 @@ import { Button } from "@repo/ui/registry/admin/ui/button";
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
 import { useForm } from "react-hook-form";
 import { authClient } from "@repo/auth/helpers/react/client";
-import { useRouter } from "next/navigation";
 
 export const signUpFormSchema = z.object({
   email: z.string().email(),
@@ -33,7 +32,6 @@ type SignUpFormProps = React.ComponentPropsWithoutRef<"form"> & {
 };
 
 export function SignUpForm({ onSuccess, onError, ...props }: SignUpFormProps) {
-  const navigate = useRouter();
   const form = useForm<z.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),
     defaultValues: {

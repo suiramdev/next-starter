@@ -4,20 +4,25 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "docker compose up -d && turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
+    "auth:generate": "turbo run auth:generate --filter=@repo/auth",
     "db:generate": "turbo run db:generate --filter=@repo/db",
     "db:migrate": "turbo run db:migrate --filter=@repo/db",
-    "db:studio": "turbo run db:studio --filter=@repo/db"
+    "db:studio": "turbo run db:studio --filter=@repo/db",
+    "biome:check": "biome check .",
+    "biome:format": "biome format . --write"
   },
   "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=22"
   },
   "devDependencies": {
-    "prettier": "^3.5.0",
+    "@biomejs/biome": "^1.9.4",
+    "lint-staged": "^16.1.0",
     "turbo": "^2.5.0",
     "typescript": "5.7.3"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "biome format --write"
   }
 }
