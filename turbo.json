@@ -15,19 +15,41 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": [
+        "DATABASE_URL",
+        "BETTER_AUTH_SECRET",
+        "NEXT_PUBLIC_BETTER_AUTH_BASE_URL",
+        "CORS_ALLOWED_ORIGINS"
+      ]
     },
     "auth:generate": {
-      "dependsOn": ["^auth:generate"]
+      "dependsOn": ["^auth:generate"],
+      "env": ["BETTER_AUTH_SECRET", "DATABASE_URL"]
     },
     "db:generate": {
-      "dependsOn": ["^auth:generate", "^db:generate"]
+      "dependsOn": ["^auth:generate", "^db:generate"],
+      "env": ["DATABASE_URL"]
     },
     "db:migrate": {
-      "dependsOn": ["^db:migrate"]
+      "persistent": true,
+      "env": ["DATABASE_URL"]
     },
     "db:studio": {
-      "dependsOn": ["^db:studio"]
+      "persistent": true,
+      "env": ["DATABASE_URL"]
+    },
+    "db:reset": {
+      "persistent": true,
+      "env": ["DATABASE_URL"]
+    },
+    "db:deploy": {
+      "dependsOn": ["^db:deploy"],
+      "env": ["DATABASE_URL"]
+    },
+    "db:push": {
+      "dependsOn": ["^db:push"],
+      "env": ["DATABASE_URL"]
     }
   }
 }
