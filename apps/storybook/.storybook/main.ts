@@ -16,14 +16,14 @@ const config: StorybookConfig = {
     "../../../packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
   ],
   addons: [
-    getAbsolutePath("@storybook/addon-essentials"),
-    getAbsolutePath("@storybook/addon-onboarding"),
+    getAbsolutePath("@storybook/addon-docs"),
     getAbsolutePath("@chromatic-com/storybook"),
-    getAbsolutePath("@storybook/experimental-addon-test"),
+    getAbsolutePath("@storybook/addon-vitest"),
   ],
   framework: {
     name: getAbsolutePath("@storybook/react-vite"),
     options: {},
   },
 };
+
 export default config;
