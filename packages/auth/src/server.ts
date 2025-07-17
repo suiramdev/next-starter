@@ -1,8 +1,7 @@
 import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin } from "better-auth/plugins";
-import { db } from "@repo/db";
-import * as authSchema from "@repo/db/schema/auth";
+import { prisma } from "@repo/db";
 import { env } from "@repo/env";
 import { ac, roles } from "./permissions";
 
@@ -19,9 +18,8 @@ export const auth = betterAuth({
     "http://localhost:3001",
     "http://localhost:3002",
   ],
-  database: drizzleAdapter(db, {
-    provider: "pg",
-    schema: authSchema,
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
   }),
   emailAndPassword: {
     enabled: true,
@@ -29,7 +27,7 @@ export const auth = betterAuth({
   plugins: [
     admin({
       ac,
-      roles, 
-    })
+      roles,
+    }),
   ],
 });
