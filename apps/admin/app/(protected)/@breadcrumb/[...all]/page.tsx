@@ -15,7 +15,6 @@ export default async function BreadcrumbSlot({
   params: Promise<{ all: string[] }>;
 }) {
   const { all } = await params;
-  console.log(all);
   const breadcrumbItems: ReactElement[] = [];
   let breadcrumbPage: ReactElement = <></>;
   for (let i = 0; i < all.length; i++) {
