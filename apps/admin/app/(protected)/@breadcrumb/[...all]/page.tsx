@@ -4,7 +4,6 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
 } from "@repo/ui/registry/new-york-v4/ui/breadcrumb";
 import React from "react";
 import type { ReactElement } from "react";

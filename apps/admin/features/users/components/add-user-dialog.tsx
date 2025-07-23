@@ -70,8 +70,8 @@ export function AddUserDialog({ children, ...props }: AddUserDialogProps) {
         <DialogHeader>
           <DialogTitle>Add New User</DialogTitle>
           <DialogDescription>
-            Invite a new user to your application. Choose how you'd like to send
-            the invitation.
+            Invite a new user to your application. Choose how you&apos;d like to
+            send the invitation.
           </DialogDescription>
         </DialogHeader>
         <Tabs

@@ -11,7 +11,7 @@ import {
 } from "@repo/ui/registry/new-york-v4/ui/form";
 import { Button } from "@repo/ui/registry/admin/ui/button";
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
-import { authClient } from "@/helpers/react/client";
+import { authClient } from "@repo/auth/helpers/react/client";
 
 export const signInFormSchema = z.object({
   email: z.string().email(),

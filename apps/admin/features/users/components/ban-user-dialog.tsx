@@ -12,7 +12,6 @@ import { DialogFooter } from "@repo/ui/registry/new-york-v4/ui/dialog";
 import { Label } from "@repo/ui/registry/new-york-v4/ui/label";
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
 import { Textarea } from "@repo/ui/registry/new-york-v4/ui/textarea";
-import { Switch } from "@repo/ui/registry/new-york-v4/ui/switch";
 
 type BanUserDialogProps = React.ComponentProps<typeof Dialog> & {
   children?: React.ReactNode;
