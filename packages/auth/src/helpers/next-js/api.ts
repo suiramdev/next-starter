@@ -1,4 +1,4 @@
-import { auth } from "@/index";
+import { auth } from "#src/index";
 import { toNextJsHandler } from "better-auth/next-js";
 
 /**

@@ -1,26 +1,26 @@
-import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
-import { ChevronDownIcon } from "@repo/ui/registry/admin/icons/chevron-down";
-import { Loader2Icon } from "@repo/ui/registry/admin/icons/loader2";
-import { cn } from "@repo/ui/lib/utils";
-import { Label } from "@repo/ui/registry/new-york-v4/ui/label";
+import { Button } from "#src/registry/new-york-v4/ui/button";
+import { ChevronDownIcon } from "#src/registry/admin/icons/chevron-down";
+import { Loader2Icon } from "#src/registry/admin/icons/loader2";
+import { cn } from "#src/lib/utils";
+import { Label } from "#src/registry/new-york-v4/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui/registry/new-york-v4/ui/select";
-import { ChevronsLeftIcon } from "@repo/ui/registry/admin/icons/chevrons-left";
-import { ChevronLeftIcon } from "@repo/ui/registry/admin/icons/chevron-left";
-import { ChevronRightIcon } from "@repo/ui/registry/admin/icons/chevron-right";
-import { ChevronsRightIcon } from "@repo/ui/registry/admin/icons/chevrons-right";
-import { ColumnsIcon } from "@repo/ui/registry/admin/icons/columns";
+} from "#src/registry/new-york-v4/ui/select";
+import { ChevronsLeftIcon } from "#src/registry/admin/icons/chevrons-left";
+import { ChevronLeftIcon } from "#src/registry/admin/icons/chevron-left";
+import { ChevronRightIcon } from "#src/registry/admin/icons/chevron-right";
+import { ChevronsRightIcon } from "#src/registry/admin/icons/chevrons-right";
+import { ColumnsIcon } from "#src/registry/admin/icons/columns";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@repo/ui/registry/new-york-v4/ui/dropdown-menu";
+} from "#src/registry/new-york-v4/ui/dropdown-menu";
 import {
   flexRender,
   RowData,
@@ -35,11 +35,10 @@ import {
   TableRow,
 } from "./table";
 
-type ControlledTableColumnsVisibilityProps<TData extends RowData> = React.ComponentProps<
-  typeof DropdownMenu
-> & {
-  table: TanstackTable<TData>;
-};
+type ControlledTableColumnsVisibilityProps<TData extends RowData> =
+  React.ComponentProps<typeof DropdownMenu> & {
+    table: TanstackTable<TData>;
+  };
 
 function ControlledTableColumnsVisibility<TData extends RowData>({
   table,
@@ -79,9 +78,10 @@ function ControlledTableColumnsVisibility<TData extends RowData>({
   );
 }
 
-type ControlledTableToolbarProps<TData extends RowData> = React.ComponentProps<"div"> & {
-  table: TanstackTable<TData>;
-};
+type ControlledTableToolbarProps<TData extends RowData> =
+  React.ComponentProps<"div"> & {
+    table: TanstackTable<TData>;
+  };
 
 function ControlledTableToolbar<TData extends RowData>({
   className,
@@ -211,9 +211,10 @@ function ControlledTablePagination<TData extends RowData>({
   );
 }
 
-type ControlledTableControlsProps<TData extends RowData> = React.ComponentProps<"div"> & {
-  table: TanstackTable<TData>;
-};
+type ControlledTableControlsProps<TData extends RowData> =
+  React.ComponentProps<"div"> & {
+    table: TanstackTable<TData>;
+  };
 
 function ControlledTableControls<TData extends RowData>({
   className,
@@ -235,13 +236,19 @@ function ControlledTableControls<TData extends RowData>({
 type ControlledTableContentProps<TData extends RowData> = {
   table: TanstackTable<TData>;
   isLoading?: boolean;
-}
+};
 
-function ControlledTableContent<TData extends RowData>({ isLoading, table }: ControlledTableContentProps<TData>) {
+function ControlledTableContent<TData extends RowData>({
+  isLoading,
+  table,
+}: ControlledTableContentProps<TData>) {
   if (isLoading) {
     return (
       <TableRow>
-        <TableCell colSpan={table.getAllColumns().length} className="text-center py-8">
+        <TableCell
+          colSpan={table.getAllColumns().length}
+          className="text-center py-8"
+        >
           <div className="flex items-center justify-center">
             <Loader2Icon className="size-4 animate-spin" />
           </div>
@@ -249,11 +256,14 @@ function ControlledTableContent<TData extends RowData>({ isLoading, table }: Con
       </TableRow>
     );
   }
-  
+
   if (table.getRowCount() <= 0) {
     return (
       <TableRow>
-        <TableCell colSpan={table.getAllColumns().length} className="text-center py-8">
+        <TableCell
+          colSpan={table.getAllColumns().length}
+          className="text-center py-8"
+        >
           No results.
         </TableCell>
       </TableRow>
@@ -302,9 +312,7 @@ function ControlledTable<TData extends RowData>({
   return (
     <div className="flex flex-col gap-4">
       {!hideToolbar && (
-        <ControlledTableToolbar table={table}>
-          {toolbar}
-        </ControlledTableToolbar>
+        <ControlledTableToolbar table={table}>{toolbar}</ControlledTableToolbar>
       )}
       <Table>
         <TableHeader>
@@ -340,8 +348,8 @@ function ControlledTable<TData extends RowData>({
 }
 
 export {
-    ControlledTableColumnsVisibility,
-    ControlledTableToolbar,
-    ControlledTableControls,
-    ControlledTable
+  ControlledTableColumnsVisibility,
+  ControlledTableToolbar,
+  ControlledTableControls,
+  ControlledTable,
 };

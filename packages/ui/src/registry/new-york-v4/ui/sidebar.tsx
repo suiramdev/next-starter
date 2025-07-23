@@ -5,25 +5,25 @@ import { Slot } from "@radix-ui/react-slot";
 import { VariantProps, cva } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
 
-import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
-import { Button } from "@/registry/admin/ui/button";
-import { Input } from "@/registry/new-york-v4/ui/input";
-import { Separator } from "@/registry/new-york-v4/ui/separator";
+import { useIsMobile } from "#src/hooks/use-mobile";
+import { cn } from "#src/lib/utils";
+import { Button } from "#src/registry/admin/ui/button";
+import { Input } from "#src/registry/new-york-v4/ui/input";
+import { Separator } from "#src/registry/new-york-v4/ui/separator";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/registry/new-york-v4/ui/sheet";
-import { Skeleton } from "@/registry/new-york-v4/ui/skeleton";
+} from "#src/registry/new-york-v4/ui/sheet";
+import { Skeleton } from "#src/registry/new-york-v4/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/registry/new-york-v4/ui/tooltip";
+} from "#src/registry/new-york-v4/ui/tooltip";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
