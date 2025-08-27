@@ -7,5 +7,8 @@ export const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
-  CORS_ALLOWED_ORIGINS: z.string().default("").transform((val) => val.split(",")),
+  CORS_ALLOWED_ORIGINS: z
+    .string()
+    .default("")
+    .transform((val) => val.split(",")),
 });

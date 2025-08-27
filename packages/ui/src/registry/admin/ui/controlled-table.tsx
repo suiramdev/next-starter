@@ -59,7 +59,7 @@ function ControlledTableColumnsVisibility<TData extends RowData>({
           .getAllColumns()
           .filter(
             (column) =>
-              typeof column.accessorFn !== "undefined" && column.getCanHide()
+              typeof column.accessorFn !== "undefined" && column.getCanHide(),
           )
           .map((column) => {
             return (
@@ -331,7 +331,7 @@ function ControlledTable<TData extends RowData>({
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
-                        header.getContext()
+                        header.getContext(),
                       )}
                 </TableHead>
               ))}
