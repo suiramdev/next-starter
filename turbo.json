@@ -11,6 +11,11 @@
     "format": {
       "dependsOn": ["^format"]
     },
+    "init": {
+      "cache": false,
+      "persistent": true,
+      "env": ["CONVEX_DEPLOYMENT", "CONVEX_URL"]
+    },
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
@@ -20,6 +25,8 @@
       "cache": false,
       "persistent": true,
       "env": [
+        "CONVEX_DEPLOYMENT",
+        "CONVEX_URL",
         "DATABASE_URL",
         "BETTER_AUTH_SECRET",
         "NEXT_PUBLIC_BETTER_AUTH_BASE_URL",

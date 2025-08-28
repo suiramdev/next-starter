@@ -1,0 +1,32 @@
+{
+  "name": "@repo/convex",
+  "version": "0.0.0",
+  "private": true,
+  "imports": {
+    "#src/*": "./src/*"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "biome check",
+    "format": "biome format --write",
+    "init": "convex dev --once",
+    "dev": "convex dev",
+    "build": "convex build"
+  },
+  "dependencies": {
+    "@repo/env": "workspace:^",
+    "convex": "^1.26.2",
+    "zod": "^4.1.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.2",
+    "@repo/biome-config": "workspace:^",
+    "@repo/typescript-config": "workspace:^",
+    "@types/node": "^24.3.0",
+    "@types/pg": "^8.15.5",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}
