@@ -5,6 +5,7 @@
     "check-types": "turbo run check-types",
     "lint": "turbo run lint",
     "format": "turbo run format",
+    "init": "dotenv-run turbo run init",
     "build": "turbo run build",
     "dev": "docker compose up -d && dotenv-run turbo run dev",
     "auth:generate": "dotenv-run turbo run auth:generate --filter=@repo/auth",
