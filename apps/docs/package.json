@@ -11,20 +11,20 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "^15.5.1",
-    "nextra": "^4.4.0",
-    "nextra-theme-docs": "^4.4.0",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "next": "^15.5.6",
+    "nextra": "^4.6.0",
+    "nextra-theme-docs": "^4.6.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.3.2",
     "@repo/biome-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@tailwindcss/postcss": "^4.1.12",
-    "@types/node": "^24.3.0",
+    "@tailwindcss/postcss": "^4.1.16",
+    "@types/node": "^24.9.2",
     "@types/react": "19.1.11",
     "@types/react-dom": "19.1.8",
-    "@biomejs/biome": "^2.2.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   }
 }
