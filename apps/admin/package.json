@@ -21,14 +21,15 @@
     "@repo/db": "workspace:^",
     "@repo/env": "workspace:^",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.90.5",
+    "@repo/zero": "workspace:^",
+    "@rocicorp/zero": "^0.24.2025101500",
     "@tanstack/react-table": "^8.21.3",
-    "next": "^15.5.6",
+    "nanoid": "^5.1.6",
+    "next": "^16.0.1",
     "pg": "^8.16.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.65.0",
-    "react-scan": "^0.4.3",
     "zod": "^4.1.12"
   },
   "devDependencies": {

@@ -35,11 +35,11 @@ type AddUserDialogProps = React.ComponentProps<typeof Dialog> & {
 
 const inviteMethods = ["email", "magic", "whitelist"] as const;
 
-const availableInviteMethods: (typeof inviteMethods)[number][] = [
-  "whitelist",
-] as const;
+type InviteMethod = (typeof inviteMethods)[number];
 
-const inviteMethodLabels: Record<(typeof inviteMethods)[number], string> = {
+const availableInviteMethods: InviteMethod[] = ["whitelist"];
+
+const inviteMethodLabels: Record<InviteMethod, string> = {
   email: "Email Invite",
   magic: "Magic Link",
   whitelist: "Whitelist",
@@ -47,9 +47,12 @@ const inviteMethodLabels: Record<(typeof inviteMethods)[number], string> = {
 
 const roleOptions = Object.keys(roles);
 
+function isInviteMethod(value: string): value is InviteMethod {
+  return value === "email" || value === "magic" || value === "whitelist";
+}
+
 export function AddUserDialog({ children, ...props }: AddUserDialogProps) {
-  const [inviteMethod, setInviteMethod] =
-    useState<(typeof availableInviteMethods)[number]>("whitelist");
+  const [inviteMethod, setInviteMethod] = useState<InviteMethod>("whitelist");
   const [open, setOpen] = useState(false);
 
   const handleOpenChange = (open: boolean) => {
@@ -58,8 +61,8 @@ export function AddUserDialog({ children, ...props }: AddUserDialogProps) {
   };
 
   const handleInviteMethodChange = (value: string) => {
-    if (inviteMethods.includes(value as (typeof inviteMethods)[number])) {
-      setInviteMethod(value as (typeof inviteMethods)[number]);
+    if (isInviteMethod(value)) {
+      setInviteMethod(value);
     }
   };
 
@@ -76,7 +79,7 @@ export function AddUserDialog({ children, ...props }: AddUserDialogProps) {
         </DialogHeader>
         <Tabs
           value={inviteMethod}
-          onValueChange={handleInviteMethodChange as (value: string) => void}
+          onValueChange={handleInviteMethodChange}
           className="w-full"
         >
           <TabsList className="grid w-full grid-cols-3 mb-4">

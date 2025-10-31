@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { withAuthMiddleware } from "@repo/auth/helpers/next-js/middleware";
+import { withAuthProxy } from "@repo/auth/helpers/next-js/proxy";
 
-export default withAuthMiddleware(
+export default withAuthProxy(
   {
     publicRoutes: ["/sign-in", "/sign-up"],
     redirectTo: "/sign-in",
   },
-  (req) => {
+  async (req) => {
     // Custom middleware to redirect the user to the dashboard page if they are authenticated
     // on authentication routes or root route
     if (req.nextUrl.pathname === "/") {

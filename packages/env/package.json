@@ -6,14 +6,15 @@
     "#src/*": "./src/*"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts",
+    "./server": "./src/server.ts"
   },
   "scripts": {
     "lint": "biome check",
     "format": "biome format --write"
   },
   "dependencies": {
-    "dotenv": "^17.2.3",
     "zod": "^4.1.12"
   },
   "devDependencies": {

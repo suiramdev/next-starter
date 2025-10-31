@@ -39,3 +39,7 @@ yarn-error.log*
 
 # Storybook
 storybook-static
+
+# Zero
+/tmp/sync-replica.db
+*.db

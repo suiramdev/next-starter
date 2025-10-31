@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { User } from "@repo/auth";
+import type { User } from "@repo/zero";
 import {
   UserTableActionsCell,
   UserTableCreatedAtCell,
@@ -33,7 +33,7 @@ export const userTableColumns: ColumnDef<User>[] = [
   },
   {
     header: "Status",
-    accessorKey: "email_verifier",
+    accessorKey: "emailVerified",
     cell: (context) => <UserTableStatusCell {...context} />,
   },
   {

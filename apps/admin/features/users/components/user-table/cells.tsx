@@ -17,7 +17,7 @@ import { TrashIcon } from "@repo/ui/registry/admin/icons/trash";
 import { BanIcon } from "@repo/ui/registry/admin/icons/ban";
 import { BanUserDialog } from "../ban-user-dialog";
 import { DeleteUserDialog } from "../delete-user-dialog";
-import type { User } from "@repo/auth";
+import type { User } from "@repo/zero";
 import type { CellContext } from "@tanstack/react-table";
 
 export function UserTableSelectHeaderCell({
@@ -59,19 +59,20 @@ export function UserTableNameCell({
   row,
   getValue,
 }: CellContext<User, unknown>) {
+  const name = getValue<string>();
   return (
     <Button
       asChild
       variant="link"
       className="w-fit px-0 text-left text-foreground"
     >
-      <Link href={`/users/${row.original.id}`}>{getValue() as string}</Link>
+      <Link href={`/users/${row.original.id}`}>{name}</Link>
     </Button>
   );
 }
 
 export function UserTableStatusCell({ getValue }: CellContext<User, unknown>) {
-  const isEmailVerified = getValue() as boolean;
+  const isEmailVerified = getValue<boolean>();
   const color = isEmailVerified
     ? "bg-blue-500 text-white dark:bg-blue-600"
     : "bg-gray-500 text-white dark:bg-gray-600";
@@ -84,9 +85,10 @@ export function UserTableStatusCell({ getValue }: CellContext<User, unknown>) {
 }
 
 export function UserTableRoleCell({ getValue }: CellContext<User, unknown>) {
+  const role = getValue<string | null>();
   return (
     <Badge variant="outline" className="capitalize">
-      {getValue() as string}
+      {role ?? ""}
     </Badge>
   );
 }
@@ -94,7 +96,8 @@ export function UserTableRoleCell({ getValue }: CellContext<User, unknown>) {
 export function UserTableCreatedAtCell({
   getValue,
 }: CellContext<User, unknown>) {
-  return `${new Date(getValue() as string).toLocaleDateString()}`;
+  const timestamp = getValue<number>();
+  return `${new Date(timestamp).toLocaleDateString()}`;
 }
 
 export function UserTableActionsCell({ row }: CellContext<User, unknown>) {
@@ -138,10 +141,15 @@ export function UserTableActionsCell({ row }: CellContext<User, unknown>) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <BanUserDialog open={isBanDialogOpen} onOpenChange={setIsBanDialogOpen} />
+      <BanUserDialog
+        open={isBanDialogOpen}
+        onOpenChange={setIsBanDialogOpen}
+        userId={user.id}
+      />
       <DeleteUserDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
+        userId={user.id}
       />
     </>
   );

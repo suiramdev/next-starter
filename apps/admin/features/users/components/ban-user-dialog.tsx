@@ -1,4 +1,7 @@
+"use client";
+
 import { useState } from "react";
+import { useZero } from "@repo/zero";
 import {
   Dialog,
   DialogHeader,
@@ -15,19 +18,41 @@ import { Textarea } from "@repo/ui/registry/new-york-v4/ui/textarea";
 
 type BanUserDialogProps = React.ComponentProps<typeof Dialog> & {
   children?: React.ReactNode;
+  userId?: string;
 };
 
-export function BanUserDialog({ children, ...props }: BanUserDialogProps) {
+export function BanUserDialog({
+  children,
+  userId,
+  ...props
+}: BanUserDialogProps) {
   const [open, setOpen] = useState(false);
   const [banReason, setBanReason] = useState("");
   const [banEndDate, setBanEndDate] = useState("");
+  const zero = useZero();
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
     props.onOpenChange?.(open);
+    if (!open) {
+      setBanReason("");
+      setBanEndDate("");
+    }
   };
 
-  const handleBan = () => {};
+  const handleBan = () => {
+    if (!userId) return;
+
+    const banExpires = banEndDate ? new Date(banEndDate).getTime() : null;
+    zero.mutate.user.update({
+      id: userId,
+      banned: true,
+      banReason: banReason || null,
+      banExpires,
+      updatedAt: new Date().getTime(),
+    });
+    handleOpenChange(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange} {...props}>

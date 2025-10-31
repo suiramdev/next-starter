@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { authClient } from "@repo/auth/helpers/react/client";
-import type { User } from "@repo/auth";
+import { useZero, useQuery, type User } from "@repo/zero";
 import { ControlledTable } from "@repo/ui/registry/admin/ui/controlled-table";
 import {
   useReactTable,
@@ -62,15 +60,18 @@ const columns: ColumnDef<User>[] = [
   {
     header: "Name",
     accessorKey: "name",
-    cell: ({ row, getValue }) => (
-      <Button
-        asChild
-        variant="link"
-        className="w-fit px-0 text-left text-foreground"
-      >
-        <Link href={`/users/${row.original.id}`}>{getValue() as string}</Link>
-      </Button>
-    ),
+    cell: ({ row, getValue }) => {
+      const name = getValue<string>();
+      return (
+        <Button
+          asChild
+          variant="link"
+          className="w-fit px-0 text-left text-foreground"
+        >
+          <Link href={`/users/${row.original.id}`}>{name}</Link>
+        </Button>
+      );
+    },
   },
   {
     header: "Email",
@@ -78,9 +79,9 @@ const columns: ColumnDef<User>[] = [
   },
   {
     header: "Status",
-    accessorKey: "email_verifier",
+    accessorKey: "emailVerified",
     cell: ({ getValue }) => {
-      const isEmailVerified = getValue() as boolean;
+      const isEmailVerified = getValue<boolean>();
       const color = isEmailVerified
         ? "bg-blue-500 text-white dark:bg-blue-600"
         : "bg-gray-500 text-white dark:bg-gray-600";
@@ -95,23 +96,27 @@ const columns: ColumnDef<User>[] = [
   {
     header: "Role",
     accessorKey: "role",
-    cell: ({ getValue }) => (
-      <Badge variant="outline" className="capitalize">
-        {getValue() as string}
-      </Badge>
-    ),
+    cell: ({ getValue }) => {
+      const role = getValue<string | null>();
+      return (
+        <Badge variant="outline" className="capitalize">
+          {role ?? ""}
+        </Badge>
+      );
+    },
   },
   {
     header: "Created At",
     accessorKey: "createdAt",
-    cell: ({ getValue }) =>
-      `${new Date(getValue() as string).toLocaleDateString()}`,
+    cell: ({ getValue }) => {
+      const timestamp = getValue<number>();
+      return `${new Date(timestamp).toLocaleDateString()}`;
+    },
   },
   {
     id: "actions",
     meta: { className: "text-right" },
     cell: ({ row }) => {
-      // This is a workaround to avoid the dialogs from closing when the user clicks on the dropdown menu items
       const [isBanDialogOpen, setIsBanDialogOpen] = useState(false);
       const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
       const user = row.original;
@@ -154,10 +159,12 @@ const columns: ColumnDef<User>[] = [
           <BanUserDialog
             open={isBanDialogOpen}
             onOpenChange={setIsBanDialogOpen}
+            userId={user.id}
           />
           <DeleteUserDialog
             open={isDeleteDialogOpen}
             onOpenChange={setIsDeleteDialogOpen}
+            userId={user.id}
           />
         </>
       );
@@ -167,22 +174,11 @@ const columns: ColumnDef<User>[] = [
 
 export function UsersTable() {
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-
-  const { data: users, isLoading } = useQuery({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const { data } = await authClient.admin.listUsers({
-        query: {
-          limit: 10,
-        },
-      });
-
-      return data?.users ?? [];
-    },
-  });
+  const z = useZero();
+  const [users] = useQuery(z.query.user);
 
   const table = useReactTable({
-    data: users ?? [],
+    data: users,
     columns,
     state: {
       rowSelection,
@@ -196,7 +192,7 @@ export function UsersTable() {
   return (
     <ControlledTable
       table={table}
-      loading={isLoading}
+      loading={!users}
       toolbar={
         <AddUserDialog>
           <AddUserDialogTrigger asChild>

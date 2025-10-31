@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
-import { ReactScan } from "@/components/debug/react-scan";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,10 +13,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <ReactScan />
-        {children}
-      </body>
+      <head>
+        <script
+          crossOrigin="anonymous"
+          src="//unpkg.com/react-scan/dist/auto.global.js"
+        />
+      </head>
+      <body>{children}</body>
     </html>
   );
 }

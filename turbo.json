@@ -20,39 +20,42 @@
       "cache": false,
       "persistent": true,
       "env": [
-        "DATABASE_URL",
         "BETTER_AUTH_SECRET",
         "NEXT_PUBLIC_BETTER_AUTH_BASE_URL",
-        "CORS_ALLOWED_ORIGINS"
+        "CORS_ALLOWED_ORIGINS",
+        "ZERO_UPSTREAM_DB",
+        "ZERO_REPLICA_FILE",
+        "NEXT_PUBLIC_ZERO_SERVER",
+        "ZERO_AUTH_SECRET"
       ]
     },
     "auth:generate": {
       "dependsOn": ["^auth:generate"],
-      "env": ["BETTER_AUTH_SECRET", "DATABASE_URL"]
+      "env": ["BETTER_AUTH_SECRET", "ZERO_UPSTREAM_DB"]
     },
     "db:generate": {
       "dependsOn": ["^auth:generate", "^db:generate"],
-      "env": ["DATABASE_URL"]
+      "env": ["ZERO_UPSTREAM_DB"]
     },
     "db:migrate": {
       "persistent": true,
-      "env": ["DATABASE_URL"]
+      "env": ["ZERO_UPSTREAM_DB"]
     },
     "db:studio": {
       "persistent": true,
-      "env": ["DATABASE_URL"]
+      "env": ["ZERO_UPSTREAM_DB"]
     },
     "db:reset": {
       "persistent": true,
-      "env": ["DATABASE_URL"]
+      "env": ["ZERO_UPSTREAM_DB"]
     },
     "db:deploy": {
       "dependsOn": ["^db:deploy"],
-      "env": ["DATABASE_URL"]
+      "env": ["ZERO_UPSTREAM_DB"]
     },
     "db:push": {
       "dependsOn": ["^db:push"],
-      "env": ["DATABASE_URL"]
+      "env": ["ZERO_UPSTREAM_DB"]
     }
   }
 }

@@ -3,14 +3,7 @@ generator prisma {
   output   = "../generated/prisma"
 }
 
-generator kysely {
-    provider = "prisma-kysely"
-    output = "../generated"
-    fileName = "types.ts"
-    enumFileName = "enums.ts"
-}
-
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("ZERO_UPSTREAM_DB")
 }

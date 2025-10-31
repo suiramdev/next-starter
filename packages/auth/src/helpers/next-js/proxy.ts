@@ -2,29 +2,28 @@ import { getSessionCookie } from "better-auth/cookies";
 import {
   NextResponse,
   type NextFetchEvent,
-  type NextMiddleware,
   type NextRequest,
 } from "next/server";
 
-export interface AuthMiddlewareOptions {
+export interface AuthProxyOptions {
   publicRoutes?: string[];
   redirectTo?: string;
 }
 
 /**
- * This is the middleware for the auth in next.js.
+ * This is the proxy for the auth in next.js.
  * It is used to protect users from accessing protected routes without being logged in.
  *
- * @param options - The options for the middleware.
- * @param nextMiddleware - The next middleware to be called.
+ * @param options - The options for the proxy.
+ * @param nextProxy - The next proxy to be called.
  */
-export function withAuthMiddleware(
-  options: AuthMiddlewareOptions,
-  nextMiddleware?: NextMiddleware
+export function withAuthProxy(
+  options: AuthProxyOptions,
+  nextProxy?: (req: NextRequest, event: NextFetchEvent) => Promise<NextResponse>
 ) {
   const redirectTo = options.redirectTo ?? "/";
 
-  return async function middleware(req: NextRequest, event: NextFetchEvent) {
+  return async function proxy(req: NextRequest, event: NextFetchEvent) {
     const { pathname } = req.nextUrl;
 
     const isProtectedRoute = !options.publicRoutes?.includes(pathname);
@@ -35,6 +34,6 @@ export function withAuthMiddleware(
       return NextResponse.redirect(new URL(redirectTo, req.url));
     }
 
-    return nextMiddleware ? nextMiddleware(req, event) : NextResponse.next();
+    return nextProxy ? nextProxy(req, event) : NextResponse.next();
   };
 }
