@@ -18,6 +18,7 @@
   "dependencies": {
     "@repo/auth": "workspace:^",
     "@repo/env": "workspace:^",
+    "@repo/zero": "workspace:^",
     "next": "^16.0.1",
     "pg": "^8.16.3",
     "react": "^19.2.0",

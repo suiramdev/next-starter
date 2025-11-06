@@ -16,6 +16,10 @@ const clientEnvSchema = z.object({
     .url()
     .optional()
     .default("http://localhost:4848"),
+  NEXT_PUBLIC_ZERO_MUTATE_URL: z
+    .url()
+    .optional()
+    .default("http://localhost:3002/api/zero/push"),
 });
 
 /**

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useZero, useQuery, type User } from "@repo/zero";
+import { useQuery } from "@repo/zero/helpers/react";
+import { getUsers } from "@repo/zero/queries";
+import { authClient } from "@repo/auth/helpers/react/client";
 import { ControlledTable } from "@repo/ui/registry/admin/ui/controlled-table";
 import { useReactTable, getCoreRowModel } from "@tanstack/react-table";
 import { Button } from "@repo/ui/registry/admin/ui/button";
@@ -11,11 +13,11 @@ import { userTableColumns } from "./columns";
 
 export function UsersTable() {
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-  const z = useZero();
-  const [users] = useQuery(z.query.user);
+  const { data: session } = authClient.useSession();
+  const [users] = useQuery(getUsers({ userId: session?.user?.id ?? "anon" }));
 
   const table = useReactTable({
-    data: users,
+    data: users ?? [],
     columns: userTableColumns,
     state: {
       rowSelection,

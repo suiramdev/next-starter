@@ -1,9 +1,7 @@
-// Re-export the generated Zero schema from Prisma via @repo/db
-export {
-  zeroSchema as schema,
-  type ZeroSchema as Schema,
-  type ZeroUser as User,
-  type ZeroSession as Session,
-  type ZeroAccount as Account,
-  type ZeroVerification as Verification,
-} from "@repo/db";
+import { createBuilder } from "@rocicorp/zero";
+import { schema } from "@repo/db/zero";
+
+export const builder = createBuilder(schema);
+
+// Re-exports the schema from the database package for convenience
+export * from "@repo/db/zero";

@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import type { User } from "@repo/zero";
+import type { User } from "@repo/db/zero";
 import {
   UserTableActionsCell,
   UserTableCreatedAtCell,

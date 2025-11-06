@@ -17,7 +17,7 @@ import { TrashIcon } from "@repo/ui/registry/admin/icons/trash";
 import { BanIcon } from "@repo/ui/registry/admin/icons/ban";
 import { BanUserDialog } from "../ban-user-dialog";
 import { DeleteUserDialog } from "../delete-user-dialog";
-import type { User } from "@repo/zero";
+import type { User } from "@repo/db/zero";
 import type { CellContext } from "@tanstack/react-table";
 
 export function UserTableSelectHeaderCell({

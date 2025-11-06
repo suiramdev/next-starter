@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useZero } from "@repo/zero";
+import { useZero } from "@repo/zero/helpers/react";
 import {
   Dialog,
   DialogHeader,

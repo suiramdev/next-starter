@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { authClient } from "#src/helpers/react/client";
 
 export const signUpFormSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   nickname: z
     .string()
     .min(1, { message: "Nickname must be at least 1 character long" }),
@@ -73,7 +73,7 @@ export function SignUpForm({ onSuccess, onError, ...props }: SignUpFormProps) {
 
           onError?.(error);
         },
-        onSuccess: () => {
+        onSuccess: async () => {
           onSuccess?.();
         },
       },

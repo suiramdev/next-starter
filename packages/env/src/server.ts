@@ -19,8 +19,12 @@ const serverEnvSchema = z.object({
     .url()
     .optional()
     .default("postgresql://postgres:postgres@localhost:5432/postgres"),
-  ZERO_REPLICA_FILE: z.string().optional().default("/tmp/sync-replica.db"),
   ZERO_AUTH_SECRET: z.string(),
+  ZERO_REPLICA_FILE: z.string().optional().default("/tmp/sync-replica.db"),
+  ZERO_GET_QUERIES_URL: z
+    .url()
+    .optional()
+    .default("http://localhost:3002/api/zero/get-queries"),
 });
 
 /**

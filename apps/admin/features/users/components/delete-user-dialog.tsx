@@ -11,7 +11,7 @@ import { DialogDescription } from "@repo/ui/registry/new-york-v4/ui/dialog";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import { DialogFooter } from "@repo/ui/registry/new-york-v4/ui/dialog";
 import { useState } from "react";
-import { useZero } from "@repo/zero";
+import { useZero } from "@repo/zero/helpers/react";
 
 type DeleteUserDialogProps = React.ComponentProps<typeof Dialog> & {
   children?: React.ReactNode;

@@ -1,27 +1,13 @@
 import { Pool } from "pg";
 import { zeroNodePg } from "@rocicorp/zero/server/adapters/pg";
-import { schema } from "./schema";
+import { schema } from "@repo/db/zero";
 import { env } from "@repo/env/server";
 
-/**
- * Creates a ZQLDatabase instance for server-side ZQL queries.
- * This allows you to run ZQL queries directly against your Postgres database.
- *
- * @see https://zero.rocicorp.dev/docs/zql-on-the-server
- */
-const globalForZeroDb = globalThis as unknown as {
-  zeroDb: ReturnType<typeof zeroNodePg>;
-};
+export const pool = new Pool({
+  connectionString: env.ZERO_UPSTREAM_DB,
+});
 
-export const zeroDb =
-  globalForZeroDb.zeroDb ||
-  zeroNodePg(
-    schema,
-    new Pool({
-      connectionString: env.ZERO_UPSTREAM_DB,
-    })
-  );
+export const zeroDb = zeroNodePg(schema, pool);
 
-if (process.env.NODE_ENV !== "production") {
-  globalForZeroDb.zeroDb = zeroDb;
-}
+// Re-export the server functions from the Zero library for convenience
+export * from "@rocicorp/zero/server";
