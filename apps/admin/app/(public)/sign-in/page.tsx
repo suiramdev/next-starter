@@ -19,7 +19,7 @@ export default function Page() {
                 Don&apos;t have an account?{" "}
                 <Link
                   href="/sign-up"
-                  className="underline-offset-4 hover:underline"
+                  className="underline-offset-4 hover:text-primary underline"
                 >
                   Sign up
                 </Link>

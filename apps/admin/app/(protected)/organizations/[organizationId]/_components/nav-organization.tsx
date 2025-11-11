@@ -4,7 +4,6 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronsUpDownIcon,
   PlusIcon,
-  Building2Icon,
   CheckIcon,
 } from "@repo/ui/registry/admin/icons";
 import { authClient } from "@repo/auth/helpers/react/client";
@@ -26,6 +25,10 @@ import {
 } from "@repo/ui/registry/new-york-v4/ui/dropdown-menu";
 import { Skeleton } from "@repo/ui/registry/new-york-v4/ui/skeleton";
 import { OrganizationAvatar } from "@/features/organizations/components/organization-avatar";
+import {
+  CreateOrganizationDialog,
+  CreateOrganizationDialogTrigger,
+} from "@/features/organizations/components/create-organization-dialog";
 
 type NavOrganizationProps = {
   currentOrganizationId?: string;
@@ -57,53 +60,57 @@ export function NavOrganization({
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <OrganizationAvatar organization={currentOrganization} />
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">
-                  {currentOrganization.name}
-                </span>
-                <span className="truncate text-xs">Organization</span>
-              </div>
-              <ChevronsUpDownIcon className="ml-auto" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            align="start"
-            side={isMobile ? "bottom" : "right"}
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className="text-muted-foreground text-xs">
-              Organizations
-            </DropdownMenuLabel>
-            {organizations.map((org) => (
-              <DropdownMenuItem
-                key={org.id}
-                onClick={() => handleSelect(org.id)}
-                className="gap-2 p-2"
+        <CreateOrganizationDialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton
+                size="lg"
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
-                <OrganizationAvatar organization={org} />
-                {org.name}
-                {org.id === currentOrganizationId && (
-                  <CheckIcon className="ml-auto size-4" />
-                )}
-              </DropdownMenuItem>
-            ))}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2 text-muted-foreground">
-              <PlusIcon className="size-4" />
-              <span className="text-muted-foreground font-medium">
-                Add organization
-              </span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                <OrganizationAvatar organization={currentOrganization} />
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">
+                    {currentOrganization.name}
+                  </span>
+                  <span className="truncate text-xs">Organization</span>
+                </div>
+                <ChevronsUpDownIcon className="ml-auto" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+              align="start"
+              side={isMobile ? "bottom" : "right"}
+              sideOffset={4}
+            >
+              <DropdownMenuLabel className="text-muted-foreground text-xs">
+                Organizations
+              </DropdownMenuLabel>
+              {organizations.map((org) => (
+                <DropdownMenuItem
+                  key={org.id}
+                  onClick={() => handleSelect(org.id)}
+                  className="gap-2 p-2"
+                >
+                  <OrganizationAvatar organization={org} />
+                  {org.name}
+                  {org.id === currentOrganizationId && (
+                    <CheckIcon className="ml-auto size-4" />
+                  )}
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <CreateOrganizationDialogTrigger asChild>
+                <DropdownMenuItem className="gap-2 p-2 text-muted-foreground">
+                  <PlusIcon className="size-4" />
+                  <span className="text-muted-foreground font-medium">
+                    Add organization
+                  </span>
+                </DropdownMenuItem>
+              </CreateOrganizationDialogTrigger>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </CreateOrganizationDialog>
       </SidebarMenuItem>
     </SidebarMenu>
   );

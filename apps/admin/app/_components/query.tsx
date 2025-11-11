@@ -3,6 +3,7 @@
 import { ZeroProvider } from "@repo/zero/helpers/react";
 import { authClient } from "@repo/auth/helpers/react/client";
 import { schema } from "@repo/db/zero";
+import { createMutators } from "@repo/zero/mutators";
 
 type QueryProviderProps = {
   children: React.ReactNode;
@@ -40,6 +41,9 @@ export function QueryProvider({ children }: QueryProviderProps) {
   // Get user ID from auth session, fallback to 'anon' if not authenticated
   const userID = session?.user?.id ?? "anon";
 
+  // Create mutators for the client
+  const mutators = createMutators({ userId: userID });
+
   // Use userId as key to force remount when user changes
   // This ensures the old Zero client is properly cleaned up before creating a new one
   return (
@@ -51,6 +55,7 @@ export function QueryProvider({ children }: QueryProviderProps) {
         auth: session?.user?.id ? fetchZeroToken : undefined,
         server: process.env.NEXT_PUBLIC_ZERO_SERVER_URL,
         schema,
+        mutators,
       }}
     >
       {children}

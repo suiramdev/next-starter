@@ -12,6 +12,10 @@ import {
 } from "@/features/users/components/current-user-dropdown";
 import { UserAvatar } from "@/features/users/components/user-avatar";
 import { OrganizationAvatar } from "@/features/organizations/components/organization-avatar";
+import {
+  CreateOrganizationDialog,
+  CreateOrganizationDialogTrigger,
+} from "@/features/organizations/components/create-organization-dialog";
 import { Separator } from "@repo/ui/registry/new-york-v4/ui/separator";
 
 export default function Page() {
@@ -35,10 +39,14 @@ export default function Page() {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Organizations</span>
-            <Button size="sm">
-              <PlusIcon />
-              Create Organization
-            </Button>
+            <CreateOrganizationDialog>
+              <CreateOrganizationDialogTrigger asChild>
+                <Button size="sm">
+                  <PlusIcon />
+                  Create Organization
+                </Button>
+              </CreateOrganizationDialogTrigger>
+            </CreateOrganizationDialog>
           </div>
           <div className="flex flex-col gap-2">
             {organizations?.map((organization) => (

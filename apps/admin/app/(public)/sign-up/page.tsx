@@ -18,7 +18,7 @@ export default function HomePage() {
               Already have an account?{" "}
               <Link
                 href="/sign-in"
-                className="underline-offset-4 hover:underline"
+                className="underline-offset-4 hover:text-primary underline"
               >
                 Sign in
               </Link>
