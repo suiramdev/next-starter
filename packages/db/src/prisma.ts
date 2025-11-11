@@ -1,5 +1,4 @@
 import { PrismaClient } from "./generated/prisma";
-import { env } from "@repo/env/server";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
@@ -8,7 +7,7 @@ export const prisma =
   new PrismaClient({
     datasources: {
       db: {
-        url: env.ZERO_UPSTREAM_DB,
+        url: process.env.DATABASE_URL,
       },
     },
   });

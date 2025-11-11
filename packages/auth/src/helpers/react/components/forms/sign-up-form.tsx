@@ -8,7 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@repo/ui/registry/new-york-v4/ui/form";
-import { Button } from "@repo/ui/registry/admin/ui/button";
+import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
 import { useForm } from "react-hook-form";
 import { authClient } from "#src/helpers/react/client";
@@ -160,11 +160,7 @@ export function SignUpForm({ onSuccess, onError, ...props }: SignUpFormProps) {
               </FormMessage>
             )}
           </div>
-          <Button
-            type="submit"
-            className="w-full"
-            loading={form.formState.isSubmitting}
-          >
+          <Button type="submit" className="w-full">
             Sign up
           </Button>
         </div>

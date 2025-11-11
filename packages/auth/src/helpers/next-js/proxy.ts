@@ -31,7 +31,9 @@ export function withAuthProxy(
     const sessionCookie = getSessionCookie(req);
 
     if (isProtectedRoute && !sessionCookie) {
-      return NextResponse.redirect(new URL(redirectTo, req.url));
+      const url = req.nextUrl.clone();
+      url.pathname = redirectTo;
+      return NextResponse.redirect(url);
     }
 
     return nextProxy ? nextProxy(req, event) : NextResponse.next();

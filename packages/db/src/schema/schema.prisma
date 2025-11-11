@@ -5,5 +5,5 @@ generator prisma {
 
 datasource db {
   provider = "postgresql"
-  url      = env("ZERO_UPSTREAM_DB")
+  url      = env("DATABASE_URL")
 }

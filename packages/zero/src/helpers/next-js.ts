@@ -12,7 +12,7 @@ const validated = Object.fromEntries(
 );
 
 export function getQuery(
-  authData: { userId: string } | undefined,
+  authData: { userId: string },
   name: string,
   args: readonly ReadonlyJSONValue[]
 ) {
@@ -25,17 +25,16 @@ export function getQuery(
     // Pass authData to both auth'd and unauth'd queries
     // For syncedQuery, this will be ignored
     // For syncedQueryWithContext, this will be used as the context
-    // FIXME: Type assertion needed because TypeScript can't infer that syncedQuery accepts undefined
-    query: q(authData!, ...args),
+    query: q(authData, ...args),
   };
 }
 
 export function getQueriesHandler(
-  getAuthData: () => Promise<{ userId: string } | undefined>
+  getAuthData: (request: NextRequest) => Promise<AuthData>
 ) {
   return async (req: NextRequest) => {
     try {
-      const authData = await getAuthData();
+      const authData = await getAuthData(req);
 
       const result = await handleGetQueriesRequest(
         (name, args) => getQuery(authData, name, args),
@@ -61,9 +60,7 @@ export function getQueriesHandler(
  * Push handler for Zero mutations.
  * This handler processes mutations from Zero clients and applies them to the database.
  */
-export function mutateHandler(
-  getAuthData: () => Promise<AuthData | undefined>
-) {
+export function mutateHandler(getAuthData: () => Promise<AuthData>) {
   return async (req: NextRequest) => {
     try {
       const authData = await getAuthData();

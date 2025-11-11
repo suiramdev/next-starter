@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack --port 3002",
+    "dev": "next dev --turbopack --port $TURBO_MFE_PORT",
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@repo/auth": "workspace:^",
-    "@repo/env": "workspace:^",
     "@repo/zero": "workspace:^",
     "next": "^16.0.1",
     "pg": "^8.16.3",

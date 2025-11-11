@@ -1,23 +1,27 @@
 import { NextResponse } from "next/server";
 import { withAuthProxy } from "@repo/auth/helpers/next-js/proxy";
 
-export default withAuthProxy(
-  {
-    publicRoutes: ["/sign-in", "/sign-up"],
-    redirectTo: "/sign-in",
-  },
-  async (req) => {
-    // Custom middleware to redirect the user to the dashboard page if they are authenticated
-    // on authentication routes or root route
-    if (req.nextUrl.pathname === "/") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
-
-    return NextResponse.next();
-  }
-);
+export default withAuthProxy({
+  publicRoutes: ["/sign-in", "/sign-up"],
+  redirectTo: "/sign-in",
+});
 
 // Routes Middleware should not run on
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - files with .png extension
+     *
+     * Note: With basePath: "/admin", the matcher is relative to the basePath.
+     * So "/" matches "/admin" and "/:path*" matches "/admin/:path*"
+     * We explicitly include "/" to ensure the root path is matched.
+     */
+    "/",
+    "/((?!api|_next/static|_next/image|favicon\\.ico|.*\\.png$).*)",
+  ],
 };

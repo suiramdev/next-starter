@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@repo/db": "workspace:^",
-    "@repo/env": "workspace:^",
     "@rocicorp/zero": "^0.24.2025101500",
     "pg": "^8.16.3",
     "react": "^19.2.0",

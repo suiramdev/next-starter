@@ -1,6 +1,5 @@
 import { SignJWT } from "jose";
 import { auth } from "../../server";
-import { env } from "@repo/env/server";
 import type { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 /**
@@ -31,8 +30,8 @@ export async function generateZeroToken(
   }
 
   // Generate JWT token for Zero
-  // Zero expects the userID to match the 'sub' field in the JWT
-  const secretKey = env.ZERO_AUTH_SECRET;
+  // Zero expects the userId to match the 'sub' field in the JWT
+  const secretKey = process.env.ZERO_AUTH_SECRET;
   if (!secretKey) {
     throw new Error("ZERO_AUTH_SECRET must be set");
   }

@@ -8,12 +8,9 @@ import { builder } from "../schema";
  */
 export const getUsers = syncedQueryWithContext(
   "getUsers",
-  z.tuple([]), // No arguments needed - filtering is based on auth context
+  z.tuple([]),
   (ctx: { userId: string }) => {
-    // Find users who share at least one organization with the authenticated user
-    // This uses a subquery to find organization IDs the user belongs to,
-    // then finds all users who belong to those same organizations
-    return builder.user.whereExists("organizations", (q) =>
+    return builder.user.related("organizations", (q) =>
       q.where("userId", "=", ctx.userId)
     );
   }

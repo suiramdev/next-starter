@@ -21,7 +21,6 @@
     "db:seed": "tsx src/seed.ts"
   },
   "dependencies": {
-    "@repo/env": "workspace:^",
     "pg": "^8.16.3",
     "zod": "^4.1.12"
   },

@@ -1,6 +1,13 @@
 import { Button } from "#src/registry/new-york-v4/ui/button";
-import { ChevronDownIcon } from "#src/registry/admin/icons/chevron-down";
-import { Loader2Icon } from "#src/registry/admin/icons/loader2";
+import {
+  ChevronDownIcon,
+  Loader2Icon,
+  ChevronsLeftIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsRightIcon,
+  ColumnsIcon,
+} from "#src/registry/admin/icons";
 import { cn } from "#src/lib/utils";
 import { Label } from "#src/registry/new-york-v4/ui/label";
 import {
@@ -10,11 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "#src/registry/new-york-v4/ui/select";
-import { ChevronsLeftIcon } from "#src/registry/admin/icons/chevrons-left";
-import { ChevronLeftIcon } from "#src/registry/admin/icons/chevron-left";
-import { ChevronRightIcon } from "#src/registry/admin/icons/chevron-right";
-import { ChevronsRightIcon } from "#src/registry/admin/icons/chevrons-right";
-import { ColumnsIcon } from "#src/registry/admin/icons/columns";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -59,7 +61,7 @@ function ControlledTableColumnsVisibility<TData extends RowData>({
           .getAllColumns()
           .filter(
             (column) =>
-              typeof column.accessorFn !== "undefined" && column.getCanHide(),
+              typeof column.accessorFn !== "undefined" && column.getCanHide()
           )
           .map((column) => {
             return (
@@ -331,7 +333,7 @@ function ControlledTable<TData extends RowData>({
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
-                        header.getContext(),
+                        header.getContext()
                       )}
                 </TableHead>
               ))}

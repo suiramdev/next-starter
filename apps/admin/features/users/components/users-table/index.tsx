@@ -6,8 +6,8 @@ import { getUsers } from "@repo/zero/queries";
 import { authClient } from "@repo/auth/helpers/react/client";
 import { ControlledTable } from "@repo/ui/registry/admin/ui/controlled-table";
 import { useReactTable, getCoreRowModel } from "@tanstack/react-table";
-import { Button } from "@repo/ui/registry/admin/ui/button";
-import { PlusIcon } from "@repo/ui/registry/admin/icons/plus";
+import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
+import { PlusIcon } from "@repo/ui/registry/admin/icons";
 import { AddUserDialog, AddUserDialogTrigger } from "../add-user-dialog";
 import { userTableColumns } from "./columns";
 

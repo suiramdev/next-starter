@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Checkbox } from "@repo/ui/registry/new-york-v4/ui/checkbox";
-import { Button } from "@repo/ui/registry/admin/ui/button";
+import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import Link from "next/link";
 import { Badge } from "@repo/ui/registry/new-york-v4/ui/badge";
 import { cn } from "@repo/ui/lib/utils";
@@ -11,10 +11,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/dropdown-menu";
-import { MoreHorizontalIcon } from "@repo/ui/registry/admin/icons/more-horizontal";
-import { PencilIcon } from "@repo/ui/registry/admin/icons/pencil";
-import { TrashIcon } from "@repo/ui/registry/admin/icons/trash";
-import { BanIcon } from "@repo/ui/registry/admin/icons/ban";
+import {
+  MoreHorizontalIcon,
+  PencilIcon,
+  TrashIcon,
+  BanIcon,
+} from "@repo/ui/registry/admin/icons";
 import { BanUserDialog } from "../ban-user-dialog";
 import { DeleteUserDialog } from "../delete-user-dialog";
 import type { User } from "@repo/db/zero";

@@ -11,7 +11,7 @@ export const getOrganizations = syncedQueryWithContext(
   z.tuple([]),
   (ctx: { userId: string }) => {
     return builder.organization
-      .whereExists("users", (q) => q.where("userId", "=", ctx.userId))
+      .related("users", (q) => q.where("userId", "=", ctx.userId))
       .orderBy("name", "asc");
   }
 );
