@@ -33,7 +33,8 @@ export function DeleteUserDialog({
 
   const handleDelete = () => {
     if (!userId) return;
-    zero.mutate.user.delete({ id: userId });
+
+    zero.mutate.deleteUser({ userId });
     handleOpenChange(false);
   };
 

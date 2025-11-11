@@ -1,7 +1,7 @@
 import * as React from "react";
+import Link from "next/link";
 import { Checkbox } from "@repo/ui/registry/new-york-v4/ui/checkbox";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
-import Link from "next/link";
 import { Badge } from "@repo/ui/registry/new-york-v4/ui/badge";
 import { cn } from "@repo/ui/lib/utils";
 import {
@@ -19,6 +19,8 @@ import {
 } from "@repo/ui/registry/admin/icons";
 import { BanUserDialog } from "../ban-user-dialog";
 import { DeleteUserDialog } from "../delete-user-dialog";
+import { EditUserDialog } from "../edit-user-dialog";
+import { authClient } from "@repo/auth/helpers/react/client";
 import type { User } from "@repo/db/zero";
 import type { CellContext } from "@tanstack/react-table";
 
@@ -105,8 +107,11 @@ export function UserTableCreatedAtCell({
 export function UserTableActionsCell({ row }: CellContext<User, unknown>) {
   const [isBanDialogOpen, setIsBanDialogOpen] = React.useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+  const { data: session } = authClient.useSession();
 
   const user = row.original;
+  const isCurrentUser = user.id === session?.user?.id;
 
   return (
     <>
@@ -119,30 +124,38 @@ export function UserTableActionsCell({ row }: CellContext<User, unknown>) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem asChild>
-            <Link href={`/users/${user.id}`} className="cursor-pointer">
-              <PencilIcon className="mr-2 h-4 w-4" />
-              Edit
-            </Link>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => setIsEditDialogOpen(true)}
+          >
+            <PencilIcon className="mr-2 h-4 w-4" />
+            Edit
           </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
-            className="cursor-pointer"
-            onClick={() => setIsBanDialogOpen(true)}
+            className={isCurrentUser ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
+            onClick={() => !isCurrentUser && setIsBanDialogOpen(true)}
+            disabled={isCurrentUser}
           >
             <BanIcon className="mr-2 h-4 w-4" />
             Ban
           </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
-            className="cursor-pointer"
-            onClick={() => setIsDeleteDialogOpen(true)}
+            className={isCurrentUser ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
+            onClick={() => !isCurrentUser && setIsDeleteDialogOpen(true)}
+            disabled={isCurrentUser}
           >
             <TrashIcon className="mr-2 h-4 w-4" />
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      <EditUserDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        user={user}
+      />
       <BanUserDialog
         open={isBanDialogOpen}
         onOpenChange={setIsBanDialogOpen}

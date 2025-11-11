@@ -1,5 +1,6 @@
 import type { AuthData } from "../client";
 import { createOrganizationMutator } from "./organizations";
+import { createUserMutator } from "./users";
 
 /**
  * Client-side mutators for Zero.
@@ -9,6 +10,7 @@ import { createOrganizationMutator } from "./organizations";
 export function createMutators(authData: AuthData) {
   return {
     ...createOrganizationMutator(authData),
+    ...createUserMutator(authData),
   } as const;
 }
 

@@ -44,12 +44,10 @@ export function BanUserDialog({
     if (!userId) return;
 
     const banExpires = banEndDate ? new Date(banEndDate).getTime() : null;
-    zero.mutate.user.update({
-      id: userId,
-      banned: true,
+    zero.mutate.banUser({
+      userId,
       banReason: banReason || null,
       banExpires,
-      updatedAt: new Date().getTime(),
     });
     handleOpenChange(false);
   };
