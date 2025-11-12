@@ -1,0 +1,38 @@
+import {
+  SidebarInset,
+  SidebarProvider,
+} from "@repo/ui/registry/new-york-v4/ui/sidebar";
+import { Sidebar } from "@/app/(protected)/_components/sidebar";
+import { SidebarTrigger } from "@repo/ui/registry/new-york-v4/ui/sidebar";
+import { Separator } from "@repo/ui/registry/new-york-v4/ui/separator";
+import { AutoSelectOrganization } from "@/app/(protected)/_components/auto-select-organization";
+
+export default async function Layout({
+  children,
+  breadcrumb,
+}: Readonly<{
+  children: React.ReactNode;
+  breadcrumb: React.ReactNode;
+}>) {
+  return (
+    <SidebarProvider>
+      <AutoSelectOrganization />
+      <Sidebar />
+      <SidebarInset>
+        <header className="group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear">
+          <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mx-2 data-[orientation=vertical]:h-4"
+            />
+            {breadcrumb}
+          </div>
+        </header>
+        <div className="flex flex-1 flex-col gap-4 px-4 py-4 md:gap-6 md:px-6 md:py-6">
+          {children}
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  );
+}

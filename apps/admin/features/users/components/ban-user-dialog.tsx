@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useZero } from "@repo/zero/helpers/react";
 import {
   Dialog,
   DialogHeader,
@@ -15,10 +14,11 @@ import { DialogFooter } from "@repo/ui/registry/new-york-v4/ui/dialog";
 import { Label } from "@repo/ui/registry/new-york-v4/ui/label";
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
 import { Textarea } from "@repo/ui/registry/new-york-v4/ui/textarea";
+import { authClient } from "@repo/auth/helpers/react/client";
 
 type BanUserDialogProps = React.ComponentProps<typeof Dialog> & {
   children?: React.ReactNode;
-  userId?: string;
+  userId: string;
 };
 
 export function BanUserDialog({
@@ -29,7 +29,6 @@ export function BanUserDialog({
   const [open, setOpen] = useState(false);
   const [banReason, setBanReason] = useState("");
   const [banEndDate, setBanEndDate] = useState("");
-  const zero = useZero();
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
@@ -40,15 +39,17 @@ export function BanUserDialog({
     }
   };
 
-  const handleBan = () => {
-    if (!userId) return;
+  const handleBan = async () => {
+    const banExpiresIn = banEndDate
+      ? new Date(banEndDate).getTime()
+      : undefined;
 
-    const banExpires = banEndDate ? new Date(banEndDate).getTime() : null;
-    zero.mutate.banUser({
+    await authClient.admin.banUser({
       userId,
-      banReason: banReason || null,
-      banExpires,
+      banReason,
+      banExpiresIn,
     });
+
     handleOpenChange(false);
   };
 

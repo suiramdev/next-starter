@@ -1,7 +1,19 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { convexClient } from "@/lib/convex-server";
+import { api } from "@repo/convex/_generated/api";
 import { SignInForm } from "@/features/auth/components/sign-in-form";
 
-export default function Page() {
+export default async function Page() {
+  const isSetupCompleted = await convexClient.query(
+    api.queries.setup.isSetupCompleted,
+    {}
+  );
+
+  if (!isSetupCompleted) {
+    redirect("/setup");
+  }
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
       <div className="w-full max-w-sm">

@@ -7,27 +7,15 @@
     "format": "turbo run format",
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "auth:generate": "turbo run auth:generate --filter=@repo/auth",
-    "db:generate": "turbo run db:generate --filter=@repo/db",
-    "db:migrate": "turbo run db:migrate --filter=@repo/db",
-    "db:studio": "turbo run db:studio --filter=@repo/db",
-    "db:reset": "turbo run db:reset --filter=@repo/db",
-    "db:deploy": "turbo run db:deploy --filter=@repo/db",
-    "db:push": "turbo run db:push --filter=@repo/db",
-    "db:seed": "turbo run db:seed --filter=@repo/db"
+    "deploy": "turbo run deploy",
+    "auth:generate": "turbo run auth:generate"
   },
   "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=22"
   },
   "devDependencies": {
-    "@rocicorp/zero": "^0.24.3000000000",
-    "turbo": "^2.6.0",
+    "turbo": "^2.6.1",
     "typescript": "5.9.2"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@rocicorp/zero-sqlite3"
-    ]
   }
 }

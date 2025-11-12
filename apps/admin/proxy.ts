@@ -1,8 +1,7 @@
-import { NextResponse } from "next/server";
 import { withAuthProxy } from "@repo/auth/helpers/next-js/proxy";
 
 export default withAuthProxy({
-  publicRoutes: ["/sign-in", "/sign-up"],
+  publicRoutes: ["/sign-in", "/sign-up", "/setup"],
   redirectTo: "/sign-in",
 });
 

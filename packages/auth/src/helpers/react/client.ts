@@ -1,5 +1,10 @@
 import { createAuthClient } from "better-auth/react";
-import { adminClient } from "better-auth/client/plugins";
+import {
+  adminClient,
+  organizationClient,
+  anonymousClient,
+} from "better-auth/client/plugins";
+import { convexClient } from "@convex-dev/better-auth/client/plugins";
 
 /**
  * This is the client for the auth service.
@@ -9,5 +14,10 @@ import { adminClient } from "better-auth/client/plugins";
  */
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
-  plugins: [adminClient()],
+  plugins: [
+    convexClient(),
+    adminClient(),
+    organizationClient(),
+    anonymousClient(),
+  ],
 });

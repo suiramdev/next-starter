@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { QueryProvider } from "@/app/_components/query";
+import { ConvexProvider } from "@/app/_components/convex-provider";
 import "@/app/globals.css";
 
 export const metadata: Metadata = {
@@ -21,7 +21,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <QueryProvider>{children}</QueryProvider>
+        <ConvexProvider>{children}</ConvexProvider>
       </body>
     </html>
   );

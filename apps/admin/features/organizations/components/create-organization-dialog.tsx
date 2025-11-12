@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useZero } from "@repo/zero/helpers/react";
+import { useMutation } from "convex/react";
+import { api } from "@repo/convex/_generated/api";
 import {
   Dialog,
   DialogHeader,
@@ -26,7 +27,7 @@ export function CreateOrganizationDialog({
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const zero = useZero();
+  const createOrganization = useMutation(api.mutations.organizations.createOrganization);
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
@@ -44,7 +45,7 @@ export function CreateOrganizationDialog({
 
     setIsSubmitting(true);
     try {
-      zero.mutate.createOrganization({ name: name.trim() });
+      await createOrganization({ name: name.trim() });
       handleOpenChange(false);
     } catch (error) {
       console.error("Failed to create organization:", error);

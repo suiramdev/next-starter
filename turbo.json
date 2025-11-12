@@ -20,23 +20,11 @@
       "cache": false,
       "persistent": true
     },
+    "deploy": {
+      "cache": false
+    },
     "auth:generate": {
-      "dependsOn": ["^auth:generate"]
-    },
-    "db:generate": {
-      "dependsOn": ["^auth:generate", "^db:generate"]
-    },
-    "db:migrate": {
-      "persistent": true
-    },
-    "db:studio": {
-      "persistent": true
-    },
-    "db:reset": {
-      "persistent": true
-    },
-    "db:deploy": {},
-    "db:push": {},
-    "db:seed": {}
+      "cache": false
+    }
   }
 }
