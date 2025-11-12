@@ -1,13 +1,13 @@
 import { getSessionCookie } from "better-auth/cookies";
 import {
-  NextResponse,
-  type NextFetchEvent,
-  type NextRequest,
+	type NextFetchEvent,
+	type NextRequest,
+	NextResponse,
 } from "next/server";
 
 export interface AuthProxyOptions {
-  publicRoutes?: string[];
-  redirectTo?: string;
+	publicRoutes?: string[];
+	redirectTo?: string;
 }
 
 /**
@@ -18,24 +18,27 @@ export interface AuthProxyOptions {
  * @param nextProxy - The next proxy to be called.
  */
 export function withAuthProxy(
-  options: AuthProxyOptions,
-  nextProxy?: (req: NextRequest, event: NextFetchEvent) => Promise<NextResponse>
+	options: AuthProxyOptions,
+	nextProxy?: (
+		req: NextRequest,
+		event: NextFetchEvent,
+	) => Promise<NextResponse>,
 ) {
-  const redirectTo = options.redirectTo ?? "/";
+	const redirectTo = options.redirectTo ?? "/";
 
-  return async function proxy(req: NextRequest, event: NextFetchEvent) {
-    const { pathname } = req.nextUrl;
+	return async function proxy(req: NextRequest, event: NextFetchEvent) {
+		const { pathname } = req.nextUrl;
 
-    const isProtectedRoute = !options.publicRoutes?.includes(pathname);
+		const isProtectedRoute = !options.publicRoutes?.includes(pathname);
 
-    const sessionCookie = getSessionCookie(req);
+		const sessionCookie = getSessionCookie(req);
 
-    if (isProtectedRoute && !sessionCookie) {
-      const url = req.nextUrl.clone();
-      url.pathname = redirectTo;
-      return NextResponse.redirect(url);
-    }
+		if (isProtectedRoute && !sessionCookie) {
+			const url = req.nextUrl.clone();
+			url.pathname = redirectTo;
+			return NextResponse.redirect(url);
+		}
 
-    return nextProxy ? nextProxy(req, event) : NextResponse.next();
-  };
+		return nextProxy ? nextProxy(req, event) : NextResponse.next();
+	};
 }

@@ -1,8 +1,7 @@
 // This file has been automatically migrated to valid ESM format by Storybook.
 import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
 import type { StorybookConfig } from "@storybook/react-vite";
-
-import { join, dirname } from "path";
 
 const require = createRequire(import.meta.url);
 
@@ -11,23 +10,23 @@ const require = createRequire(import.meta.url);
  * It is needed in projects that use Yarn PnP or are set up within a monorepo.
  */
 function getAbsolutePath(value: string): string {
-  return dirname(require.resolve(join(value, "package.json")));
+	return dirname(require.resolve(join(value, "package.json")));
 }
 
 const config: StorybookConfig = {
-  stories: [
-    "../../../packages/ui/src/**/*.mdx",
-    "../../../packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-  ],
-  addons: [
-    getAbsolutePath("@storybook/addon-docs"),
-    getAbsolutePath("@chromatic-com/storybook"),
-    getAbsolutePath("@storybook/addon-vitest"),
-  ],
-  framework: {
-    name: getAbsolutePath("@storybook/react-vite"),
-    options: {},
-  },
+	stories: [
+		"../../../packages/ui/src/**/*.mdx",
+		"../../../packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+	],
+	addons: [
+		getAbsolutePath("@storybook/addon-docs"),
+		getAbsolutePath("@chromatic-com/storybook"),
+		getAbsolutePath("@storybook/addon-vitest"),
+	],
+	framework: {
+		name: getAbsolutePath("@storybook/react-vite"),
+		options: {},
+	},
 };
 
 export default config;

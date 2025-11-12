@@ -1,7 +1,7 @@
 export default function Page() {
-  return (
-    <section>
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-    </section>
-  );
+	return (
+		<section>
+			<h1 className="mb-4 font-bold text-2xl">Dashboard</h1>
+		</section>
+	);
 }

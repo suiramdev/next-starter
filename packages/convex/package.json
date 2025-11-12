@@ -1,37 +1,33 @@
 {
-  "name": "@repo/convex",
-  "version": "0.0.0",
-  "private": true,
-  "exports": {
-    "./_generated/api": {
-      "types": "./convex/_generated/api.d.ts",
-      "default": "./convex/_generated/api.js"
-    },
-    "./_generated/server": {
-      "types": "./convex/_generated/server.d.ts",
-      "default": "./convex/_generated/server.js"
-    }
-  },
-  "scripts": {
-    "lint": "biome check",
-    "format": "biome format --write",
-    "dev": "convex dev",
-    "deploy": "convex deploy",
-    "auth:generate": "cd convex/betterAuth && npx @better-auth/cli generate -y --output ./generatedSchema.ts"
-  },
-  "dependencies": {
-    "@convex-dev/better-auth": "^0.9.7",
-    "@repo/auth": "workspace:^",
-    "better-auth": "^1.3.27",
-    "convex": "^1.29.0",
-    "convex-helpers": "^0.1.104"
-  },
-  "devDependencies": {
-    "@better-auth/cli": "^1.3.27",
-    "@biomejs/biome": "^2.3.5",
-    "@repo/biome-config": "workspace:^",
-    "@repo/typescript-config": "workspace:^",
-    "@types/node": "^24.10.1",
-    "typescript": "^5.9.3"
-  }
+	"name": "@repo/convex",
+	"version": "0.0.0",
+	"private": true,
+	"exports": {
+		"./_generated/api": {
+			"types": "./convex/_generated/api.d.ts",
+			"default": "./convex/_generated/api.js"
+		},
+		"./_generated/server": {
+			"types": "./convex/_generated/server.d.ts",
+			"default": "./convex/_generated/server.js"
+		}
+	},
+	"scripts": {
+		"dev": "convex dev",
+		"deploy": "convex deploy",
+		"auth:generate": "cd convex/betterAuth && npx @better-auth/cli generate -y --output ./generatedSchema.ts"
+	},
+	"dependencies": {
+		"@convex-dev/better-auth": "^0.9.7",
+		"@repo/auth": "workspace:^",
+		"better-auth": "^1.3.27",
+		"convex": "^1.29.0",
+		"convex-helpers": "^0.1.104"
+	},
+	"devDependencies": {
+		"@better-auth/cli": "^1.3.27",
+		"@repo/typescript-config": "workspace:^",
+		"@types/node": "^24.10.1",
+		"typescript": "^5.9.3"
+	}
 }

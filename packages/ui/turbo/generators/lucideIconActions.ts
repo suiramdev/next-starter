@@ -1,23 +1,23 @@
 import type { PlopTypes } from "@turbo/gen";
 
 export const lucideIconActions: PlopTypes.ActionType[] = [
-  // Icon component
-  {
-    type: "add",
-    path: "src/registry/{{registry}}/icons/{{dashCase iconName}}.tsx",
-    template: `import { {{iconName}}, LucideProps } from "lucide-react";
+	// Icon component
+	{
+		type: "add",
+		path: "src/registry/{{registry}}/icons/{{dashCase iconName}}.tsx",
+		template: `import { {{iconName}}, LucideProps } from "lucide-react";
 
 export function {{iconName}}Icon({ ...props }: LucideProps) {
   return <{{iconName}} {...props} />;
 }
 `,
-    force: false,
-  },
-  // Storybook story
-  {
-    type: "add",
-    path: "src/registry/{{registry}}/icons/{{dashCase iconName}}.stories.tsx",
-    template: `import type { Meta, StoryObj } from "@storybook/react";
+		force: false,
+	},
+	// Storybook story
+	{
+		type: "add",
+		path: "src/registry/{{registry}}/icons/{{dashCase iconName}}.stories.tsx",
+		template: `import type { Meta, StoryObj } from "@storybook/react";
 import { {{iconName}}Icon } from "./{{dashCase iconName}}";
 
 /**
@@ -43,6 +43,6 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {};
 `,
-    force: false,
-  },
+		force: false,
+	},
 ];

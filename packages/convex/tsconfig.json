@@ -1,12 +1,12 @@
 {
-  "extends": "@repo/typescript-config/base.json",
-  "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "convex",
-    "baseUrl": ".",
-    "paths": {
-      "#convex/*": ["convex/*"]
-    }
-  },
-  "include": ["convex/**/*"]
+	"extends": "@repo/typescript-config/base.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "convex",
+		"baseUrl": ".",
+		"paths": {
+			"#convex/*": ["convex/*"]
+		}
+	},
+	"include": ["convex/**/*"]
 }
