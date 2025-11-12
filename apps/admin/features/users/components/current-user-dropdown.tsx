@@ -65,9 +65,7 @@ export function CurrentUserDropdown({
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {currentOrganizationId && (
-          <Link
-            href={`/organizations/${currentOrganizationId}/users/${session?.user?.id}`}
-          >
+          <Link href={`/users/${session?.user?.id}`}>
             <DropdownMenuItem>
               <SettingsIcon />
               Account

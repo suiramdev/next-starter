@@ -8,9 +8,14 @@ import {
   MemberTableSelectHeaderCell,
   MemberTableStatusCell,
 } from "./cells";
-import type { MemberFromList } from "./cells";
+import { components } from "@repo/convex/_generated/api";
+import { FunctionReturnType } from "convex/server";
 
-export const memberTableColumns: ColumnDef<MemberFromList>[] = [
+type Member = FunctionReturnType<
+  typeof components.betterAuth.queries.organizations.getOrganizationMembers
+>[number];
+
+export const memberTableColumns: ColumnDef<Member>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -38,12 +43,12 @@ export const memberTableColumns: ColumnDef<MemberFromList>[] = [
   },
   {
     header: "Role",
-    accessorKey: "user.role",
+    accessorKey: "role",
     cell: (context) => <MemberTableRoleCell {...context} />,
   },
   {
     header: "Created At",
-    accessorKey: "user.createdAt",
+    accessorKey: "createdAt",
     cell: (context) => <MemberTableCreatedAtCell {...context} />,
   },
   {

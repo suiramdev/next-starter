@@ -1,5 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
+import { FunctionReturnType } from "convex/server";
+import { components } from "@repo/convex/_generated/api";
 import { authClient } from "@repo/auth/helpers/react/client";
 import { Checkbox } from "@repo/ui/registry/new-york-v4/ui/checkbox";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
@@ -21,11 +23,9 @@ import { BanUserDialog } from "../../../users/components/ban-user-dialog";
 import { DeleteMemberDialog } from "../delete-member-dialog";
 import type { CellContext } from "@tanstack/react-table";
 
-// Extract the member type from listMembers return type
-// Note: This works by inferring from the actual function signature
-type ListMembersReturn = ReturnType<typeof authClient.organization.listMembers>;
-type ListMembersData = Awaited<ListMembersReturn>["data"];
-export type MemberFromList = NonNullable<ListMembersData>["members"][number];
+type Member = FunctionReturnType<
+  typeof components.betterAuth.queries.organizations.getOrganizationMembers
+>[number];
 
 export function MemberTableSelectHeaderCell({
   isAllPageRowsSelected,
@@ -49,16 +49,14 @@ export function MemberTableSelectHeaderCell({
   );
 }
 
-export function MemberTableSelectCell({
-  row,
-}: CellContext<MemberFromList, unknown>) {
+export function MemberTableSelectCell({ row }: CellContext<Member, unknown>) {
   return (
     <div className="flex items-center justify-start">
       <Checkbox
         checked={row.getIsSelected()}
         disabled={!row.getCanSelect()}
         onCheckedChange={row.getToggleSelectedHandler()}
-        aria-label={`Select member ${row.original?.user.name}`}
+        aria-label={`Select member ${row.original?.user?.name ?? ""}`}
       />
     </div>
   );
@@ -67,8 +65,8 @@ export function MemberTableSelectCell({
 export function MemberTableNameCell({
   row,
   getValue,
-}: CellContext<MemberFromList, unknown>) {
-  const name = getValue<string>();
+}: CellContext<Member, unknown>) {
+  const name = getValue<string | null>();
 
   return (
     <Button
@@ -76,14 +74,14 @@ export function MemberTableNameCell({
       variant="link"
       className="w-fit px-0 text-left text-foreground"
     >
-      <Link href={`/users/${row.original?.user.id}`}>{name}</Link>
+      <Link href={`/users/${row.original?.userId}`}>{name ?? "Anonymous"}</Link>
     </Button>
   );
 }
 
 export function MemberTableStatusCell({
   getValue,
-}: CellContext<MemberFromList, unknown>) {
+}: CellContext<Member, unknown>) {
   const isEmailVerified = getValue<boolean>();
   const color = isEmailVerified
     ? "bg-blue-500 text-white dark:bg-blue-600"
@@ -98,7 +96,7 @@ export function MemberTableStatusCell({
 
 export function MemberTableRoleCell({
   getValue,
-}: CellContext<MemberFromList, unknown>) {
+}: CellContext<Member, unknown>) {
   const role = getValue<string | null>();
   return (
     <Badge variant="outline" className="capitalize">
@@ -109,20 +107,18 @@ export function MemberTableRoleCell({
 
 export function MemberTableCreatedAtCell({
   getValue,
-}: CellContext<MemberFromList, unknown>) {
+}: CellContext<Member, unknown>) {
   const timestamp = getValue<number>();
   return `${new Date(timestamp).toLocaleDateString()}`;
 }
 
-export function MemberTableActionsCell({
-  row,
-}: CellContext<MemberFromList, unknown>) {
+export function MemberTableActionsCell({ row }: CellContext<Member, unknown>) {
   const [isBanDialogOpen, setIsBanDialogOpen] = React.useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
   const { data: session } = authClient.useSession();
 
   const member = row.original;
-  const isCurrentUser = member?.user.id === session?.user?.id;
+  const isCurrentUser = member?.userId === session?.user?.id;
 
   return (
     <>
@@ -159,15 +155,17 @@ export function MemberTableActionsCell({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <BanUserDialog
-        open={isBanDialogOpen}
-        onOpenChange={setIsBanDialogOpen}
-        userId={member.user.id}
-      />
+      {member.user?.userId && (
+        <BanUserDialog
+          open={isBanDialogOpen}
+          onOpenChange={setIsBanDialogOpen}
+          userId={member.user?.userId}
+        />
+      )}
       <DeleteMemberDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        memberIdOrEmail={member.id ?? member.user.email}
+        memberIdOrEmail={member._id}
         organizationId={member.organizationId}
       />
     </>
