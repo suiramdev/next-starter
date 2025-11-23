@@ -1,6 +1,5 @@
 "use client";
 
-import { api } from "@repo/convex/_generated/api";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import {
 	Dialog,
@@ -13,7 +12,6 @@ import {
 } from "@repo/ui/registry/new-york-v4/ui/dialog";
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
 import { Label } from "@repo/ui/registry/new-york-v4/ui/label";
-import { useMutation } from "convex/react";
 import { useState } from "react";
 
 type CreateOrganizationDialogProps = React.ComponentProps<typeof Dialog> & {
@@ -26,39 +24,26 @@ export function CreateOrganizationDialog({
 }: CreateOrganizationDialogProps) {
 	const [open, setOpen] = useState(false);
 	const [name, setName] = useState("");
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const createOrganization = useMutation(
-		api.mutations.organizations.createOrganization,
-	);
+	const [error, setError] = useState<string | null>(null);
 
 	const handleOpenChange = (open: boolean) => {
 		setOpen(open);
 		props.onOpenChange?.(open);
 		if (!open) {
 			setName("");
-			setIsSubmitting(false);
+			setError(null);
 		}
 	};
 
 	const handleSubmit = async () => {
-		if (!name.trim()) {
-			return;
-		}
+		if (!name.trim()) return;
 
-		setIsSubmitting(true);
-		try {
-			await createOrganization({ name: name.trim() });
-			handleOpenChange(false);
-		} catch (error) {
-			console.error("Failed to create organization:", error);
-			// TODO: Add error handling/toast notification
-		} finally {
-			setIsSubmitting(false);
-		}
+		setError(null);
+		handleOpenChange(false);
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === "Enter" && name.trim() && !isSubmitting) {
+		if (e.key === "Enter" && name.trim()) {
 			handleSubmit();
 		}
 	};
@@ -74,6 +59,11 @@ export function CreateOrganizationDialog({
 					</DialogDescription>
 				</DialogHeader>
 				<div className="space-y-4 py-2">
+					{error && (
+						<div className="rounded-lg bg-destructive/10 p-3 text-destructive text-sm">
+							{error}
+						</div>
+					)}
 					<div className="space-y-2">
 						<Label htmlFor="organization-name">Organization Name</Label>
 						<Input
@@ -82,24 +72,16 @@ export function CreateOrganizationDialog({
 							value={name}
 							onChange={(e) => setName(e.target.value)}
 							onKeyDown={handleKeyDown}
-							disabled={isSubmitting}
 							autoFocus
 						/>
 					</div>
 				</div>
 				<DialogFooter>
-					<Button
-						variant="outline"
-						onClick={() => handleOpenChange(false)}
-						disabled={isSubmitting}
-					>
+					<Button variant="outline" onClick={() => handleOpenChange(false)}>
 						Cancel
 					</Button>
-					<Button
-						onClick={handleSubmit}
-						disabled={!name.trim() || isSubmitting}
-					>
-						{isSubmitting ? "Creating..." : "Create"}
+					<Button onClick={handleSubmit} disabled={!name.trim()}>
+						Create
 					</Button>
 				</DialogFooter>
 			</DialogContent>

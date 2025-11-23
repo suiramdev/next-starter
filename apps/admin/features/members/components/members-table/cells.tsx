@@ -1,5 +1,5 @@
 import { authClient } from "@repo/auth/helpers/react/client";
-import type { components } from "@repo/convex/_generated/api";
+import type { api } from "@repo/convex/_generated/api";
 import { cn } from "@repo/ui/lib/utils";
 import {
 	BanIcon,
@@ -24,8 +24,8 @@ import { BanUserDialog } from "../../../users/components/ban-user-dialog";
 import { DeleteMemberDialog } from "../delete-member-dialog";
 
 type Member = FunctionReturnType<
-	typeof components.betterAuth.queries.organizations.getOrganizationMembers
->[number];
+	typeof api.queries.organizations.listMembers
+>["members"][number];
 
 export function MemberTableSelectHeaderCell({
 	isAllPageRowsSelected,
@@ -155,17 +155,17 @@ export function MemberTableActionsCell({ row }: CellContext<Member, unknown>) {
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
-			{member.user?.userId && (
+			{member.userId && (
 				<BanUserDialog
 					open={isBanDialogOpen}
 					onOpenChange={setIsBanDialogOpen}
-					userId={member.user?.userId}
+					userId={member.userId}
 				/>
 			)}
 			<DeleteMemberDialog
 				open={isDeleteDialogOpen}
 				onOpenChange={setIsDeleteDialogOpen}
-				memberIdOrEmail={member._id}
+				memberIdOrEmail={member.id}
 				organizationId={member.organizationId}
 			/>
 		</>

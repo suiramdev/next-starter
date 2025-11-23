@@ -27,6 +27,9 @@
 		"deploy": {
 			"cache": false
 		},
+		"db:reset": {
+			"cache": false
+		},
 		"auth:generate": {
 			"cache": false
 		}

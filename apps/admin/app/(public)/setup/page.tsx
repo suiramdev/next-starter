@@ -4,12 +4,9 @@ import { convexClient } from "@/lib/convex-server";
 import { SetupForm } from "./_components/setup-form";
 
 export default async function SetupPage() {
-	const isSetupCompleted = await convexClient.query(
-		api.queries.setup.isSetupCompleted,
-		{},
-	);
+	const isSetup = await convexClient.query(api.queries.setup.isSetup, {});
 
-	if (isSetupCompleted) {
+	if (isSetup) {
 		redirect("/");
 	}
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { authClient } from "@repo/auth/helpers/react/client";
+import { api } from "@repo/convex/_generated/api";
 import {
 	CheckIcon,
 	ChevronsUpDownIcon,
@@ -21,6 +22,7 @@ import {
 	useSidebar,
 } from "@repo/ui/registry/new-york-v4/ui/sidebar";
 import { Skeleton } from "@repo/ui/registry/new-york-v4/ui/skeleton";
+import { useQuery } from "convex/react";
 import { usePathname, useRouter } from "next/navigation";
 import {
 	CreateOrganizationDialog,
@@ -30,10 +32,10 @@ import { OrganizationAvatar } from "@/features/organizations/components/organiza
 
 export function NavOrganization() {
 	const { data: activeOrganization } = authClient.useActiveOrganization();
+	const organizations = useQuery(api.queries.organizations.listOrganizations);
 	const router = useRouter();
 	const pathname = usePathname();
 	const { isMobile } = useSidebar();
-	const { data: organizations } = authClient.useListOrganizations();
 
 	const handleSelect = (orgId: string) => {
 		const newPathname = pathname.replace(activeOrganization?.id ?? "", orgId);
@@ -57,7 +59,7 @@ export function NavOrganization() {
 								<OrganizationAvatar organization={activeOrganization} />
 								<div className="grid flex-1 text-left text-sm leading-tight">
 									<span className="truncate font-medium">
-										{activeOrganization.name}
+										{activeOrganization?.name}
 									</span>
 									<span className="truncate text-xs">Organization</span>
 								</div>

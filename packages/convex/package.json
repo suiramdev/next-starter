@@ -15,6 +15,7 @@
 	"scripts": {
 		"dev": "convex dev",
 		"deploy": "convex deploy",
+		"db:reset": "bash scripts/reset-data.sh",
 		"auth:generate": "cd convex/betterAuth && npx @better-auth/cli generate -y --output ./generatedSchema.ts"
 	},
 	"dependencies": {

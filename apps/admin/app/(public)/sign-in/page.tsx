@@ -5,12 +5,9 @@ import { SignInForm } from "@/features/auth/components/sign-in-form";
 import { convexClient } from "@/lib/convex-server";
 
 export default async function Page() {
-	const isSetupCompleted = await convexClient.query(
-		api.queries.setup.isSetupCompleted,
-		{},
-	);
+	const isSetup = await convexClient.query(api.queries.setup.isSetup, {});
 
-	if (!isSetupCompleted) {
+	if (!isSetup) {
 		redirect("/setup");
 	}
 

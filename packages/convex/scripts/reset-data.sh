@@ -1,0 +1,2 @@
+for tableName in `npx convex data --component betterAuth`; do npx convex import --component betterAuth --table $tableName --replace -y --format jsonLines /dev/null; done
+for tableName in `npx convex data`; do npx convex import --table $tableName --replace -y --format jsonLines /dev/null; done

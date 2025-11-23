@@ -1,6 +1,6 @@
 import { query } from "../_generated/server";
 
-export const isSetupCompleted = query({
+export const isSetup = query({
 	args: {},
 	handler: async (ctx) => {
 		const setting = await ctx.db

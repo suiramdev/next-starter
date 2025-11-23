@@ -63,9 +63,9 @@ export function SetupForm({ onSuccess, onError, ...props }: SetupFormProps) {
 			try {
 				await setupMutation({
 					organizationName: values.organizationName,
-					userEmail: values.userEmail,
-					userPassword: values.userPassword,
-					userName: values.userName,
+					email: values.userEmail,
+					password: values.userPassword,
+					name: values.userName,
 				});
 
 				onSuccess?.();

@@ -1,24 +1,37 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { mutation } from "../_generated/server";
 
-export const create = mutation({
+export const setDefaultActiveOrganization = mutation({
 	args: {
-		organizationName: v.string(),
+		userId: v.id("user"),
 	},
 	handler: async (ctx, args) => {
-		const slug = args.organizationName
-			.toLowerCase()
-			.replace(/[^a-z0-9]+/g, "-")
-			.replace(/^-+|-+$/g, "");
+		const member = await ctx.db
+			.query("member")
+			.withIndex("userId", (q) => q.eq("userId", args.userId))
+			.first();
 
-		const organizationId = await ctx.db.insert("organization", {
-			name: args.organizationName,
-			slug: slug,
-			createdAt: Date.now(),
+		if (!member) {
+			throw new ConvexError({
+				message: "Member not found",
+				code: 404,
+			});
+		}
+
+		const session = await ctx.db
+			.query("session")
+			.withIndex("userId", (q) => q.eq("userId", args.userId))
+			.first();
+
+		if (!session) {
+			throw new ConvexError({
+				message: "Session not found",
+				code: 404,
+			});
+		}
+
+		await ctx.db.patch(session._id, {
+			activeOrganizationId: member?.organizationId,
 		});
-
-		return {
-			organizationId: organizationId,
-		};
 	},
 });

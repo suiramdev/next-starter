@@ -1,4 +1,4 @@
-import type { components } from "@repo/convex/_generated/api";
+import type { api } from "@repo/convex/_generated/api";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { FunctionReturnType } from "convex/server";
 import {
@@ -12,8 +12,8 @@ import {
 } from "./cells";
 
 type Member = FunctionReturnType<
-	typeof components.betterAuth.queries.organizations.getOrganizationMembers
->[number];
+	typeof api.queries.organizations.listMembers
+>["members"][number];
 
 export const memberTableColumns: ColumnDef<Member>[] = [
 	{

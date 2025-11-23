@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ConvexProvider } from "@/app/_components/convex-provider";
 import "@/app/globals.css";
+import { ThemeProvider } from "./_components/theme-provider";
 
 export const metadata: Metadata = {
 	title: "Create Next App",
@@ -13,7 +14,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<head>
 				<script
 					crossOrigin="anonymous"
@@ -21,7 +22,14 @@ export default function RootLayout({
 				/>
 			</head>
 			<body>
-				<ConvexProvider>{children}</ConvexProvider>
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+				>
+					<ConvexProvider>{children}</ConvexProvider>
+				</ThemeProvider>
 			</body>
 		</html>
 	);

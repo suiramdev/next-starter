@@ -14,13 +14,10 @@ import { UserAvatar } from "./user-avatar";
 
 export type CurrentUserDropdownProps = React.ComponentProps<
 	typeof DropdownMenu
-> & {
-	currentOrganizationId?: string;
-};
+>;
 
 export function CurrentUserDropdown({
 	children,
-	currentOrganizationId,
 	...props
 }: CurrentUserDropdownProps) {
 	const router = useRouter();
@@ -64,14 +61,12 @@ export function CurrentUserDropdown({
 					</div>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				{currentOrganizationId && (
-					<Link href={`/users/${session?.user?.id}`}>
-						<DropdownMenuItem>
-							<SettingsIcon />
-							Account
-						</DropdownMenuItem>
-					</Link>
-				)}
+				<Link href={`/users/${session?.user?.id}`}>
+					<DropdownMenuItem>
+						<SettingsIcon />
+						Account
+					</DropdownMenuItem>
+				</Link>
 				<DropdownMenuItem onClick={handleSignOut}>
 					<LogOutIcon />
 					Log out

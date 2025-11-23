@@ -1,4 +1,8 @@
-import { LayoutDashboardIcon, UsersIcon } from "@repo/ui/registry/admin/icons";
+import {
+	LayoutDashboardIcon,
+	SettingsIcon,
+	UsersIcon,
+} from "@repo/ui/registry/admin/icons";
 import {
 	SidebarGroup,
 	SidebarGroupContent,
@@ -26,6 +30,14 @@ export function NavMain() {
 							<Link href="/users">
 								<UsersIcon />
 								Users
+							</Link>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+					<SidebarMenuItem>
+						<SidebarMenuButton asChild>
+							<Link href="/settings">
+								<SettingsIcon />
+								Settings
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>

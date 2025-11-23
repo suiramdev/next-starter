@@ -11,7 +11,6 @@ import {
 	ChevronsLeftIcon,
 	ChevronsRightIcon,
 	ColumnsIcon,
-	Loader2Icon,
 } from "#src/registry/admin/icons";
 import { Button } from "#src/registry/new-york-v4/ui/button";
 import {
@@ -20,6 +19,7 @@ import {
 	DropdownMenuContent,
 	DropdownMenuTrigger,
 } from "#src/registry/new-york-v4/ui/dropdown-menu";
+import { Empty, EmptyHeader } from "#src/registry/new-york-v4/ui/empty";
 import { Label } from "#src/registry/new-york-v4/ui/label";
 import {
 	Select,
@@ -28,6 +28,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#src/registry/new-york-v4/ui/select";
+import { Spinner } from "#src/registry/new-york-v4/ui/spinner";
 import {
 	Table,
 	TableBody,
@@ -252,7 +253,7 @@ function ControlledTableContent<TData extends RowData>({
 					className="py-8 text-center"
 				>
 					<div className="flex items-center justify-center">
-						<Loader2Icon className="size-4 animate-spin" />
+						<Spinner className="size-4 animate-spin" />
 					</div>
 				</TableCell>
 			</TableRow>
@@ -266,7 +267,9 @@ function ControlledTableContent<TData extends RowData>({
 					colSpan={table.getAllColumns().length}
 					className="py-8 text-center"
 				>
-					No results.
+					<Empty>
+						<EmptyHeader>No results.</EmptyHeader>
+					</Empty>
 				</TableCell>
 			</TableRow>
 		);

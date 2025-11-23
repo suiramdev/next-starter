@@ -10,6 +10,7 @@
 		"build": "turbo run build",
 		"dev": "turbo run dev",
 		"deploy": "turbo run deploy",
+		"db:reset": "turbo run db:reset",
 		"auth:generate": "turbo run auth:generate"
 	},
 	"packageManager": "pnpm@9.0.0",

@@ -1,20 +1,43 @@
-import { createClient, type GenericCtx } from "@convex-dev/better-auth";
+import {
+	type AuthFunctions,
+	createClient,
+	type GenericCtx,
+} from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
 import { ac, roles } from "@repo/auth/permissions";
 import { betterAuth } from "better-auth";
 import { admin, anonymous, organization } from "better-auth/plugins";
-import { components } from "./_generated/api";
+import { components, internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import authSchema from "./betterAuth/generatedSchema";
+
+const authFunctions: AuthFunctions = internal.auth;
 
 // The component client has methods needed for integrating Convex with Better Auth,
 // as well as helper methods for general use.
 export const authComponent = createClient<DataModel, typeof authSchema>(
 	components.betterAuth,
 	{
+		authFunctions,
 		local: {
 			schema: authSchema,
+		},
+		triggers: {
+			session: {
+				onCreate: async (ctx, session) => {
+					// If the user doesn't have an active organization, assign the first available organization as active
+					if (!session.activeOrganizationId) {
+						await ctx.runMutation(
+							components.betterAuth.mutations.organizations
+								.setDefaultActiveOrganization,
+							{
+								userId: session.userId,
+							},
+						);
+					}
+				},
+			},
 		},
 	},
 );
@@ -39,10 +62,6 @@ export const createAuth = (
 		plugins: [
 			// The Convex plugin is required for Convex compatibility
 			convex(),
-			admin({
-				ac,
-				roles,
-			}),
 			organization({
 				ac,
 				roles,
@@ -61,3 +80,5 @@ export const getCurrentUser = query({
 		return authComponent.getAuthUser(ctx);
 	},
 });
+
+export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi();

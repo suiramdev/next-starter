@@ -16,14 +16,13 @@ import { UserAvatar } from "@/features/users/components/user-avatar";
 
 export function NavUser() {
 	const { data: session } = authClient.useSession();
-	const { data: activeOrganization } = authClient.useActiveOrganization();
 
 	if (!session) return <NavUserSkeleton />;
 
 	return (
 		<SidebarMenu>
 			<SidebarMenuItem>
-				<CurrentUserDropdown currentOrganizationId={activeOrganization?.id}>
+				<CurrentUserDropdown>
 					<CurrentUserDropdownTrigger asChild>
 						<SidebarMenuButton size="lg">
 							<UserAvatar

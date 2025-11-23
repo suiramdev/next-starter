@@ -1,6 +1,5 @@
 "use client";
 
-import { authClient } from "@repo/auth/helpers/react/client";
 import { api } from "@repo/convex/_generated/api";
 import { PlusIcon } from "@repo/ui/registry/admin/icons";
 import { ControlledTable } from "@repo/ui/registry/admin/ui/controlled-table";
@@ -17,21 +16,25 @@ type MembersTableProps = {
 
 export function MembersTable({ organizationId }: MembersTableProps) {
 	const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-	const { data: activeOrganization } = authClient.useActiveOrganization();
+	const activeMember = useQuery(api.queries.organizations.getActiveMember);
 
-	const members = useQuery(api.queries.organizations.getOrganizationMembers, {
-		organizationId: organizationId ?? activeOrganization?.id ?? "",
+	const listMembers = useQuery(api.queries.organizations.listMembers, {
+		query: {
+			organizationId: organizationId ?? activeMember?.organizationId ?? "",
+		},
 	});
 
+	const members = listMembers?.members ?? [];
+
 	const table = useReactTable({
-		data: members ?? [],
+		data: members,
 		columns: memberTableColumns,
 		state: {
 			rowSelection,
 		},
 		enableRowSelection: true,
 		onRowSelectionChange: setRowSelection,
-		getRowId: (row) => row._id,
+		getRowId: (row) => row.id,
 		getCoreRowModel: getCoreRowModel(),
 	});
 

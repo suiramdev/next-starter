@@ -4,8 +4,9 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/sidebar";
-import { AutoSelectOrganization } from "@/app/(protected)/_components/auto-select-organization";
+import { AuthLoadingScreen } from "@/app/(protected)/_components/auth-loading-screen";
 import { Sidebar } from "@/app/(protected)/_components/sidebar";
+import { ThemeSwitcher } from "./_components/theme-switcher";
 
 export default async function Layout({
 	children,
@@ -15,24 +16,28 @@ export default async function Layout({
 	breadcrumb: React.ReactNode;
 }>) {
 	return (
-		<SidebarProvider>
-			<AutoSelectOrganization />
-			<Sidebar />
-			<SidebarInset>
-				<header className="flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-					<div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
-						<SidebarTrigger className="-ml-1" />
-						<Separator
-							orientation="vertical"
-							className="mx-2 data-[orientation=vertical]:h-4"
-						/>
-						{breadcrumb}
+		<AuthLoadingScreen>
+			<SidebarProvider>
+				<Sidebar />
+				<SidebarInset>
+					<header className="flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+						<div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+							<SidebarTrigger className="-ml-1" />
+							<Separator
+								orientation="vertical"
+								className="mx-2 data-[orientation=vertical]:h-4"
+							/>
+							{breadcrumb}
+							<div className="flex flex-1 items-center justify-end gap-2">
+								<ThemeSwitcher />
+							</div>
+						</div>
+					</header>
+					<div className="flex flex-1 flex-col gap-4 px-4 py-4 md:gap-6 md:px-6 md:py-6">
+						{children}
 					</div>
-				</header>
-				<div className="flex flex-1 flex-col gap-4 px-4 py-4 md:gap-6 md:px-6 md:py-6">
-					{children}
-				</div>
-			</SidebarInset>
-		</SidebarProvider>
+				</SidebarInset>
+			</SidebarProvider>
+		</AuthLoadingScreen>
 	);
 }

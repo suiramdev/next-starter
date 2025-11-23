@@ -1,3 +1,5 @@
+"use client";
+
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -6,13 +8,10 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@repo/ui/registry/new-york-v4/ui/breadcrumb";
+import { useParams } from "next/navigation";
 
-export default async function BreadcrumbSlot({
-	params,
-}: {
-	params: Promise<{ id: string }>;
-}) {
-	const { id } = await params;
+export default function BreadcrumbSlot() {
+	const { id } = useParams<{ id: string }>();
 
 	return (
 		<Breadcrumb>
