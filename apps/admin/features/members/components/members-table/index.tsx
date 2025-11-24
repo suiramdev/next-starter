@@ -1,11 +1,12 @@
 "use client";
 
+import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@repo/convex/_generated/api";
 import { PlusIcon } from "@repo/ui/registry/admin/icons";
 import { ControlledTable } from "@repo/ui/registry/admin/ui/controlled-table";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
+import { useQuery } from "@tanstack/react-query";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { useQuery } from "convex/react";
 import { useState } from "react";
 import { AddMemberDialog, AddMemberDialogTrigger } from "../add-member-dialog";
 import { memberTableColumns } from "./columns";
@@ -16,13 +17,17 @@ type MembersTableProps = {
 
 export function MembersTable({ organizationId }: MembersTableProps) {
 	const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-	const activeMember = useQuery(api.queries.organizations.getActiveMember);
+	const { data: activeMember } = useQuery(
+		convexQuery(api.queries.organizations.getActiveMember),
+	);
 
-	const listMembers = useQuery(api.queries.organizations.listMembers, {
-		query: {
-			organizationId: organizationId ?? activeMember?.organizationId ?? "",
-		},
-	});
+	const { data: listMembers, isLoading: isLoadingListMembers } = useQuery(
+		convexQuery(api.queries.organizations.listMembers, {
+			query: {
+				organizationId: organizationId ?? activeMember?.organizationId ?? "",
+			},
+		}),
+	);
 
 	const members = listMembers?.members ?? [];
 
@@ -51,6 +56,7 @@ export function MembersTable({ organizationId }: MembersTableProps) {
 					</AddMemberDialogTrigger>
 				</AddMemberDialog>
 			}
+			loading={isLoadingListMembers}
 		/>
 	);
 }

@@ -54,7 +54,10 @@ export const listMembers = query({
 			});
 		} catch (_error) {
 			// If an error happens in the auth layer, return an empty array instead
-			return [];
+			return {
+				members: [],
+				total: 0,
+			};
 		}
 	},
 });

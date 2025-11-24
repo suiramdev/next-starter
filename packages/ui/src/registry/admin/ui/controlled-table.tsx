@@ -28,7 +28,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#src/registry/new-york-v4/ui/select";
-import { Spinner } from "#src/registry/new-york-v4/ui/spinner";
+import { Skeleton } from "#src/registry/new-york-v4/ui/skeleton";
 import {
 	Table,
 	TableBody,
@@ -236,6 +236,33 @@ function ControlledTableControls<TData extends RowData>({
 	);
 }
 
+type ControlledTableContentSkeletonProps<TData extends RowData> = {
+	table: TanstackTable<TData>;
+	rowCount?: number;
+};
+
+function ControlledTableContentSkeleton<TData extends RowData>({
+	table,
+	rowCount = 5,
+}: ControlledTableContentSkeletonProps<TData>) {
+	const columnCount = table.getAllColumns().length;
+	return (
+		<>
+			{Array.from({ length: rowCount }).map((_, rowIndex) => (
+				// biome-ignore lint/suspicious/noArrayIndexKey: Skeleton rows are static placeholders
+				<TableRow key={rowIndex}>
+					{Array.from({ length: columnCount }).map((_, colIndex) => (
+						// biome-ignore lint/suspicious/noArrayIndexKey: Skeleton cells are static placeholders
+						<TableCell key={colIndex}>
+							<Skeleton className="h-4 w-full" />
+						</TableCell>
+					))}
+				</TableRow>
+			))}
+		</>
+	);
+}
+
 type ControlledTableContentProps<TData extends RowData> = {
 	table: TanstackTable<TData>;
 	isLoading?: boolean;
@@ -246,18 +273,7 @@ function ControlledTableContent<TData extends RowData>({
 	table,
 }: ControlledTableContentProps<TData>) {
 	if (isLoading) {
-		return (
-			<TableRow>
-				<TableCell
-					colSpan={table.getAllColumns().length}
-					className="py-8 text-center"
-				>
-					<div className="flex items-center justify-center">
-						<Spinner className="size-4 animate-spin" />
-					</div>
-				</TableCell>
-			</TableRow>
-		);
+		return <ControlledTableContentSkeleton table={table} />;
 	}
 
 	if (table.getRowCount() <= 0) {
@@ -357,5 +373,6 @@ export {
 	ControlledTableColumnsVisibility,
 	ControlledTableToolbar,
 	ControlledTableControls,
+	ControlledTableContentSkeleton,
 	ControlledTable,
 };
