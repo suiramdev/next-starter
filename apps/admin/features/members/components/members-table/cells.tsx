@@ -20,7 +20,7 @@ import type { CellContext } from "@tanstack/react-table";
 import type { FunctionReturnType } from "convex/server";
 import Link from "next/link";
 import * as React from "react";
-import { BanUserDialog } from "../../../users/components/ban-user-dialog";
+import { BanUserDialog } from "@/features/users/components/ban-user-dialog";
 import { DeleteMemberDialog } from "../delete-member-dialog";
 
 type Member = FunctionReturnType<

@@ -1,5 +1,9 @@
 import { authClient } from "@repo/auth/helpers/react/client";
-import { LogOutIcon, SettingsIcon } from "@repo/ui/registry/admin/icons";
+import {
+	LogOutIcon,
+	SettingsIcon,
+	UserIcon,
+} from "@repo/ui/registry/admin/icons";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -63,8 +67,14 @@ export function CurrentUserDropdown({
 				<DropdownMenuSeparator />
 				<Link href={`/users/${session?.user?.id}`}>
 					<DropdownMenuItem>
+						<UserIcon />
+						Profile
+					</DropdownMenuItem>
+				</Link>
+				<Link href={`/users/${session?.user?.id}/settings`}>
+					<DropdownMenuItem>
 						<SettingsIcon />
-						Account
+						Settings
 					</DropdownMenuItem>
 				</Link>
 				<DropdownMenuItem onClick={handleSignOut}>

@@ -3,8 +3,7 @@ import { tables } from "./generatedSchema";
 
 export default defineSchema({
 	...tables,
-	member: tables.member.index("by_organizationId_and_userId", [
-		"organizationId",
-		"userId",
-	]),
+	member: tables.member.index("by_organizationId_and_userId", {
+		fields: ["organizationId", "userId"],
+	}),
 });

@@ -11,6 +11,15 @@ export const updateUser = mutation({
 	handler: async (ctx, args) => {
 		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
 
+		if (args.email) {
+			await auth.api.changeEmail({
+				headers,
+				body: {
+					newEmail: args.email,
+				},
+			});
+		}
+
 		return await auth.api.updateUser({
 			headers,
 			body: {
