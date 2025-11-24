@@ -65,12 +65,6 @@ export function CurrentUserDropdown({
 					</div>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<Link href={`/users/${session?.user?.id}`}>
-					<DropdownMenuItem>
-						<UserIcon />
-						Profile
-					</DropdownMenuItem>
-				</Link>
 				<Link href={`/users/${session?.user?.id}/settings`}>
 					<DropdownMenuItem>
 						<SettingsIcon />
