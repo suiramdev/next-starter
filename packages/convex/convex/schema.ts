@@ -7,4 +7,9 @@ export default defineSchema({
 		value: v.any(),
 		updatedAt: v.number(),
 	}).index("by_key", ["key"]),
+	organization_settings: defineTable({
+		organizationId: v.string(),
+		allowAnonymousLogin: v.optional(v.union(v.null(), v.boolean())),
+		allowUserSignUp: v.optional(v.union(v.null(), v.boolean())),
+	}).index("by_organizationId", ["organizationId"]),
 });

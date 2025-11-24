@@ -2,7 +2,11 @@ import { v } from "convex/values";
 import { components } from "../_generated/api";
 import { query } from "../_generated/server";
 import { authComponent, createAuth } from "../auth";
-import { ForbiddenError, UnauthorizedError } from "../utils/errors";
+import {
+	ForbiddenError,
+	NotFoundError,
+	UnauthorizedError,
+} from "../utils/errors";
 
 export const listOrganizations = query({
 	args: {},
@@ -75,6 +79,83 @@ export const getActiveMember = query({
 			// If an error happens in the auth layer, return null instead
 			return null;
 		}
+	},
+});
+
+export const getActiveOrganization = query({
+	args: {},
+	handler: async (ctx) => {
+		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
+
+		try {
+			const activeMember = await auth.api.getActiveMember({
+				headers,
+			});
+
+			if (!activeMember) {
+				throw new NotFoundError();
+			}
+
+			// Verify the user's membership and existence of the organization
+			const organization = await auth.api.getFullOrganization({
+				query: {
+					organizationId: activeMember.organizationId,
+				},
+				headers,
+			});
+
+			if (!organization) {
+				throw new NotFoundError();
+			}
+
+			const settings = await ctx.db
+				.query("organization_settings")
+				.withIndex("by_organizationId", (q) =>
+					q.eq("organizationId", activeMember.organizationId),
+				)
+				.unique();
+
+			return {
+				...organization,
+				settings: settings,
+			};
+		} catch (_error) {
+			// If an error happens in the auth layer, return null instead
+			return null;
+		}
+	},
+});
+
+export const getOrganization = query({
+	args: {
+		organizationId: v.string(),
+	},
+	handler: async (ctx, args) => {
+		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
+
+		// Verify the user's membership and existence of the organization
+		const organization = await auth.api.getFullOrganization({
+			query: {
+				organizationId: args.organizationId,
+			},
+			headers,
+		});
+
+		if (!organization) {
+			throw new ForbiddenError();
+		}
+
+		const settings = await ctx.db
+			.query("organization_settings")
+			.withIndex("by_organizationId", (q) =>
+				q.eq("organizationId", args.organizationId),
+			)
+			.unique();
+
+		return {
+			...organization,
+			settings: settings,
+		};
 	},
 });
 

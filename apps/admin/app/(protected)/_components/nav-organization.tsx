@@ -1,5 +1,6 @@
 "use client";
 
+import { convexQuery } from "@convex-dev/react-query";
 import { authClient } from "@repo/auth/helpers/react/client";
 import { api } from "@repo/convex/_generated/api";
 import {
@@ -22,7 +23,7 @@ import {
 	useSidebar,
 } from "@repo/ui/registry/new-york-v4/ui/sidebar";
 import { Skeleton } from "@repo/ui/registry/new-york-v4/ui/skeleton";
-import { useQuery } from "convex/react";
+import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import {
 	CreateOrganizationDialog,
@@ -31,8 +32,11 @@ import {
 import { OrganizationAvatar } from "@/features/organizations/components/organization-avatar";
 
 export function NavOrganization() {
-	const { data: activeOrganization } = authClient.useActiveOrganization();
-	const organizations = useQuery(api.queries.organizations.listOrganizations);
+	const { data: activeOrganization, isLoading: isLoadingActiveOrganization } =
+		useQuery(convexQuery(api.queries.organizations.getActiveOrganization));
+	const { data: organizations } = useQuery(
+		convexQuery(api.queries.organizations.listOrganizations),
+	);
 	const router = useRouter();
 	const pathname = usePathname();
 	const { isMobile } = useSidebar();
@@ -42,7 +46,7 @@ export function NavOrganization() {
 		router.replace(newPathname);
 	};
 
-	if (!activeOrganization) {
+	if (isLoadingActiveOrganization || !activeOrganization) {
 		return <OrganizationSwitcherSkeleton />;
 	}
 
