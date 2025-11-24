@@ -21,11 +21,17 @@ export const signInFormSchema = z.object({
 });
 
 type SignInFormProps = React.ComponentPropsWithoutRef<"form"> & {
+	callbackURL?: string;
 	onError?: (error: Error) => void;
 	onSuccess?: () => void;
 };
 
-export function SignInForm({ onSuccess, onError, ...props }: SignInFormProps) {
+export function SignInForm({
+	callbackURL,
+	onSuccess,
+	onError,
+	...props
+}: SignInFormProps) {
 	const form = useForm<z.infer<typeof signInFormSchema>>({
 		resolver: zodResolver(signInFormSchema),
 		defaultValues: {
@@ -38,6 +44,7 @@ export function SignInForm({ onSuccess, onError, ...props }: SignInFormProps) {
 		await authClient.signIn.email({
 			email: values.email,
 			password: values.password,
+			callbackURL: callbackURL,
 			fetchOptions: {
 				onError: ({ error }) => {
 					if (error.code === "INVALID_EMAIL_OR_PASSWORD") {

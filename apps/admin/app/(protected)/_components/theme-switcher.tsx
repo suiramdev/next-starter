@@ -9,9 +9,16 @@ import {
 	DropdownMenuTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/dropdown-menu";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export function ThemeSwitcher() {
 	const { theme, setTheme } = useTheme();
+	// Prevents hydration mismatch issues with next-themes
+	const [mounted, setMounted] = useState(false);
+
+	useEffect(() => {
+		setMounted(true);
+	}, []);
 
 	const handleThemeChange = (newTheme: string) => {
 		setTheme(newTheme);
@@ -22,7 +29,7 @@ export function ThemeSwitcher() {
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
 					<Button variant="ghost" size="icon" aria-label="Toggle theme">
-						{theme === "system" ? (
+						{!mounted || theme === "system" ? (
 							<MonitorIcon className="size-4" />
 						) : theme === "dark" ? (
 							<MoonIcon className="size-4" />

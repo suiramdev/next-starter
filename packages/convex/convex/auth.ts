@@ -6,7 +6,7 @@ import {
 import { convex } from "@convex-dev/better-auth/plugins";
 import { ac, roles } from "@repo/auth/permissions";
 import { betterAuth } from "better-auth";
-import { admin, anonymous, organization } from "better-auth/plugins";
+import { anonymous, organization } from "better-auth/plugins";
 import { components, internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
 import { query } from "./_generated/server";
@@ -22,22 +22,6 @@ export const authComponent = createClient<DataModel, typeof authSchema>(
 		authFunctions,
 		local: {
 			schema: authSchema,
-		},
-		triggers: {
-			session: {
-				onCreate: async (ctx, session) => {
-					// If the user doesn't have an active organization, assign the first available organization as active
-					if (!session.activeOrganizationId) {
-						await ctx.runMutation(
-							components.betterAuth.mutations.organizations
-								.setDefaultActiveOrganization,
-							{
-								userId: session.userId,
-							},
-						);
-					}
-				},
-			},
 		},
 	},
 );
@@ -69,6 +53,28 @@ export const createAuth = (
 			}),
 			anonymous(),
 		],
+		databaseHooks: {
+			session: {
+				create: {
+					before: async (session) => {
+						const defaultActiveOrganization = await ctx.runQuery(
+							components.betterAuth.queries.organizations
+								.getDefaultActiveOrganization,
+							{
+								userId: session.userId,
+							},
+						);
+
+						return {
+							data: {
+								...session,
+								activeOrganizationId: defaultActiveOrganization,
+							},
+						};
+					},
+				},
+			},
+		},
 	});
 };
 

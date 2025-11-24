@@ -1,10 +1,32 @@
-import { ConvexError, v } from "convex/values";
+import { v } from "convex/values";
 import { systemFields } from "convex-helpers/validators";
+import { ForbiddenError, NotFoundError } from "#convex/utils/errors";
 import { query } from "../_generated/server";
 import schema from "../schema";
 
 const memberWithSystemFields = systemFields("member");
 const userWithSystemFields = systemFields("user");
+
+export const getDefaultActiveOrganization = query({
+	args: {
+		userId: v.string(),
+	},
+	returns: v.string(),
+	handler: async (ctx, args) => {
+		const member = await ctx.db
+			.query("member")
+			.withIndex("userId", (q) => q.eq("userId", args.userId))
+			.first();
+
+		if (!member) {
+			throw new NotFoundError();
+		}
+
+		console.log(member.organizationId);
+
+		return member.organizationId;
+	},
+});
 
 export const getMember = query({
 	args: {
@@ -34,10 +56,7 @@ export const getMember = query({
 			.unique();
 
 		if (!member) {
-			throw new ConvexError({
-				message: "Forbidden",
-				code: 403,
-			});
+			throw new ForbiddenError();
 		}
 
 		const user = await ctx.db

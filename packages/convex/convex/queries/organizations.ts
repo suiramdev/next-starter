@@ -1,7 +1,8 @@
-import { ConvexError, v } from "convex/values";
+import { v } from "convex/values";
 import { components } from "../_generated/api";
 import { query } from "../_generated/server";
 import { authComponent, createAuth } from "../auth";
+import { ForbiddenError, UnauthorizedError } from "../utils/errors";
 
 export const listOrganizations = query({
 	args: {},
@@ -13,6 +14,7 @@ export const listOrganizations = query({
 				headers,
 			});
 		} catch (_error) {
+			console.error(_error);
 			// If an error happens in the auth layer, return an empty array instead
 			return [];
 		}
@@ -90,10 +92,7 @@ export const getMember = query({
 			});
 
 			if (!member) {
-				throw new ConvexError({
-					message: "Unauthorized",
-					code: 401,
-				});
+				throw new UnauthorizedError();
 			}
 
 			organizationId = member?.organizationId;
@@ -109,10 +108,7 @@ export const getMember = query({
 			);
 
 			if (!organization) {
-				throw new ConvexError({
-					message: "Forbidden",
-					code: 403,
-				});
+				throw new ForbiddenError();
 			}
 		}
 
