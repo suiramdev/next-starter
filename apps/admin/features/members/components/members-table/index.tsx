@@ -8,7 +8,6 @@ import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useState } from "react";
-import { AddMemberDialog, AddMemberDialogTrigger } from "../add-member-dialog";
 import { memberTableColumns } from "./columns";
 
 type MembersTableProps = {
@@ -47,14 +46,10 @@ export function MembersTable({ organizationId }: MembersTableProps) {
 		<ControlledTable
 			table={table}
 			toolbar={
-				<AddMemberDialog>
-					<AddMemberDialogTrigger asChild>
-						<Button variant="outline" size="sm">
-							<PlusIcon />
-							Add Member
-						</Button>
-					</AddMemberDialogTrigger>
-				</AddMemberDialog>
+				<Button variant="outline" size="sm">
+					<PlusIcon />
+					Add Member
+				</Button>
 			}
 			loading={isLoadingListMembers}
 		/>
