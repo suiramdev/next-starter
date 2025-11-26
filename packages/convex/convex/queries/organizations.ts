@@ -108,16 +108,10 @@ export const getActiveOrganization = query({
 				throw new NotFoundError();
 			}
 
-			const settings = await ctx.db
-				.query("organization_settings")
-				.withIndex("by_organizationId", (q) =>
-					q.eq("organizationId", activeMember.organizationId),
-				)
-				.unique();
-
 			return {
 				...organization,
-				settings: settings,
+				// TODO: Remove ?
+				settings: {},
 			};
 		} catch (_error) {
 			// If an error happens in the auth layer, return null instead
@@ -145,16 +139,10 @@ export const getOrganization = query({
 			throw new ForbiddenError();
 		}
 
-		const settings = await ctx.db
-			.query("organization_settings")
-			.withIndex("by_organizationId", (q) =>
-				q.eq("organizationId", args.organizationId),
-			)
-			.unique();
-
 		return {
 			...organization,
-			settings: settings,
+			// TODO: Remove ?
+			settings: {},
 		};
 	},
 });

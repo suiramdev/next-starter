@@ -27,17 +27,11 @@ export const signUpFormSchema = z.object({
 });
 
 type SignUpFormProps = React.ComponentPropsWithoutRef<"form"> & {
-	callbackURL?: string;
 	onError?: (error: Error) => void;
 	onSuccess?: () => void;
 };
 
-export function SignUpForm({
-	callbackURL,
-	onSuccess,
-	onError,
-	...props
-}: SignUpFormProps) {
+export function SignUpForm({ onSuccess, onError, ...props }: SignUpFormProps) {
 	const form = useForm<z.infer<typeof signUpFormSchema>>({
 		resolver: zodResolver(signUpFormSchema),
 		defaultValues: {
@@ -60,7 +54,6 @@ export function SignUpForm({
 			email: values.email,
 			password: values.password,
 			name: values.nickname,
-			callbackURL: callbackURL,
 			fetchOptions: {
 				onError: ({ error }) => {
 					if (error.code === "USER_ALREADY_EXISTS") {
@@ -80,11 +73,10 @@ export function SignUpForm({
 
 					onError?.(error);
 				},
-				onSuccess: async () => {
-					onSuccess?.();
-				},
 			},
 		});
+
+		onSuccess?.();
 	};
 
 	return (

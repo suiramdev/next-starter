@@ -22,8 +22,6 @@ export const getDefaultActiveOrganization = query({
 			throw new NotFoundError();
 		}
 
-		console.log(member.organizationId);
-
 		return member.organizationId;
 	},
 });

@@ -21,15 +21,15 @@ export const signInFormSchema = z.object({
 });
 
 type SignInFormProps = React.ComponentPropsWithoutRef<"form"> & {
-	callbackURL?: string;
 	onError?: (error: Error) => void;
 	onSuccess?: () => void;
+	enableAnonymousSignIn?: boolean;
 };
 
 export function SignInForm({
-	callbackURL,
 	onSuccess,
 	onError,
+	enableAnonymousSignIn = false,
 	...props
 }: SignInFormProps) {
 	const form = useForm<z.infer<typeof signInFormSchema>>({
@@ -44,7 +44,6 @@ export function SignInForm({
 		await authClient.signIn.email({
 			email: values.email,
 			password: values.password,
-			callbackURL: callbackURL,
 			fetchOptions: {
 				onError: ({ error }) => {
 					if (error.code === "INVALID_EMAIL_OR_PASSWORD") {
@@ -62,11 +61,26 @@ export function SignInForm({
 
 					onError?.(error);
 				},
-				onSuccess: () => {
-					onSuccess?.();
+			},
+		});
+
+		onSuccess?.();
+	};
+
+	const handleAnonymousSignIn = async () => {
+		await authClient.signIn.anonymous({
+			fetchOptions: {
+				onError: ({ error }) => {
+					form.setError("root.serverError", {
+						...error,
+						message: error.message ?? "Something went wrong, please try again",
+					});
+					onError?.(error);
 				},
 			},
 		});
+
+		onSuccess?.();
 	};
 
 	return (
@@ -106,15 +120,27 @@ export function SignInForm({
 								</FormItem>
 							)}
 						/>
+					</div>
+					<div className="flex flex-col gap-2">
+						<Button type="submit" className="w-full">
+							Sign in
+						</Button>
+						{enableAnonymousSignIn && (
+							<Button
+								type="button"
+								variant="outline"
+								className="w-full"
+								onClick={handleAnonymousSignIn}
+							>
+								Continue as guest
+							</Button>
+						)}
 						{form.formState.errors.root?.serverError && (
 							<FormMessage>
 								{form.formState.errors.root.serverError.message}
 							</FormMessage>
 						)}
 					</div>
-					<Button type="submit" className="w-full">
-						Sign in
-					</Button>
 				</div>
 			</form>
 		</Form>

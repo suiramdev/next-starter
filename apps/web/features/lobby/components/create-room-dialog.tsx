@@ -1,6 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "@repo/convex/_generated/api";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import {
@@ -12,108 +11,81 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/dialog";
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@repo/ui/registry/new-york-v4/ui/form";
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
+import { Label } from "@repo/ui/registry/new-york-v4/ui/label";
 import { Switch } from "@repo/ui/registry/new-york-v4/ui/switch";
 import { useMutation } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
-
-const createRoomSchema = z.object({
-	name: z.string().min(2, "Name must be at least 2 characters"),
-	isPrivate: z.boolean().default(false),
-});
-
-type CreateRoomValues = z.infer<typeof createRoomSchema>;
+import { authClient } from "@/lib/auth-client";
 
 export function CreateRoomDialog() {
+	const session = authClient.useSession();
 	const [open, setOpen] = useState(false);
+	const [name, setName] = useState("");
+	const [isPrivate, setIsPrivate] = useState(false);
 	const createRoom = useMutation(api.mutations.rooms.createRoom);
 	const router = useRouter();
 
-	const form = useForm<CreateRoomValues>({
-		resolver: zodResolver(createRoomSchema),
-		defaultValues: {
-			name: "",
-			isPrivate: false,
-		},
-	});
+	const handleOpenChange = (isOpen: boolean) => {
+		if (isOpen && !name) {
+			const userName = session.data?.user?.name;
+			if (userName) {
+				setName(`${userName}'s room`);
+			}
+		}
+		setOpen(isOpen);
+	};
 
-	const onSubmit = async (values: CreateRoomValues) => {
+	const handleCreate = async (e: React.FormEvent) => {
+		e.preventDefault();
 		try {
-			const roomId = await createRoom(values);
+			const roomId = await createRoom({ name, isPrivate });
 			setOpen(false);
 			router.push(`/rooms/${roomId}`);
 			toast.success("Room created successfully");
 		} catch (error) {
-			console.error(error);
 			toast.error("Failed to create room");
+			console.error(error);
 		}
 	};
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
+		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<DialogTrigger asChild>
 				<Button>Create Room</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-[425px]">
+			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Create a Room</DialogTitle>
+					<DialogTitle>Create a New Room</DialogTitle>
 					<DialogDescription>
-						Create a new game lobby for you and your friends.
+						Start a new game room for others to join.
 					</DialogDescription>
 				</DialogHeader>
-				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-						<FormField
-							control={form.control}
-							name="name"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Room Name</FormLabel>
-									<FormControl>
-										<Input placeholder="My awesome room" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
+				<form onSubmit={handleCreate} className="space-y-4">
+					<div className="space-y-2">
+						<Label htmlFor="name">Room Name</Label>
+						<Input
+							id="name"
+							placeholder="My Awesome Room"
+							value={name}
+							onChange={(e) => setName(e.target.value)}
+							required
 						/>
-						<FormField
-							control={form.control}
-							name="isPrivate"
-							render={({ field }) => (
-								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-									<div className="space-y-0.5">
-										<FormLabel className="text-base">Private Room</FormLabel>
-										<FormDescription>
-											Only users with the code can join
-										</FormDescription>
-									</div>
-									<FormControl>
-										<Switch
-											checked={field.value}
-											onCheckedChange={field.onChange}
-										/>
-									</FormControl>
-								</FormItem>
-							)}
+					</div>
+					<div className="flex items-center justify-between space-x-2">
+						<Label htmlFor="private">Private Room</Label>
+						<Switch
+							id="private"
+							checked={isPrivate}
+							onCheckedChange={setIsPrivate}
 						/>
-						<DialogFooter>
-							<Button type="submit">Create</Button>
-						</DialogFooter>
-					</form>
-				</Form>
+					</div>
+					<DialogFooter>
+						<Button type="submit">Create</Button>
+					</DialogFooter>
+				</form>
 			</DialogContent>
 		</Dialog>
 	);

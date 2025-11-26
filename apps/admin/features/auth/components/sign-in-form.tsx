@@ -1,8 +1,14 @@
 "use client";
 
 import { SignInForm as Form } from "@repo/auth/helpers/react/components/forms/sign-in-form";
-import { basePath } from "../../../lib/constants";
+import { useRouter } from "next/navigation";
 
 export function SignInForm() {
-	return <Form callbackURL={basePath} />;
+	const router = useRouter();
+
+	const handleSuccess = () => {
+		router.push("/");
+	};
+
+	return <Form onSuccess={handleSuccess} />;
 }
