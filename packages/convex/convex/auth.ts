@@ -61,12 +61,31 @@ export const createAuth = (
 		logger: {
 			disabled: optionsOnly,
 		},
-		baseURL: process.env.SITE_URL,
-		secret: process.env.BETTER_AUTH_SECRET,
+		baseURL: process.env.SITE_URL as string,
+		secret: process.env.BETTER_AUTH_SECRET as string,
 		trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",") ?? [],
 		database: authComponent.adapter(ctx),
 		emailAndPassword: {
 			enabled: true,
+		},
+		socialProviders: {
+			spotify: {
+				clientId: process.env.SPOTIFY_CLIENT_ID as string,
+				clientSecret: process.env.SPOTIFY_CLIENT_SECRET as string,
+				scope: [
+					"user-read-email",
+					"playlist-read-private",
+					"playlist-read-collaborative",
+				],
+				redirectURI: process.env.SPOTIFY_REDIRECT_URI as string,
+			},
+		},
+		account: {
+			accountLinking: {
+				enabled: true,
+				trustedProviders: ["spotify"],
+				allowDifferentEmails: true,
+			},
 		},
 		plugins: [
 			// The Convex plugin is required for Convex compatibility

@@ -5,7 +5,10 @@ import { authComponent } from "../auth";
 export const listRooms = query({
 	args: {},
 	handler: async (ctx) => {
-		const rooms = await ctx.db.query("rooms").collect();
+		const rooms = await ctx.db
+			.query("rooms")
+			.filter((q) => q.eq(q.field("isPrivate"), false))
+			.collect();
 
 		const roomsWithDetails = await Promise.all(
 			rooms.map(async (room) => {

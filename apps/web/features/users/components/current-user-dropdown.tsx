@@ -1,12 +1,12 @@
 "use client";
 
-import { LogOut } from "@repo/ui/registry/admin/icons";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/dropdown-menu";
+import { LogOut } from "@repo/ui/registry/web/icons";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { UserAvatar } from "./user-avatar";

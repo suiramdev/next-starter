@@ -38,7 +38,7 @@ This document lists all environment variables required across the project.
 
 - **Where**: Frontend apps
 - **Purpose**: Base URL for Better Auth API routes
-- **Development**: `http://localhost:3024/api/auth` (using microfrontend proxy port)
+- **Development**: `http://127.0.0.1:3024/api/auth` (using microfrontend proxy port)
 - **Production**: `https://your-domain.com/api/auth`
 - **Used in**:
   - `apps/admin/lib/auth-client.ts`
@@ -48,7 +48,7 @@ This document lists all environment variables required across the project.
 
 - **Where**: Convex backend (`packages/convex`)
 - **Purpose**: Base URL for Better Auth configuration
-- **Development**: `http://localhost:3024` (microfrontend proxy port)
+- **Development**: `http://127.0.0.1:3024` (microfrontend proxy port)
 - **Production**: Your application's public URL
 - **Used in**: `packages/convex/convex/auth.ts`
 
@@ -56,7 +56,7 @@ This document lists all environment variables required across the project.
 
 - **Where**: Convex backend (`packages/convex`)
 - **Purpose**: Comma-separated list of trusted origins for CORS
-- **Development**: `http://localhost:3024` (microfrontend proxy port)
+- **Development**: `http://127.0.0.1:3024` (microfrontend proxy port)
 - **Production**: `https://yourdomain.com`
 - **Used in**: `packages/convex/convex/auth.ts`
 - **Default**: Empty array (no trusted origins)
@@ -75,7 +75,7 @@ This document lists all environment variables required across the project.
 
 - **Where**: `apps/common`
 - **Purpose**: Comma-separated list of allowed CORS origins
-- **Format**: `http://localhost:3000,http://localhost:3001`
+- **Format**: `http://127.0.0.1:3000,http://127.0.0.1:3001`
 - **Used in**: `apps/common/proxy.ts`
 - **Note**: In development, all origins are allowed if not set
 
@@ -141,9 +141,9 @@ Example output: `xK9mP2qR7vN4wL8jT5yU3zA6bC1dE9fG0hI2jK4lM6nO8pQ0rS2tU4vW6xY8zA=
 
 ```bash
 cd packages/convex
-npx convex env set SITE_URL http://localhost:3024
+npx convex env set SITE_URL http://127.0.0.1:3024
 npx convex env set BETTER_AUTH_SECRET <generated-secret>
-npx convex env set BETTER_AUTH_TRUSTED_ORIGINS http://localhost:3024
+npx convex env set BETTER_AUTH_TRUSTED_ORIGINS http://127.0.0.1:3024
 ```
 
 ### Step 4: Create `.env.local` Files
@@ -154,7 +154,7 @@ npx convex env set BETTER_AUTH_TRUSTED_ORIGINS http://localhost:3024
 # Replace with your actual Convex URL from Step 1
 NEXT_PUBLIC_CONVEX_SITE_URL=https://happy-animal-123.convex.cloud
 NEXT_PUBLIC_CONVEX_SITE_URL=https://happy-animal-123.convex.cloud
-NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3024/api/auth
+NEXT_PUBLIC_BETTER_AUTH_URL=http://127.0.0.1:3024/api/auth
 TURBO_MFE_PORT=3000
 ```
 
@@ -164,9 +164,9 @@ TURBO_MFE_PORT=3000
 # Replace with your actual Convex URL from Step 1
 NEXT_PUBLIC_CONVEX_SITE_URL=https://happy-animal-123.convex.cloud
 NEXT_PUBLIC_CONVEX_SITE_URL=https://happy-animal-123.convex.cloud
-NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3024/api/auth
+NEXT_PUBLIC_BETTER_AUTH_URL=http://127.0.0.1:3024/api/auth
 TURBO_MFE_PORT=3001
-CORS_ALLOWED_ORIGINS=http://localhost:3024
+CORS_ALLOWED_ORIGINS=http://127.0.0.1:3024
 ```
 
 **`apps/web/.env.local`** (if using Convex):
@@ -174,7 +174,7 @@ CORS_ALLOWED_ORIGINS=http://localhost:3024
 ```bash
 NEXT_PUBLIC_CONVEX_SITE_URL=https://happy-animal-123.convex.cloud
 NEXT_PUBLIC_CONVEX_SITE_URL=https://happy-animal-123.convex.cloud
-NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3024/api/auth
+NEXT_PUBLIC_BETTER_AUTH_URL=http://127.0.0.1:3024/api/auth
 TURBO_MFE_PORT=3002
 ```
 
@@ -183,7 +183,7 @@ TURBO_MFE_PORT=3002
 ```bash
 NEXT_PUBLIC_CONVEX_SITE_URL=https://happy-animal-123.convex.cloud
 NEXT_PUBLIC_CONVEX_SITE_URL=https://happy-animal-123.convex.cloud
-NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3024/api/auth
+NEXT_PUBLIC_BETTER_AUTH_URL=http://127.0.0.1:3024/api/auth
 TURBO_MFE_PORT=3003
 ```
 
@@ -191,13 +191,13 @@ TURBO_MFE_PORT=3003
 
 This project uses a microfrontend setup with a proxy on port **3024**. Routes are distributed as follows:
 
-- **Main Proxy**: `http://localhost:3024` (handles all routing)
-- **Web app**: Root `/` → `http://localhost:3024/`
-- **Admin app**: `/admin/*` → `http://localhost:3024/admin/*`
-- **Common app**: `/common/*` → `http://localhost:3024/common/*` (includes `/api/auth/*`)
-- **Docs app**: `/docs/*` → `http://localhost:3024/docs/*`
+- **Main Proxy**: `http://127.0.0.1:3024` (handles all routing)
+- **Web app**: Root `/` → `http://127.0.0.1:3024/`
+- **Admin app**: `/admin/*` → `http://127.0.0.1:3024/admin/*`
+- **Common app**: `/common/*` → `http://127.0.0.1:3024/common/*` (includes `/api/auth/*`)
+- **Docs app**: `/docs/*` → `http://127.0.0.1:3024/docs/*`
 
-**Auth API Routes**: Accessible at `http://localhost:3024/api/auth/*` (routed through common app)
+**Auth API Routes**: Accessible at `http://127.0.0.1:3024/api/auth/*` (routed through common app)
 
 ### Internal Port Assignments (Managed by Turbo)
 
@@ -210,30 +210,30 @@ This project uses a microfrontend setup with a proxy on port **3024**. Routes ar
 
 **Convex Backend** (`packages/convex`):
 
-- `SITE_URL=http://localhost:3024`
+- `SITE_URL=http://127.0.0.1:3024`
 - `BETTER_AUTH_SECRET=<generated-secret>`
-- `BETTER_AUTH_TRUSTED_ORIGINS=http://localhost:3024`
+- `BETTER_AUTH_TRUSTED_ORIGINS=http://127.0.0.1:3024`
 
 **Admin App** (`apps/admin/.env.local`):
 
 - `NEXT_PUBLIC_CONVEX_SITE_URL=https://your-dev-deployment.convex.cloud`
 - `NEXT_PUBLIC_CONVEX_SITE_URL=https://your-dev-deployment.convex.cloud`
-- `NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3024/api/auth`
+- `NEXT_PUBLIC_BETTER_AUTH_URL=http://127.0.0.1:3024/api/auth`
 - `TURBO_MFE_PORT=3000`
 
 **Common App** (`apps/common/.env.local`):
 
 - `NEXT_PUBLIC_CONVEX_SITE_URL=https://your-dev-deployment.convex.cloud`
 - `NEXT_PUBLIC_CONVEX_SITE_URL=https://your-dev-deployment.convex.cloud`
-- `NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3024/api/auth`
+- `NEXT_PUBLIC_BETTER_AUTH_URL=http://127.0.0.1:3024/api/auth`
 - `TURBO_MFE_PORT=3001`
-- `CORS_ALLOWED_ORIGINS=http://localhost:3024`
+- `CORS_ALLOWED_ORIGINS=http://127.0.0.1:3024`
 
 **Web App** (`apps/web/.env.local`):
 
 - `NEXT_PUBLIC_CONVEX_SITE_URL=https://your-dev-deployment.convex.cloud`
 - `NEXT_PUBLIC_CONVEX_SITE_URL=https://your-dev-deployment.convex.cloud`
-- `NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3024/api/auth`
+- `NEXT_PUBLIC_BETTER_AUTH_URL=http://127.0.0.1:3024/api/auth`
 - `TURBO_MFE_PORT=3002`
 
 ## Quick Setup Guide
@@ -256,9 +256,9 @@ This project uses a microfrontend setup with a proxy on port **3024**. Routes ar
 
    ```bash
    cd packages/convex
-   npx convex env set SITE_URL http://localhost:3024
+   npx convex env set SITE_URL http://127.0.0.1:3024
    npx convex env set BETTER_AUTH_SECRET <your-generated-secret>
-   npx convex env set BETTER_AUTH_TRUSTED_ORIGINS http://localhost:3024
+   npx convex env set BETTER_AUTH_TRUSTED_ORIGINS http://127.0.0.1:3024
    ```
 
 4. **Create `.env.local` files** in each app directory (see examples above)

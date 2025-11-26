@@ -11,6 +11,7 @@ export const createRoom = mutation({
 	args: {
 		name: v.string(),
 		isPrivate: v.boolean(),
+		playlistId: v.optional(v.string()),
 	},
 	handler: async (ctx, args) => {
 		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
@@ -28,6 +29,7 @@ export const createRoom = mutation({
 			hostId: userId,
 			isPrivate: args.isPrivate,
 			status: "waiting",
+			playlistId: args.playlistId,
 		});
 
 		await ctx.db.insert("players", {
