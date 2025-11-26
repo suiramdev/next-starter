@@ -5,7 +5,7 @@ import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import { SpotifyIcon } from "@repo/ui/registry/web/icons";
 import { authClient } from "@/lib/auth-client";
 
-export function ConnectSpotifyButton({
+export function LinkSpotifyButton({
 	className,
 	...props
 }: React.ComponentProps<typeof Button>) {
@@ -23,7 +23,7 @@ export function ConnectSpotifyButton({
 			className={cn("bg-[#1DB954] text-white hover:bg-[#1ed760]", className)}
 		>
 			<SpotifyIcon className="size-4" />
-			Connect Spotify
+			Link with Spotify
 		</Button>
 	);
 }

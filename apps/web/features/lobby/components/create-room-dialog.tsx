@@ -26,7 +26,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-import { ConnectSpotifyButton } from "../../../components/connect-spotify-button";
+import { LinkSpotifyButton } from "../../../components/link-spotify-button";
 import { SpotifyPlaylistSelector } from "../../../components/spotify-playlist-selector";
 
 interface CreateRoomFormValues {
@@ -143,10 +143,10 @@ export function CreateRoomDialog() {
 										) : (
 											<div className="flex flex-col gap-2">
 												<span className="text-muted-foreground text-sm">
-													You must connect your Spotify account to choose a
-													playlist
+													Please connect your Spotify account to select a
+													playlist.
 												</span>
-												<ConnectSpotifyButton className="w-full" />
+												<LinkSpotifyButton className="w-full" />
 											</div>
 										)}
 									</FormControl>

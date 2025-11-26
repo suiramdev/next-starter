@@ -1,4 +1,4 @@
-import { CurrentUserDropdown } from "@/features/users/components/current-user-dropdown";
+import { NavUser } from "./nav-user";
 
 export function TopBar() {
 	return (
@@ -6,9 +6,7 @@ export function TopBar() {
 			<div className="container mx-auto flex w-full items-center justify-between">
 				<span className="font-bold text-xl">Blind Test</span>
 
-				<div className="flex items-center gap-2">
-					<CurrentUserDropdown />
-				</div>
+				<NavUser />
 			</div>
 		</header>
 	);

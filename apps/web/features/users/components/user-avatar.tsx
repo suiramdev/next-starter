@@ -4,25 +4,21 @@ import {
 	AvatarImage,
 } from "@repo/ui/registry/new-york-v4/ui/avatar";
 
-interface UserAvatarProps {
-	name?: string | null;
-	image?: string | null;
-	className?: string;
-}
+type UserAvatarProps = React.ComponentProps<typeof Avatar> & {
+	user: {
+		image?: string | null;
+		name?: string | null;
+	};
+};
 
-export function UserAvatar({ name, image, className }: UserAvatarProps) {
-	const initials =
-		name
-			?.split(" ")
-			.map((n) => n[0])
-			.join("")
-			.toUpperCase()
-			.slice(0, 2) ?? "U";
-
+export function UserAvatar({ user, ...props }: UserAvatarProps) {
 	return (
-		<Avatar className={className}>
-			<AvatarImage src={image ?? undefined} alt={name ?? "User"} />
-			<AvatarFallback>{initials}</AvatarFallback>
+		<Avatar {...props}>
+			<AvatarImage src={user.image ?? undefined} alt={user.name ?? undefined} />
+			<AvatarFallback>
+				{user.name?.charAt(0).toUpperCase()}
+				{user.name?.charAt(1).toUpperCase()}
+			</AvatarFallback>
 		</Avatar>
 	);
 }

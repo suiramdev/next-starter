@@ -1,47 +1,101 @@
-"use client";
-
+import { authClient } from "@repo/auth/helpers/react/client";
+import { api } from "@repo/convex/_generated/api";
+import { LogOutIcon } from "@repo/ui/registry/admin/icons";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/dropdown-menu";
-import { LogOut } from "@repo/ui/registry/web/icons";
+import { SpotifyIcon } from "@repo/ui/registry/web/icons";
+import { useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
 import { UserAvatar } from "./user-avatar";
 
-export function CurrentUserDropdown() {
-	const session = authClient.useSession();
+export type CurrentUserDropdownProps = React.ComponentProps<
+	typeof DropdownMenu
+>;
+
+export function CurrentUserDropdown({
+	children,
+	...props
+}: CurrentUserDropdownProps) {
+	const { data: session } = authClient.useSession();
 	const router = useRouter();
 
-	const handleSignOut = async () => {
-		await authClient.signOut({
+	const isSpotifyLinked = useQuery(api.queries.spotify.isLinked);
+
+	const handleSignOut = () => {
+		authClient.signOut({
 			fetchOptions: {
 				onSuccess: () => {
-					router.push("/sign-in");
+					router.push("/");
 				},
 			},
 		});
 	};
 
-	const user = session.data?.user;
+	const handleUnlinkSpotify = () => {
+		authClient.unlinkAccount({
+			providerId: "spotify",
+		});
+	};
 
-	if (!user) {
-		return null;
-	}
+	const handleLinkSpotify = () => {
+		authClient.linkSocial({
+			provider: "spotify",
+		});
+	};
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger className="cursor-pointer focus:outline-none">
-				<UserAvatar name={user.name} image={user.image} />
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end">
+		<DropdownMenu {...props}>
+			{children}
+			<DropdownMenuContent
+				className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+				align="end"
+				sideOffset={4}
+			>
+				<DropdownMenuLabel>
+					<div className="flex items-center gap-2">
+						<UserAvatar
+							user={{
+								image: session?.user?.image,
+								name: session?.user?.name,
+							}}
+						/>
+						<div className="grid flex-1 text-left text-sm leading-tight">
+							<span className="truncate font-medium">
+								{session?.user?.name ?? "Unknown"}
+							</span>
+							{session?.user?.email && (
+								<span className="truncate text-muted-foreground text-xs">
+									{session?.user?.email}
+								</span>
+							)}
+						</div>
+					</div>
+				</DropdownMenuLabel>
+				<DropdownMenuSeparator />
+				{isSpotifyLinked ? (
+					<DropdownMenuItem onClick={handleUnlinkSpotify} variant="destructive">
+						<SpotifyIcon />
+						Unlink from Spotify
+					</DropdownMenuItem>
+				) : (
+					<DropdownMenuItem onClick={handleLinkSpotify}>
+						<SpotifyIcon />
+						Link with Spotify
+					</DropdownMenuItem>
+				)}
 				<DropdownMenuItem onClick={handleSignOut}>
-					<LogOut className="mr-2 h-4 w-4" />
+					<LogOutIcon />
 					Log out
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);
 }
+
+export const CurrentUserDropdownTrigger = DropdownMenuTrigger;
