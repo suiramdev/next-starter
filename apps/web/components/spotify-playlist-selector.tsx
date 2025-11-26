@@ -38,7 +38,7 @@ interface SpotifyPlaylist {
 
 interface SpotifyPlaylistSelectorProps {
 	value?: string;
-	onValueChange?: (value: string) => void;
+	onValueChange?: (value: string, name?: string, image?: string) => void;
 	id?: string;
 }
 
@@ -70,7 +70,7 @@ export function SpotifyPlaylistSelector({
 	const handleSelect = useCallback(
 		(playlist: SpotifyPlaylist) => {
 			setSelectedPlaylist(playlist);
-			onValueChange?.(playlist.id);
+			onValueChange?.(playlist.id, playlist.name, playlist.images[0]?.url);
 			setOpen(false);
 		},
 		[onValueChange],
@@ -84,28 +84,11 @@ export function SpotifyPlaylistSelector({
 					variant="outline"
 					role="combobox"
 					aria-expanded={open}
-					className="h-full w-full justify-between"
+					className="h-full w-full justify-between overflow-hidden text-left"
 					ref={triggerRef}
 				>
 					{selectedPlaylist ? (
-						<div className="flex items-center gap-2">
-							{selectedPlaylist.images[0] ? (
-								<Image
-									src={selectedPlaylist.images[0].url}
-									alt={selectedPlaylist.name}
-									className="rounded object-cover"
-									width={32}
-									height={32}
-								/>
-							) : (
-								<div className="relative aspect-square size-8 rounded-xs bg-primary/20">
-									<DiscIcon className="absolute inset-0 m-auto size-4 text-muted-foreground" />
-								</div>
-							)}
-							<span className="text-muted-foreground">
-								{selectedPlaylist.name}
-							</span>
-						</div>
+						<SpotifyPlaylistItem playlist={selectedPlaylist} />
 					) : (
 						<span className="text-muted-foreground">
 							Search for a playlist...
@@ -137,27 +120,7 @@ export function SpotifyPlaylistSelector({
 										onSelect={() => handleSelect(playlist)}
 										className="flex items-center gap-3"
 									>
-										{playlist.images[0] ? (
-											<Image
-												src={playlist.images[0].url}
-												alt={playlist.name}
-												className="rounded object-cover"
-												width={32}
-												height={32}
-											/>
-										) : (
-											<div className="relative aspect-square size-8 rounded-xs bg-primary/20">
-												<DiscIcon className="absolute inset-0 m-auto size-4 text-muted-foreground" />
-											</div>
-										)}
-										<div className="flex flex-col">
-											<span className="font-medium">{playlist.name}</span>
-											<span className="text-muted-foreground text-xs">
-												{playlist.tracks.total} tracks
-												{playlist.owner?.display_name &&
-													` • ${playlist.owner.display_name}`}
-											</span>
-										</div>
+										<SpotifyPlaylistItem playlist={playlist} />
 									</CommandItem>
 								))}
 							</CommandGroup>
@@ -166,5 +129,32 @@ export function SpotifyPlaylistSelector({
 				</Command>
 			</PopoverContent>
 		</Popover>
+	);
+}
+
+function SpotifyPlaylistItem({ playlist }: { playlist: SpotifyPlaylist }) {
+	return (
+		<div className="flex min-w-0 gap-2">
+			{playlist.images[0] ? (
+				<Image
+					src={playlist.images[0].url}
+					alt={playlist.name}
+					className="rounded object-cover"
+					width={32}
+					height={32}
+				/>
+			) : (
+				<div className="relative aspect-square size-8 rounded-xs bg-primary/20">
+					<DiscIcon className="absolute inset-0 m-auto size-4 text-muted-foreground" />
+				</div>
+			)}
+			<div className="flex min-w-0 flex-col">
+				<span className="truncate font-medium">{playlist.name}</span>
+				<span className="truncate text-muted-foreground text-xs">
+					{playlist.tracks.total} tracks
+					{playlist.owner?.display_name && ` • ${playlist.owner.display_name}`}
+				</span>
+			</div>
+		</div>
 	);
 }

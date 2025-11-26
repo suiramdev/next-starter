@@ -17,7 +17,7 @@ export const isLinked = query({
 	},
 });
 
-export const getAccessToken = query({
+export const getSpotifyAccount = query({
 	args: { userId: v.string() },
 	handler: async (ctx, args) => {
 		const account = await ctx.db
@@ -27,6 +27,13 @@ export const getAccessToken = query({
 			)
 			.first();
 
-		return account?.accessToken;
+		if (!account) return null;
+
+		return {
+			_id: account._id,
+			accessToken: account.accessToken,
+			refreshToken: account.refreshToken,
+			accessTokenExpiresAt: account.accessTokenExpiresAt,
+		};
 	},
 });

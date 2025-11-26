@@ -33,6 +33,8 @@ interface CreateRoomFormValues {
 	name: string;
 	isPrivate: boolean;
 	playlistId?: string;
+	playlistName?: string;
+	playlistImage?: string;
 }
 
 export function CreateRoomDialog() {
@@ -67,6 +69,8 @@ export function CreateRoomDialog() {
 				name: data.name,
 				isPrivate: data.isPrivate,
 				playlistId: data.playlistId,
+				playlistName: data.playlistName,
+				playlistImage: data.playlistImage,
 			});
 			setOpen(false);
 			form.reset();
@@ -130,7 +134,11 @@ export function CreateRoomDialog() {
 										{isLinked ? (
 											<SpotifyPlaylistSelector
 												value={field.value}
-												onValueChange={field.onChange}
+												onValueChange={(id, name, image) => {
+													field.onChange(id);
+													form.setValue("playlistName", name);
+													form.setValue("playlistImage", image);
+												}}
 											/>
 										) : (
 											<div className="flex flex-col gap-2">

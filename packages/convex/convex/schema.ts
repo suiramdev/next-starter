@@ -24,6 +24,8 @@ export default defineSchema({
 			v.literal("finished"),
 		),
 		playlistId: v.optional(v.string()),
+		playlistName: v.optional(v.string()),
+		playlistImage: v.optional(v.string()),
 	})
 		.index("by_status", ["status"])
 		.index("by_code_and_status", ["code", "status"]),

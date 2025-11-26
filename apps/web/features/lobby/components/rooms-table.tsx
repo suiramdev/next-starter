@@ -15,6 +15,7 @@ import {
 import { DiscIcon, LogInIcon, Users } from "@repo/ui/registry/web/icons";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -62,9 +63,30 @@ export function RoomsTable() {
 							<span className="font-medium">{room.name}</span>
 						</TableCell>
 						<TableCell>
-							<span className="text-muted-foreground">
-								Choosing a playlist...
-							</span>
+							{room.playlistName ? (
+								<div className="flex items-center gap-2">
+									{room.playlistImage ? (
+										<Image
+											src={room.playlistImage}
+											alt={room.playlistName}
+											className="rounded object-cover"
+											width={24}
+											height={24}
+										/>
+									) : (
+										<div className="relative aspect-square size-6 rounded-xs bg-primary/20">
+											<DiscIcon className="absolute inset-0 m-auto size-3 text-muted-foreground" />
+										</div>
+									)}
+									<span className="text-muted-foreground">
+										{room.playlistName}
+									</span>
+								</div>
+							) : (
+								<span className="text-muted-foreground">
+									Choosing a playlist...
+								</span>
+							)}
 						</TableCell>
 						<TableCell>
 							<span className="text-muted-foreground">
