@@ -19,15 +19,40 @@ export const setup = mutation({
 			});
 		}
 
-		await ctx.runMutation(components.betterAuth.mutations.setup.setup, {
-			organizationName: args.organizationName,
-			name: args.name,
-			email: args.email,
-			password: args.password,
+		const { organizationId } = await ctx.runMutation(
+			components.betterAuth.mutations.setup.setup,
+			{
+				organizationName: args.organizationName,
+				name: args.name,
+				email: args.email,
+				password: args.password,
+			},
+		);
+
+		// Store default organization ID
+		await ctx.db.insert("app_settings", {
+			key: "defaultOrganizationId",
+			value: organizationId,
+			updatedAt: Date.now(),
+		});
+
+		// Configure organization settings for default organization
+		await ctx.db.insert("organization_settings", {
+			organizationId,
+			key: "allowAnonymousLogin",
+			value: true,
+			updatedAt: Date.now(),
+		});
+
+		await ctx.db.insert("organization_settings", {
+			organizationId,
+			key: "allowUserSignUp",
+			value: false,
+			updatedAt: Date.now(),
 		});
 
 		await ctx.db.insert("app_settings", {
-			key: "is_setup",
+			key: "setupCompleted",
 			value: true,
 			updatedAt: Date.now(),
 		});

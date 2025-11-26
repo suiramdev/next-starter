@@ -5,7 +5,7 @@ export const isSetup = query({
 	handler: async (ctx) => {
 		const setting = await ctx.db
 			.query("app_settings")
-			.withIndex("by_key", (q) => q.eq("key", "is_setup"))
+			.withIndex("by_key", (q) => q.eq("key", "setupCompleted"))
 			.first();
 
 		return setting?.value === true;

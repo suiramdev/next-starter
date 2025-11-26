@@ -10,6 +10,10 @@
 		"./_generated/server": {
 			"types": "./convex/_generated/server.d.ts",
 			"default": "./convex/_generated/server.js"
+		},
+		"./_generated/dataModel": {
+			"types": "./convex/_generated/dataModel.d.ts",
+			"default": "./convex/_generated/dataModel.js"
 		}
 	},
 	"scripts": {
