@@ -10,6 +10,7 @@ import {
 	CardTitle,
 } from "@repo/ui/registry/new-york-v4/ui/card";
 import { useMutation, useQuery } from "convex/react";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 
@@ -20,7 +21,16 @@ interface WaitingRoomProps {
 export function WaitingRoom({ roomId }: WaitingRoomProps) {
 	const room = useQuery(api.queries.rooms.getRoom, { roomId });
 	const startGame = useMutation(api.mutations.rooms.start);
+	const leaveRoom = useMutation(api.mutations.rooms.leaveRoom);
 	const { data: session } = authClient.useSession();
+
+	useEffect(() => {
+		const handleLeaveRoom = async () => {
+			leaveRoom({ roomId });
+		};
+
+		window.onbeforeunload = handleLeaveRoom;
+	}, [leaveRoom, roomId]);
 
 	if (!room) {
 		return <div>Loading room...</div>;

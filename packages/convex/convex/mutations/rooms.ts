@@ -124,3 +124,58 @@ export const start = mutation({
 		});
 	},
 });
+
+export const leaveRoom = mutation({
+	args: {
+		roomId: v.id("rooms"),
+	},
+	handler: async (ctx, args) => {
+		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
+		const session = await auth.api.getSession({ headers });
+
+		if (!session) {
+			throw new UnauthorizedError();
+		}
+
+		const userId = session.user.id;
+
+		const room = await ctx.db.get(args.roomId);
+		if (!room) {
+			throw new NotFoundError();
+		}
+
+		// Find and delete the player record
+		const player = await ctx.db
+			.query("players")
+			.withIndex("by_roomId_and_userId", (q) =>
+				q.eq("roomId", args.roomId).eq("userId", userId),
+			)
+			.unique();
+
+		if (player) {
+			await ctx.db.delete(player._id);
+		}
+
+		// Get remaining players
+		const remainingPlayers = await ctx.db
+			.query("players")
+			.withIndex("by_roomId", (q) => q.eq("roomId", args.roomId))
+			.collect();
+
+		// If the leaving user was the host, assign a new random host
+		if (room.hostId === userId) {
+			const randomIndex = Math.floor(Math.random() * remainingPlayers.length);
+			const newHost = remainingPlayers[randomIndex];
+
+			// If no players left, delete the room
+			if (!newHost) {
+				await ctx.db.delete(args.roomId);
+				return;
+			}
+
+			await ctx.db.patch(args.roomId, {
+				hostId: newHost.userId,
+			});
+		}
+	},
+});
