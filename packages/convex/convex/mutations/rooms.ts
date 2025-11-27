@@ -71,6 +71,17 @@ export const joinRoom = mutation({
 			throw new NotFoundError();
 		}
 
+		const isBanned = await ctx.db
+			.query("banned_users")
+			.withIndex("by_roomId_and_userId", (q) =>
+				q.eq("roomId", room._id).eq("userId", userId),
+			)
+			.unique();
+
+		if (isBanned) {
+			throw new ForbiddenError();
+		}
+
 		if (room.status !== "waiting") {
 			throw new ForbiddenError();
 		}
@@ -93,6 +104,142 @@ export const joinRoom = mutation({
 		});
 
 		return room._id;
+	},
+});
+
+export const updateRoom = mutation({
+	args: {
+		roomId: v.id("rooms"),
+		name: v.optional(v.string()),
+		isPrivate: v.optional(v.boolean()),
+		playlistId: v.optional(v.string()),
+		playlistName: v.optional(v.string()),
+		playlistImage: v.optional(v.string()),
+	},
+	handler: async (ctx, args) => {
+		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
+		const session = await auth.api.getSession({ headers });
+
+		if (!session) {
+			throw new UnauthorizedError();
+		}
+
+		const userId = session.user.id;
+
+		const room = await ctx.db.get(args.roomId);
+		if (!room) {
+			throw new NotFoundError();
+		}
+
+		if (room.hostId !== userId) {
+			throw new ForbiddenError();
+		}
+
+		await ctx.db.patch(args.roomId, {
+			...(args.name && { name: args.name }),
+			...(args.isPrivate !== undefined && { isPrivate: args.isPrivate }),
+			...(args.playlistId && { playlistId: args.playlistId }),
+			...(args.playlistName && { playlistName: args.playlistName }),
+			...(args.playlistImage && { playlistImage: args.playlistImage }),
+		});
+	},
+});
+
+export const kickUser = mutation({
+	args: {
+		roomId: v.id("rooms"),
+		userId: v.string(),
+	},
+	handler: async (ctx, args) => {
+		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
+		const session = await auth.api.getSession({ headers });
+
+		if (!session) {
+			throw new UnauthorizedError();
+		}
+
+		const currentUserId = session.user.id;
+		const room = await ctx.db.get(args.roomId);
+
+		if (!room) {
+			throw new NotFoundError();
+		}
+
+		if (room.hostId !== currentUserId) {
+			throw new ForbiddenError();
+		}
+
+		// Prevent kicking the host
+		if (args.userId === room.hostId) {
+			throw new ForbiddenError();
+		}
+
+		const player = await ctx.db
+			.query("players")
+			.withIndex("by_roomId_and_userId", (q) =>
+				q.eq("roomId", args.roomId).eq("userId", args.userId),
+			)
+			.unique();
+
+		if (player) {
+			await ctx.db.delete(player._id);
+		}
+	},
+});
+
+export const banUser = mutation({
+	args: {
+		roomId: v.id("rooms"),
+		userId: v.string(),
+	},
+	handler: async (ctx, args) => {
+		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
+		const session = await auth.api.getSession({ headers });
+
+		if (!session) {
+			throw new UnauthorizedError();
+		}
+
+		const currentUserId = session.user.id;
+		const room = await ctx.db.get(args.roomId);
+
+		if (!room) {
+			throw new NotFoundError();
+		}
+
+		if (room.hostId !== currentUserId) {
+			throw new ForbiddenError();
+		}
+
+		// Prevent banning the host
+		if (args.userId === room.hostId) {
+			throw new ForbiddenError();
+		}
+
+		const player = await ctx.db
+			.query("players")
+			.withIndex("by_roomId_and_userId", (q) =>
+				q.eq("roomId", args.roomId).eq("userId", args.userId),
+			)
+			.unique();
+
+		if (player) {
+			await ctx.db.delete(player._id);
+		}
+
+		const alreadyBanned = await ctx.db
+			.query("banned_users")
+			.withIndex("by_roomId_and_userId", (q) =>
+				q.eq("roomId", args.roomId).eq("userId", args.userId),
+			)
+			.unique();
+
+		if (!alreadyBanned) {
+			await ctx.db.insert("banned_users", {
+				roomId: args.roomId,
+				userId: args.userId,
+			});
+		}
 	},
 });
 

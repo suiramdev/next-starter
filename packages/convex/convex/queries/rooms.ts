@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { components } from "../_generated/api";
 import { query } from "../_generated/server";
 import { authComponent } from "../auth";
 
@@ -45,6 +46,23 @@ export const getRoom = query({
 			.withIndex("by_roomId", (q) => q.eq("roomId", args.roomId))
 			.collect();
 
+		const playersWithDetails = await Promise.all(
+			players.map(async (player) => {
+				const user = await ctx.runQuery(
+					components.betterAuth.queries.users.getUser,
+					{
+						userId: player.userId,
+					},
+				);
+
+				return {
+					...player,
+					name: user?.name,
+					image: user?.image,
+				};
+			}),
+		);
+
 		const user = await authComponent.getAuthUser(ctx);
 		const userId = user?._id;
 
@@ -56,7 +74,7 @@ export const getRoom = query({
 			...room,
 			// If the room is private, don't expose the code
 			code: showCode ? room.code : undefined,
-			players,
+			players: playersWithDetails,
 		};
 	},
 });
