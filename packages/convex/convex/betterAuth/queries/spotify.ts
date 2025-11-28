@@ -1,39 +1,23 @@
 import { v } from "convex/values";
+import { systemFields } from "convex-helpers/validators";
 import { query } from "../_generated/server";
-
-export const isLinked = query({
-	args: {
-		userId: v.string(),
-	},
-	handler: async (ctx, args) => {
-		const account = await ctx.db
-			.query("account")
-			.withIndex("providerId_userId", (q) =>
-				q.eq("providerId", "spotify").eq("userId", args.userId),
-			)
-			.first();
-
-		return !!account;
-	},
-});
+import schema from "../schema";
 
 export const getSpotifyAccount = query({
 	args: { userId: v.string() },
+	returns: v.union(
+		v.null(),
+		v.object({
+			...schema.tables.account.validator.fields,
+			...systemFields("account"),
+		}),
+	),
 	handler: async (ctx, args) => {
-		const account = await ctx.db
+		return await ctx.db
 			.query("account")
 			.withIndex("providerId_userId", (q) =>
 				q.eq("providerId", "spotify").eq("userId", args.userId),
 			)
-			.first();
-
-		if (!account) return null;
-
-		return {
-			_id: account._id,
-			accessToken: account.accessToken,
-			refreshToken: account.refreshToken,
-			accessTokenExpiresAt: account.accessTokenExpiresAt,
-		};
+			.unique();
 	},
 });

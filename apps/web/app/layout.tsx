@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
 import { ConvexProvider } from "./_components/convex-provider";
-import { ThemeProvider } from "./_components/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {

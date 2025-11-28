@@ -16,7 +16,7 @@ import { useParams } from "next/navigation";
 export default function BreadcrumbSlot() {
 	const { id } = useParams<{ id: string }>();
 
-	const user = useQuery(api.queries.organizations.getMember, {
+	const user = useQuery(api.queries.users.getUser, {
 		userId: id,
 	});
 
@@ -30,7 +30,7 @@ export default function BreadcrumbSlot() {
 				</BreadcrumbItem>
 				<BreadcrumbSeparator />
 				<BreadcrumbItem>
-					<BreadcrumbPage>{user?.user?.name ?? id}</BreadcrumbPage>
+					<BreadcrumbPage>{user?.name ?? id}</BreadcrumbPage>
 				</BreadcrumbItem>
 			</BreadcrumbList>
 		</Breadcrumb>

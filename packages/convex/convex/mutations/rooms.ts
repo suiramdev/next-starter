@@ -1,11 +1,11 @@
 import { v } from "convex/values";
+import { mutation } from "../_generated/server";
+import { authComponent } from "../auth";
 import {
 	ForbiddenError,
 	NotFoundError,
 	UnauthorizedError,
-} from "#convex/utils/errors";
-import { mutation } from "../_generated/server";
-import { authComponent, createAuth } from "../auth";
+} from "../utils/errors";
 
 export const createRoom = mutation({
 	args: {
@@ -16,19 +16,16 @@ export const createRoom = mutation({
 		playlistImage: v.optional(v.string()),
 	},
 	handler: async (ctx, args) => {
-		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
-		const session = await auth.api.getSession({ headers });
+		const user = await authComponent.safeGetAuthUser(ctx);
 
-		if (!session) {
+		if (!user) {
 			throw new UnauthorizedError();
 		}
-
-		const userId = session.user.id;
 
 		const roomId = await ctx.db.insert("rooms", {
 			name: args.name,
 			code: Math.random().toString(36).substring(2, 8).toUpperCase(),
-			hostId: userId,
+			hostId: user._id,
 			isPrivate: args.isPrivate,
 			status: "waiting",
 			playlistId: args.playlistId,
@@ -38,7 +35,7 @@ export const createRoom = mutation({
 
 		await ctx.db.insert("players", {
 			roomId,
-			userId,
+			userId: user._id,
 			score: 0,
 		});
 
@@ -51,14 +48,11 @@ export const joinRoom = mutation({
 		code: v.string(),
 	},
 	handler: async (ctx, args) => {
-		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
-		const session = await auth.api.getSession({ headers });
+		const user = await authComponent.safeGetAuthUser(ctx);
 
-		if (!session) {
+		if (!user) {
 			throw new UnauthorizedError();
 		}
-
-		const userId = session.user.id;
 
 		const room = await ctx.db
 			.query("rooms")
@@ -71,25 +65,10 @@ export const joinRoom = mutation({
 			throw new NotFoundError();
 		}
 
-		const isBanned = await ctx.db
-			.query("banned_users")
-			.withIndex("by_roomId_and_userId", (q) =>
-				q.eq("roomId", room._id).eq("userId", userId),
-			)
-			.unique();
-
-		if (isBanned) {
-			throw new ForbiddenError();
-		}
-
-		if (room.status !== "waiting") {
-			throw new ForbiddenError();
-		}
-
 		const existingPlayer = await ctx.db
 			.query("players")
 			.withIndex("by_roomId_and_userId", (q) =>
-				q.eq("roomId", room._id).eq("userId", userId),
+				q.eq("roomId", room._id).eq("userId", user._id),
 			)
 			.unique();
 
@@ -99,7 +78,7 @@ export const joinRoom = mutation({
 
 		await ctx.db.insert("players", {
 			roomId: room._id,
-			userId,
+			userId: user._id,
 			score: 0,
 		});
 
@@ -117,21 +96,18 @@ export const updateRoom = mutation({
 		playlistImage: v.optional(v.string()),
 	},
 	handler: async (ctx, args) => {
-		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
-		const session = await auth.api.getSession({ headers });
+		const user = await authComponent.safeGetAuthUser(ctx);
 
-		if (!session) {
+		if (!user) {
 			throw new UnauthorizedError();
 		}
-
-		const userId = session.user.id;
 
 		const room = await ctx.db.get(args.roomId);
 		if (!room) {
 			throw new NotFoundError();
 		}
 
-		if (room.hostId !== userId) {
+		if (room.hostId !== user._id) {
 			throw new ForbiddenError();
 		}
 
@@ -151,21 +127,19 @@ export const kickUser = mutation({
 		userId: v.string(),
 	},
 	handler: async (ctx, args) => {
-		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
-		const session = await auth.api.getSession({ headers });
+		const user = await authComponent.safeGetAuthUser(ctx);
 
-		if (!session) {
+		if (!user) {
 			throw new UnauthorizedError();
 		}
 
-		const currentUserId = session.user.id;
 		const room = await ctx.db.get(args.roomId);
 
 		if (!room) {
 			throw new NotFoundError();
 		}
 
-		if (room.hostId !== currentUserId) {
+		if (room.hostId !== user._id) {
 			throw new ForbiddenError();
 		}
 
@@ -187,82 +161,24 @@ export const kickUser = mutation({
 	},
 });
 
-export const banUser = mutation({
-	args: {
-		roomId: v.id("rooms"),
-		userId: v.string(),
-	},
-	handler: async (ctx, args) => {
-		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
-		const session = await auth.api.getSession({ headers });
-
-		if (!session) {
-			throw new UnauthorizedError();
-		}
-
-		const currentUserId = session.user.id;
-		const room = await ctx.db.get(args.roomId);
-
-		if (!room) {
-			throw new NotFoundError();
-		}
-
-		if (room.hostId !== currentUserId) {
-			throw new ForbiddenError();
-		}
-
-		// Prevent banning the host
-		if (args.userId === room.hostId) {
-			throw new ForbiddenError();
-		}
-
-		const player = await ctx.db
-			.query("players")
-			.withIndex("by_roomId_and_userId", (q) =>
-				q.eq("roomId", args.roomId).eq("userId", args.userId),
-			)
-			.unique();
-
-		if (player) {
-			await ctx.db.delete(player._id);
-		}
-
-		const alreadyBanned = await ctx.db
-			.query("banned_users")
-			.withIndex("by_roomId_and_userId", (q) =>
-				q.eq("roomId", args.roomId).eq("userId", args.userId),
-			)
-			.unique();
-
-		if (!alreadyBanned) {
-			await ctx.db.insert("banned_users", {
-				roomId: args.roomId,
-				userId: args.userId,
-			});
-		}
-	},
-});
-
 export const start = mutation({
 	args: {
 		roomId: v.id("rooms"),
 	},
 	handler: async (ctx, args) => {
-		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
-		const session = await auth.api.getSession({ headers });
+		const user = await authComponent.safeGetAuthUser(ctx);
 
-		if (!session) {
+		if (!user) {
 			throw new UnauthorizedError();
 		}
 
-		const userId = session.user.id;
-
 		const room = await ctx.db.get(args.roomId);
+
 		if (!room) {
 			throw new NotFoundError();
 		}
 
-		if (room.hostId !== userId) {
+		if (room.hostId !== user._id) {
 			throw new ForbiddenError();
 		}
 
@@ -277,14 +193,11 @@ export const leaveRoom = mutation({
 		roomId: v.id("rooms"),
 	},
 	handler: async (ctx, args) => {
-		const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
-		const session = await auth.api.getSession({ headers });
+		const user = await authComponent.safeGetAuthUser(ctx);
 
-		if (!session) {
+		if (!user) {
 			throw new UnauthorizedError();
 		}
-
-		const userId = session.user.id;
 
 		const room = await ctx.db.get(args.roomId);
 		if (!room) {
@@ -295,7 +208,7 @@ export const leaveRoom = mutation({
 		const player = await ctx.db
 			.query("players")
 			.withIndex("by_roomId_and_userId", (q) =>
-				q.eq("roomId", args.roomId).eq("userId", userId),
+				q.eq("roomId", args.roomId).eq("userId", user._id),
 			)
 			.unique();
 
@@ -310,7 +223,7 @@ export const leaveRoom = mutation({
 			.collect();
 
 		// If the leaving user was the host, assign a new random host
-		if (room.hostId === userId) {
+		if (room.hostId === user._id) {
 			const randomIndex = Math.floor(Math.random() * remainingPlayers.length);
 			const newHost = remainingPlayers[randomIndex];
 

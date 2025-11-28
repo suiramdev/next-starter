@@ -1,17 +1,36 @@
 import { v } from "convex/values";
-import { components } from "../_generated/api";
 import { query } from "../_generated/server";
 import { authComponent } from "../auth";
+import { NotFoundError, UnauthorizedError } from "../utils/errors";
 
 export const listRooms = query({
 	args: {},
+	returns: v.array(
+		v.object({
+			_id: v.id("rooms"),
+			name: v.string(),
+			status: v.union(
+				v.literal("waiting"),
+				v.literal("playing"),
+				v.literal("finished"),
+			),
+			code: v.optional(v.string()),
+			playlistId: v.optional(v.string()),
+			playlistName: v.optional(v.string()),
+			playlistImage: v.optional(v.string()),
+			players: v.array(
+				v.object({
+					_id: v.id("players"),
+					userId: v.string(),
+					score: v.number(),
+				}),
+			),
+		}),
+	),
 	handler: async (ctx) => {
-		const rooms = await ctx.db
-			.query("rooms")
-			.filter((q) => q.eq(q.field("isPrivate"), false))
-			.collect();
+		const rooms = await ctx.db.query("rooms").collect();
 
-		const roomsWithDetails = await Promise.all(
+		const enrichedRooms = await Promise.all(
 			rooms.map(async (room) => {
 				const players = await ctx.db
 					.query("players")
@@ -19,15 +38,24 @@ export const listRooms = query({
 					.collect();
 
 				return {
-					...room,
-					// If the room is private, don't expose the code
+					_id: room._id,
+					name: room.name,
+					// Omit the code if the room is private
 					code: room.isPrivate ? undefined : room.code,
-					playerCount: players.length,
+					status: room.status,
+					playlistId: room.playlistId,
+					playlistName: room.playlistName,
+					playlistImage: room.playlistImage,
+					players: players.map((player) => ({
+						_id: player._id,
+						userId: player.userId,
+						score: player.score,
+					})),
 				};
 			}),
 		);
 
-		return roomsWithDetails;
+		return enrichedRooms;
 	},
 });
 
@@ -35,10 +63,37 @@ export const getRoom = query({
 	args: {
 		roomId: v.id("rooms"),
 	},
+	returns: v.object({
+		_id: v.id("rooms"),
+		name: v.string(),
+		status: v.union(
+			v.literal("waiting"),
+			v.literal("playing"),
+			v.literal("finished"),
+		),
+		code: v.optional(v.string()),
+		playlistId: v.optional(v.string()),
+		playlistName: v.optional(v.string()),
+		playlistImage: v.optional(v.string()),
+		players: v.array(
+			v.object({
+				_id: v.id("players"),
+				userId: v.string(),
+				score: v.number(),
+			}),
+		),
+	}),
 	handler: async (ctx, args) => {
+		const user = await authComponent.safeGetAuthUser(ctx);
+
+		if (!user) {
+			throw new UnauthorizedError();
+		}
+
 		const room = await ctx.db.get(args.roomId);
+
 		if (!room) {
-			return null;
+			throw new NotFoundError();
 		}
 
 		const players = await ctx.db
@@ -46,35 +101,22 @@ export const getRoom = query({
 			.withIndex("by_roomId", (q) => q.eq("roomId", args.roomId))
 			.collect();
 
-		const playersWithDetails = await Promise.all(
-			players.map(async (player) => {
-				const user = await ctx.runQuery(
-					components.betterAuth.queries.users.getUser,
-					{
-						userId: player.userId,
-					},
-				);
-
-				return {
-					...player,
-					name: user?.name,
-					image: user?.image,
-				};
-			}),
-		);
-
-		const user = await authComponent.getAuthUser(ctx);
-		const userId = user?._id;
-
-		const isPlayer = players.some((p) => p.userId === userId);
-		const isHost = room.hostId === userId;
-		const showCode = !room.isPrivate || isPlayer || isHost;
+		const isPlayer = players.some((p) => p.userId === user?._id);
 
 		return {
-			...room,
-			// If the room is private, don't expose the code
-			code: showCode ? room.code : undefined,
-			players: playersWithDetails,
+			_id: room._id,
+			name: room.name,
+			// Omit the code if the room is private and the user is not a player
+			code: !room.isPrivate || isPlayer ? room.code : undefined,
+			status: room.status,
+			playlistId: room.playlistId,
+			playlistName: room.playlistName,
+			playlistImage: room.playlistImage,
+			players: players.map((player) => ({
+				_id: player._id,
+				userId: player.userId,
+				score: player.score,
+			})),
 		};
 	},
 });

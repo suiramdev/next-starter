@@ -3,6 +3,10 @@
 	"version": "0.0.0",
 	"private": true,
 	"exports": {
+		"./auth": {
+			"types": "./convex/auth.ts",
+			"default": "./convex/auth.ts"
+		},
 		"./_generated/api": {
 			"types": "./convex/_generated/api.d.ts",
 			"default": "./convex/_generated/api.js"

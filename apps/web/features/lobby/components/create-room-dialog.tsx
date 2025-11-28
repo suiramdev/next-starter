@@ -50,7 +50,7 @@ export function CreateRoomDialog() {
 	});
 
 	const createRoom = useMutation(api.mutations.rooms.createRoom);
-	const isLinked = useQuery(api.queries.spotify.isLinked);
+	const hasSpotifyAccount = useQuery(api.queries.spotify.hasSpotifyAccount);
 	const router = useRouter();
 
 	const handleOpenChange = (isOpen: boolean) => {
@@ -131,7 +131,7 @@ export function CreateRoomDialog() {
 								<FormItem>
 									<FormLabel>Playlist</FormLabel>
 									<FormControl>
-										{isLinked ? (
+										{hasSpotifyAccount ? (
 											<SpotifyPlaylistSelector
 												value={field.value}
 												onValueChange={(id, name, image) => {

@@ -1,30 +1,32 @@
+import { getToken } from "@convex-dev/better-auth/nextjs";
+import { api } from "@repo/convex/_generated/api";
+import { createAuth } from "@repo/convex/auth";
 import {
 	Sidebar as SidebarComponent,
 	SidebarContent,
 	SidebarFooter,
-	SidebarHeader,
-	SidebarMenu,
-	SidebarMenuItem,
 } from "@repo/ui/registry/new-york-v4/ui/sidebar";
+import { preloadQuery } from "convex/nextjs";
 import { NavMain } from "./nav-main";
-import { NavOrganization } from "./nav-organization";
 import { NavUser } from "./nav-user";
 
-export function Sidebar() {
+export async function Sidebar() {
+	const token = await getToken(createAuth);
+	const preloadedQuery = await preloadQuery(
+		api.queries.users.getUser,
+		{},
+		{
+			token,
+		},
+	);
+
 	return (
 		<SidebarComponent variant="inset">
-			<SidebarHeader>
-				<SidebarMenu>
-					<SidebarMenuItem>
-						<NavOrganization />
-					</SidebarMenuItem>
-				</SidebarMenu>
-			</SidebarHeader>
 			<SidebarContent>
 				<NavMain />
 			</SidebarContent>
 			<SidebarFooter>
-				<NavUser />
+				<NavUser preloadedQuery={preloadedQuery} />
 			</SidebarFooter>
 		</SidebarComponent>
 	);

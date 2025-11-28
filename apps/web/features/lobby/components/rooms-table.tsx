@@ -1,9 +1,7 @@
 "use client";
 
-import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@repo/convex/_generated/api";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
-import { Skeleton } from "@repo/ui/registry/new-york-v4/ui/skeleton";
 import {
 	Table,
 	TableBody,
@@ -13,16 +11,17 @@ import {
 	TableRow,
 } from "@repo/ui/registry/new-york-v4/ui/table";
 import { DiscIcon, LogInIcon, Users } from "@repo/ui/registry/web/icons";
-import { useQuery } from "@tanstack/react-query";
-import { useMutation } from "convex/react";
+import { type Preloaded, useMutation, usePreloadedQuery } from "convex/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export function RoomsTable() {
-	const { data: rooms, isLoading: isLoadingRooms } = useQuery(
-		convexQuery(api.queries.rooms.listRooms),
-	);
+type RoomsTableProps = {
+	preloadedQuery: Preloaded<typeof api.queries.rooms.listRooms>;
+};
+
+export function RoomsTable({ preloadedQuery }: RoomsTableProps) {
+	const rooms = usePreloadedQuery(preloadedQuery);
 	const joinRoom = useMutation(api.mutations.rooms.joinRoom);
 	const router = useRouter();
 
@@ -36,10 +35,6 @@ export function RoomsTable() {
 			console.error(error);
 		}
 	};
-
-	if (isLoadingRooms) {
-		return <RoomsTableSkeleton />;
-	}
 
 	return (
 		<Table>
@@ -101,8 +96,8 @@ export function RoomsTable() {
 							<div className="flex items-center gap-2 text-muted-foreground">
 								<Users className="h-4 w-4" />
 								<span>
-									{room.playerCount} player
-									{room.playerCount !== 1 ? "s" : ""}
+									{room.players.length} player
+									{room.players.length !== 1 ? "s" : ""}
 								</span>
 							</div>
 						</TableCell>
@@ -115,45 +110,5 @@ export function RoomsTable() {
 				))}
 			</TableBody>
 		</Table>
-	);
-}
-
-function RoomsTableSkeleton() {
-	return (
-		<div className="rounded-md border">
-			<Table>
-				<TableHeader>
-					<TableRow>
-						<TableHead>Room</TableHead>
-						<TableHead>Playlist</TableHead>
-						<TableHead>Status</TableHead>
-						<TableHead>Players</TableHead>
-						<TableHead />
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{Array.from({ length: 5 }).map((_, i) => (
-						// biome-ignore lint/suspicious/noArrayIndexKey: Skeleton rows are static placeholders
-						<TableRow key={`room-skeleton-${i}`} className="h-12">
-							<TableCell>
-								<Skeleton className="h-4 w-32" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-28" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-20" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-20" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="ml-auto h-8 w-8" />
-							</TableCell>
-						</TableRow>
-					))}
-				</TableBody>
-			</Table>
-		</div>
 	);
 }

@@ -2,17 +2,6 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-	app_settings: defineTable({
-		key: v.string(),
-		value: v.any(),
-		updatedAt: v.number(),
-	}).index("by_key", ["key"]),
-	organization_settings: defineTable({
-		organizationId: v.string(),
-		key: v.string(),
-		value: v.any(),
-		updatedAt: v.number(),
-	}).index("by_organizationId_and_key", ["organizationId", "key"]),
 	rooms: defineTable({
 		name: v.string(),
 		code: v.string(),
@@ -36,11 +25,5 @@ export default defineSchema({
 	})
 		.index("by_roomId", ["roomId"])
 		.index("by_userId", ["userId"])
-		.index("by_roomId_and_userId", ["roomId", "userId"]),
-	banned_users: defineTable({
-		roomId: v.id("rooms"),
-		userId: v.string(),
-	})
-		.index("by_roomId", ["roomId"])
 		.index("by_roomId_and_userId", ["roomId", "userId"]),
 });

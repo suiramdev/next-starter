@@ -1,9 +1,11 @@
+import { v } from "convex/values";
 import { components } from "../_generated/api";
 import { query } from "../_generated/server";
 import { authComponent } from "../auth";
 
-export const isLinked = query({
+export const hasSpotifyAccount = query({
 	args: {},
+	returns: v.boolean(),
 	handler: async (ctx) => {
 		const user = await authComponent.safeGetAuthUser(ctx);
 
@@ -11,13 +13,13 @@ export const isLinked = query({
 			return false;
 		}
 
-		const isLinked = await ctx.runQuery(
-			components.betterAuth.queries.spotify.isLinked,
+		const account = await ctx.runQuery(
+			components.betterAuth.queries.spotify.getSpotifyAccount,
 			{
 				userId: user?._id,
 			},
 		);
 
-		return isLinked;
+		return !!account;
 	},
 });

@@ -22,6 +22,7 @@ import {
 } from "@repo/ui/registry/web/icons";
 import { useMutation, useQuery } from "convex/react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { SpotifyPlaylistSelector } from "@/components/spotify-playlist-selector";
@@ -41,6 +42,7 @@ export function WaitingRoom({ roomId }: WaitingRoomProps) {
 	const kickUser = useMutation(api.mutations.rooms.kickUser);
 	const banUser = useMutation(api.mutations.rooms.banUser);
 	const { data: session } = authClient.useSession();
+	const router = useRouter();
 
 	const [isUpdatingPlaylist, setIsUpdatingPlaylist] = useState(false);
 
@@ -76,8 +78,8 @@ export function WaitingRoom({ roomId }: WaitingRoomProps) {
 	const handleLeave = async () => {
 		try {
 			await leaveRoom({ roomId });
-			// Redirect is handled by parent or router usually, but here we might need to push
-			// window.location.href = "/"; // Simple redirect
+			router.push("/");
+			toast.success("Left room successfully");
 		} catch (error) {
 			toast.error("Failed to leave room");
 		}

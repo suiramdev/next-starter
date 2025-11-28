@@ -20,14 +20,11 @@ import type { CellContext } from "@tanstack/react-table";
 import type { FunctionReturnType } from "convex/server";
 import Link from "next/link";
 import * as React from "react";
-import { BanUserDialog } from "@/features/users/components/ban-user-dialog";
-import { DeleteMemberDialog } from "../delete-member-dialog";
+import { BanUserDialog } from "../components/ban-user-dialog";
 
-type Member = FunctionReturnType<
-	typeof api.queries.organizations.listMembers
->["members"][number];
+type User = FunctionReturnType<typeof api.queries.users.listUsers>[number];
 
-export function MemberTableSelectHeaderCell({
+export function UserTableSelectHeaderCell({
 	isAllPageRowsSelected,
 	isSomePageRowsSelected,
 	toggleAllPageRowsSelected,
@@ -49,23 +46,23 @@ export function MemberTableSelectHeaderCell({
 	);
 }
 
-export function MemberTableSelectCell({ row }: CellContext<Member, unknown>) {
+export function UserTableSelectCell({ row }: CellContext<User, unknown>) {
 	return (
 		<div className="flex items-center justify-start">
 			<Checkbox
 				checked={row.getIsSelected()}
 				disabled={!row.getCanSelect()}
 				onCheckedChange={row.getToggleSelectedHandler()}
-				aria-label={`Select member ${row.original?.user?.name ?? ""}`}
+				aria-label={`Select user ${row.original?.name ?? ""}`}
 			/>
 		</div>
 	);
 }
 
-export function MemberTableNameCell({
+export function UserTableNameCell({
 	row,
 	getValue,
-}: CellContext<Member, unknown>) {
+}: CellContext<User, unknown>) {
 	const name = getValue<string | null>();
 
 	return (
@@ -74,14 +71,12 @@ export function MemberTableNameCell({
 			variant="link"
 			className="w-fit px-0 text-left text-foreground"
 		>
-			<Link href={`/users/${row.original?.userId}`}>{name ?? "Anonymous"}</Link>
+			<Link href={`/users/${row.original?._id}`}>{name ?? "Anonymous"}</Link>
 		</Button>
 	);
 }
 
-export function MemberTableStatusCell({
-	getValue,
-}: CellContext<Member, unknown>) {
+export function UserTableStatusCell({ getValue }: CellContext<User, unknown>) {
 	const isEmailVerified = getValue<boolean>();
 	const color = isEmailVerified
 		? "bg-blue-500 text-white dark:bg-blue-600"
@@ -94,31 +89,20 @@ export function MemberTableStatusCell({
 	);
 }
 
-export function MemberTableRoleCell({
+export function UserTableCreatedAtCell({
 	getValue,
-}: CellContext<Member, unknown>) {
-	const role = getValue<string | null>();
-	return (
-		<Badge variant="outline" className="capitalize">
-			{role ?? ""}
-		</Badge>
-	);
-}
-
-export function MemberTableCreatedAtCell({
-	getValue,
-}: CellContext<Member, unknown>) {
+}: CellContext<User, unknown>) {
 	const timestamp = getValue<number>();
 	return `${new Date(timestamp).toLocaleDateString()}`;
 }
 
-export function MemberTableActionsCell({ row }: CellContext<Member, unknown>) {
+export function UserTableActionsCell({ row }: CellContext<User, unknown>) {
 	const [isBanDialogOpen, setIsBanDialogOpen] = React.useState(false);
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
 	const { data: session } = authClient.useSession();
 
-	const member = row.original;
-	const isCurrentUser = member?.userId === session?.user?.id;
+	const user = row.original;
+	const isCurrentUser = user?._id === session?.user?.id;
 
 	return (
 		<>
@@ -155,19 +139,13 @@ export function MemberTableActionsCell({ row }: CellContext<Member, unknown>) {
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
-			{member.userId && (
+			{user._id && (
 				<BanUserDialog
 					open={isBanDialogOpen}
 					onOpenChange={setIsBanDialogOpen}
-					userId={member.userId}
+					userId={user._id}
 				/>
 			)}
-			<DeleteMemberDialog
-				open={isDeleteDialogOpen}
-				onOpenChange={setIsDeleteDialogOpen}
-				memberIdOrEmail={member.id}
-				organizationId={member.organizationId}
-			/>
 		</>
 	);
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
 import { ConvexProvider } from "@/app/_components/convex-provider";
 import "@/app/globals.css";
-import { ThemeProvider } from "./_components/theme-provider";
 
 export const metadata: Metadata = {
 	title: "Create Next App",

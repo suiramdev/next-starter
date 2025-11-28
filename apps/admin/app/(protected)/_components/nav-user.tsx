@@ -1,6 +1,6 @@
 "use client";
 
-import { authClient } from "@repo/auth/helpers/react/client";
+import type { api } from "@repo/convex/_generated/api";
 import { ChevronsUpDownIcon } from "@repo/ui/registry/admin/icons";
 import {
 	SidebarMenu,
@@ -8,16 +8,19 @@ import {
 	SidebarMenuItem,
 } from "@repo/ui/registry/new-york-v4/ui/sidebar";
 import { Skeleton } from "@repo/ui/registry/new-york-v4/ui/skeleton";
+import { type Preloaded, usePreloadedQuery } from "convex/react";
 import {
 	CurrentUserDropdown,
 	CurrentUserDropdownTrigger,
 } from "@/features/users/components/current-user-dropdown";
 import { UserAvatar } from "@/features/users/components/user-avatar";
 
-export function NavUser() {
-	const { data: session } = authClient.useSession();
+type NavUserProps = {
+	preloadedQuery: Preloaded<typeof api.queries.users.getUser>;
+};
 
-	if (!session) return <NavUserSkeleton />;
+export function NavUser({ preloadedQuery }: NavUserProps) {
+	const user = usePreloadedQuery(preloadedQuery);
 
 	return (
 		<SidebarMenu>
@@ -27,16 +30,14 @@ export function NavUser() {
 						<SidebarMenuButton size="lg">
 							<UserAvatar
 								user={{
-									image: session.user.image,
-									name: session.user.name,
+									image: user.image,
+									name: user.name,
 								}}
 							/>
 							<div className="grid flex-1 text-left text-sm leading-tight">
-								<span className="truncate font-medium">
-									{session.user.name}
-								</span>
+								<span className="truncate font-medium">{user.name}</span>
 								<span className="truncate text-muted-foreground text-xs">
-									{session.user.email}
+									{user.email}
 								</span>
 							</div>
 							<ChevronsUpDownIcon className="ml-auto size-4" />

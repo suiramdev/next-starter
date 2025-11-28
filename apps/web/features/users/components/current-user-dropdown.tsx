@@ -25,7 +25,7 @@ export function CurrentUserDropdown({
 	const { data: session } = authClient.useSession();
 	const router = useRouter();
 
-	const isSpotifyLinked = useQuery(api.queries.spotify.isLinked);
+	const hasSpotifyAccount = useQuery(api.queries.spotify.hasSpotifyAccount);
 
 	const handleSignOut = () => {
 		authClient.signOut({
@@ -78,7 +78,7 @@ export function CurrentUserDropdown({
 					</div>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				{isSpotifyLinked ? (
+				{hasSpotifyAccount ? (
 					<DropdownMenuItem onClick={handleUnlinkSpotify} variant="destructive">
 						<SpotifyIcon />
 						Unlink from Spotify

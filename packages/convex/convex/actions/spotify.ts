@@ -1,89 +1,89 @@
 "use node";
 
-import * as fs from "node:fs";
-import * as os from "node:os";
-import * as path from "node:path";
 import { v } from "convex/values";
 import { z } from "zod";
-import { components } from "../_generated/api";
-import { type ActionCtx, action } from "../_generated/server";
+import { components, internal } from "../_generated/api";
+import { action, internalAction } from "../_generated/server";
 import { authComponent } from "../auth";
+import { NotFoundError, UnauthorizedError } from "../utils/errors";
 
-function writeDebugData(filename: string, data: unknown) {
-	const tmpDir = os.tmpdir();
-	const filePath = path.join(tmpDir, filename);
-	fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-	console.log(`Debug data written to: ${filePath}`);
-}
+export const getSpotifyAccessToken = internalAction({
+	args: {},
+	returns: v.string(),
+	handler: async (ctx) => {
+		const user = await authComponent.safeGetAuthUser(ctx);
 
-async function getValidSpotifyToken(
-	ctx: ActionCtx,
-	userId: string,
-): Promise<string> {
-	const account = await ctx.runQuery(
-		components.betterAuth.queries.spotify.getSpotifyAccount,
-		{ userId },
-	);
+		if (!user) {
+			throw new UnauthorizedError();
+		}
 
-	if (!account) {
-		throw new Error("Spotify not linked");
-	}
+		const account = await ctx.runQuery(
+			components.betterAuth.queries.spotify.getSpotifyAccount,
+			{ userId: user._id },
+		);
 
-	// Check if token is expired (with 60s buffer)
-	const isExpired =
-		account.accessTokenExpiresAt &&
-		account.accessTokenExpiresAt < Date.now() + 60000;
+		if (!account) {
+			throw new NotFoundError();
+		}
 
-	if (!isExpired && account.accessToken) {
-		return account.accessToken;
-	}
+		// Check if token is expired (with 60s buffer)
+		const isExpired =
+			account.accessTokenExpiresAt &&
+			account.accessTokenExpiresAt < Date.now() + 60000;
 
-	// Token expired, refresh it
-	if (!account.refreshToken) {
-		throw new Error("No refresh token available. Please re-link Spotify.");
-	}
+		if (!isExpired && account.accessToken) {
+			return account.accessToken;
+		}
 
-	const clientId = process.env.SPOTIFY_CLIENT_ID;
-	const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+		// Token expired, refresh it
+		if (!account.refreshToken) {
+			throw new Error("No refresh token available. Please re-link Spotify.");
+		}
 
-	if (!clientId || !clientSecret) {
-		throw new Error("Spotify credentials not configured");
-	}
+		const clientId = process.env.SPOTIFY_CLIENT_ID;
+		const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
-	const response = await fetch("https://accounts.spotify.com/api/token", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/x-www-form-urlencoded",
-			Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
-		},
-		body: new URLSearchParams({
-			grant_type: "refresh_token",
-			refresh_token: account.refreshToken,
-		}),
-	});
+		if (!clientId || !clientSecret) {
+			throw new Error("Spotify credentials not configured");
+		}
 
-	if (!response.ok) {
-		const error = await response.text();
-		console.error("Failed to refresh Spotify token:", error);
-		throw new Error("Failed to refresh Spotify token. Please re-link Spotify.");
-	}
+		const response = await fetch("https://accounts.spotify.com/api/token", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded",
+				Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
+			},
+			body: new URLSearchParams({
+				grant_type: "refresh_token",
+				refresh_token: account.refreshToken,
+			}),
+		});
 
-	const data = await response.json();
-	const newAccessToken = data.access_token;
-	const expiresIn = data.expires_in; // seconds
+		if (!response.ok) {
+			const error = await response.text();
+			console.error("Failed to refresh Spotify token:", error);
+			throw new Error(
+				"Failed to refresh Spotify token. Please re-link Spotify.",
+			);
+		}
 
-	// Update the token in the database
-	await ctx.runMutation(
-		components.betterAuth.mutations.spotify.updateSpotifyToken,
-		{
-			accountId: account._id,
-			accessToken: newAccessToken,
-			accessTokenExpiresAt: Date.now() + expiresIn * 1000,
-		},
-	);
+		const data = await response.json();
+		const newAccessToken = data.access_token;
+		const expiresIn = data.expires_in; // seconds
 
-	return newAccessToken;
-}
+		// Update the token in the database
+		await ctx.runMutation(
+			components.betterAuth.mutations.spotify.updateSpotifyToken,
+			{
+				accountId: account._id,
+				accessToken: newAccessToken,
+				accessTokenExpiresAt: Date.now() + expiresIn * 1000,
+			},
+		);
+
+		return newAccessToken;
+	},
+});
 
 const spotifyImageSchema = z.object({
 	url: z.string(),
@@ -126,43 +126,10 @@ const spotifyPlaylistSchema = z.object({
 	primary_color: z.string().nullable().optional(),
 });
 
-const spotifyMyPlaylistsResponseSchema = z.object({
-	items: z.array(spotifyPlaylistSchema),
-});
-
 const spotifySearchResponseSchema = z.object({
 	playlists: z.object({
 		items: z.array(spotifyPlaylistSchema.nullable()),
 	}),
-});
-
-export const getPlaylists = action({
-	args: {},
-	handler: async (ctx) => {
-		const user = await authComponent.safeGetAuthUser(ctx);
-		if (!user) {
-			throw new Error("Unauthorized");
-		}
-
-		const token = await getValidSpotifyToken(ctx, user._id);
-
-		const response = await fetch("https://api.spotify.com/v1/me/playlists", {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
-
-		if (!response.ok) {
-			const error = await response.text();
-			console.error("Spotify API error:", error);
-			throw new Error(`Failed to fetch playlists: ${response.statusText}`);
-		}
-
-		const data = await response.json();
-		const parsed = spotifyMyPlaylistsResponseSchema.parse(data);
-
-		return parsed.items;
-	},
 });
 
 export const searchPlaylists = action({
@@ -171,17 +138,20 @@ export const searchPlaylists = action({
 	},
 	handler: async (ctx, args) => {
 		const user = await authComponent.safeGetAuthUser(ctx);
+
 		if (!user) {
-			throw new Error("Unauthorized");
+			throw new UnauthorizedError();
 		}
 
-		const token = await getValidSpotifyToken(ctx, user._id);
+		const accessToken = await ctx.runAction(
+			internal.actions.spotify.getSpotifyAccessToken,
+		);
 
 		const response = await fetch(
 			`https://api.spotify.com/v1/search?type=playlist&q=${encodeURIComponent(args.query)}`,
 			{
 				headers: {
-					Authorization: `Bearer ${token}`,
+					Authorization: `Bearer ${accessToken}`,
 				},
 			},
 		);
