@@ -1,6 +1,6 @@
-"use client";
-
+import { getToken } from "@convex-dev/better-auth/nextjs";
 import { api } from "@repo/convex/_generated/api";
+import { createAuth } from "@repo/convex/auth";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -9,16 +9,25 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@repo/ui/registry/new-york-v4/ui/breadcrumb";
-import { useQuery } from "convex/react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { convexClient } from "@/lib/convex-server";
 
-export default function BreadcrumbSlot() {
-	const { id } = useParams<{ id: string }>();
+type BreadcrumbSlotProps = {
+	params: Promise<{ id: string }>;
+};
 
-	const user = useQuery(api.queries.users.getUser, {
-		userId: id,
-	});
+export default async function BreadcrumbSlot({ params }: BreadcrumbSlotProps) {
+	const { id } = await params;
+	const token = await getToken(createAuth);
+
+	let user = null;
+	if (token) {
+		convexClient.setAuth(token);
+
+		user = await convexClient.query(api.queries.users.getUser, {
+			userId: id,
+		});
+	}
 
 	return (
 		<Breadcrumb>

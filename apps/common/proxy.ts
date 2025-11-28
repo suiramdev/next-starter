@@ -7,12 +7,25 @@ export function proxy(request: NextRequest) {
 	// Get the origin from the request
 	const origin = request.headers.get("origin") ?? "";
 
-	// Check if the origin is allowed
-	if (process.env.CORS_ALLOWED_ORIGINS?.includes(origin)) {
-		response.headers.set("Access-Control-Allow-Origin", origin);
-	} else if (process.env.NODE_ENV === "development") {
-		// In development, allow all origins as a fallback
-		response.headers.set("Access-Control-Allow-Origin", "*");
+	// Determine the allowed origin
+	let allowedOrigin: string | null = null;
+
+	if (origin) {
+		// Check if the origin is in the allowed list
+		const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS?.split(",") ?? [];
+		if (allowedOrigins.includes(origin)) {
+			allowedOrigin = origin;
+		} else if (process.env.NODE_ENV === "development") {
+			// In development, allow the request origin if present
+			// This is necessary when credentials are included
+			allowedOrigin = origin;
+		}
+	}
+
+	// Only set CORS headers if we have an allowed origin
+	if (allowedOrigin) {
+		response.headers.set("Access-Control-Allow-Origin", allowedOrigin);
+		response.headers.set("Access-Control-Allow-Credentials", "true");
 	}
 
 	response.headers.set(
@@ -23,7 +36,6 @@ export function proxy(request: NextRequest) {
 		"Access-Control-Allow-Headers",
 		"Content-Type, Authorization",
 	);
-	response.headers.set("Access-Control-Allow-Credentials", "true");
 
 	// Handle preflight requests
 	if (request.method === "OPTIONS") {

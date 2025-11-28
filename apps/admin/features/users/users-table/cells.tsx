@@ -79,8 +79,8 @@ export function UserTableNameCell({
 export function UserTableStatusCell({ getValue }: CellContext<User, unknown>) {
 	const isEmailVerified = getValue<boolean>();
 	const color = isEmailVerified
-		? "bg-blue-500 text-white dark:bg-blue-600"
-		: "bg-gray-500 text-white dark:bg-gray-600";
+		? "bg-muted text-muted-foreground"
+		: "bg-destructive text-destructive-foreground";
 
 	return (
 		<Badge variant="secondary" className={cn("capitalize", color)}>
@@ -98,7 +98,6 @@ export function UserTableCreatedAtCell({
 
 export function UserTableActionsCell({ row }: CellContext<User, unknown>) {
 	const [isBanDialogOpen, setIsBanDialogOpen] = React.useState(false);
-	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
 	const { data: session } = authClient.useSession();
 
 	const user = row.original;
@@ -125,17 +124,6 @@ export function UserTableActionsCell({ row }: CellContext<User, unknown>) {
 					>
 						<BanIcon className="mr-2 h-4 w-4" />
 						Ban
-					</DropdownMenuItem>
-					<DropdownMenuItem
-						variant="destructive"
-						className={
-							isCurrentUser ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-						}
-						onClick={() => !isCurrentUser && setIsDeleteDialogOpen(true)}
-						disabled={isCurrentUser}
-					>
-						<TrashIcon className="mr-2 h-4 w-4" />
-						Delete
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>

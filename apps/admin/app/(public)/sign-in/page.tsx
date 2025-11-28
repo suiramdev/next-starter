@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { SignInForm } from "@/features/auth/components/sign-in-form";
 
 export default async function Page() {
@@ -15,15 +14,6 @@ export default async function Page() {
 								<span className="sr-only">Acme Inc.</span>
 							</a>
 							<h1 className="font-bold text-xl">Welcome back to Acme Inc.</h1>
-							<div className="text-center text-sm">
-								Don&apos;t have an account?{" "}
-								<Link
-									href="/sign-up"
-									className="underline underline-offset-4 hover:text-primary"
-								>
-									Sign up
-								</Link>
-							</div>
 						</div>
 						<SignInForm />
 					</div>

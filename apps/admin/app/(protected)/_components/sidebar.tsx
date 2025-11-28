@@ -15,9 +15,7 @@ export async function Sidebar() {
 	const preloadedQuery = await preloadQuery(
 		api.queries.users.getUser,
 		{},
-		{
-			token,
-		},
+		{ token },
 	);
 
 	return (

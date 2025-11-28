@@ -35,12 +35,12 @@ export const userTableColumns: ColumnDef<User>[] = [
 	},
 	{
 		header: "Status",
-		accessorKey: "isEmailVerified",
+		accessorKey: "emailVerified",
 		cell: (context) => <UserTableStatusCell {...context} />,
 	},
 	{
 		header: "Created At",
-		accessorKey: "createdAt",
+		accessorKey: "_creationTime",
 		cell: (context) => <UserTableCreatedAtCell {...context} />,
 	},
 	{

@@ -6,9 +6,8 @@ import type { ReactNode } from "react";
 import { authClient } from "@/lib/auth-client";
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL ?? "", {
-	// Set to false to allow setup mutation before authentication
-	// Individual mutations/queries should handle their own auth requirements
-	expectAuth: false,
+	// Optionally pause queries until the user is authenticated
+	expectAuth: true,
 });
 
 export function ConvexProvider({ children }: { children: ReactNode }) {

@@ -1,9 +1,5 @@
 import { authClient } from "@repo/auth/helpers/react/client";
-import {
-	LogOutIcon,
-	SettingsIcon,
-	UserIcon,
-} from "@repo/ui/registry/admin/icons";
+import { LogOutIcon } from "@repo/ui/registry/admin/icons";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -12,7 +8,6 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/dropdown-menu";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserAvatar } from "./user-avatar";
 
@@ -65,12 +60,6 @@ export function CurrentUserDropdown({
 					</div>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<Link href={`/users/${session?.user?.id}/settings`}>
-					<DropdownMenuItem>
-						<SettingsIcon />
-						Settings
-					</DropdownMenuItem>
-				</Link>
 				<DropdownMenuItem onClick={handleSignOut}>
 					<LogOutIcon />
 					Log out

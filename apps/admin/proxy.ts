@@ -4,13 +4,14 @@ import {
 	type NextRequest,
 	NextResponse,
 } from "next/server";
+import { basePath } from "./lib/constants";
 
 const isSignInRoute = (pathname: string) => {
-	return ["/sign-in", "/sign-up"].includes(pathname);
+	return pathname === `/sign-in`;
 };
 
 const isProtectedRoute = (pathname: string) => {
-	return !["/sign-in", "/sign-up"].includes(pathname);
+	return pathname !== `/sign-in`;
 };
 
 export function proxy(req: NextRequest, _event: NextFetchEvent) {
@@ -22,14 +23,14 @@ export function proxy(req: NextRequest, _event: NextFetchEvent) {
 	 * If the user is not signed in and on a protected route, redirect to the sign in page.
 	 */
 	if (isProtectedRoute(pathname) && !sessionCookie) {
-		return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+		return NextResponse.redirect(new URL(`${basePath}/sign-in`, req.nextUrl));
 	}
 
 	/**
 	 * If the user is signed in and on a sign in route, redirect to the home page.
 	 */
 	if (isSignInRoute(pathname) && sessionCookie) {
-		return NextResponse.redirect(new URL("/", req.nextUrl));
+		return NextResponse.redirect(new URL(`${basePath}/`, req.nextUrl));
 	}
 
 	console.log("sessionCookie", sessionCookie);

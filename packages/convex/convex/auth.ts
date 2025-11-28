@@ -5,7 +5,7 @@ import {
 } from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
 import { betterAuth } from "better-auth";
-import { anonymous } from "better-auth/plugins";
+import { admin, anonymous } from "better-auth/plugins";
 import { components, internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
 import { query } from "./_generated/server";
@@ -65,6 +65,7 @@ export const createAuth = (
 			// The Convex plugin is required for Convex compatibility
 			convex(),
 			anonymous(),
+			admin(),
 		],
 	});
 };

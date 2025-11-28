@@ -1,0 +1,5 @@
+- Anonymous users have a very short expiration time for their session
+- Ask AI to add `admin()` plugin or create a permission system so that the admin app is restricted to only admins
+- Create a seed that adds an admin user to the database
+- Enable to join directly using spotify, in addition to the e-mail / anonymous login
+- Remove Form from auth helpers

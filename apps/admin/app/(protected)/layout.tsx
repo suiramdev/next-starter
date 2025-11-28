@@ -1,10 +1,15 @@
+import { getToken } from "@convex-dev/better-auth/nextjs";
+import { api } from "@repo/convex/_generated/api";
+import { createAuth } from "@repo/convex/auth";
 import { Separator } from "@repo/ui/registry/new-york-v4/ui/separator";
 import {
 	SidebarInset,
 	SidebarProvider,
 	SidebarTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/sidebar";
+import { redirect } from "next/navigation";
 import { Sidebar } from "@/app/(protected)/_components/sidebar";
+import { convexClient } from "@/lib/convex-server";
 import { ThemeSwitcher } from "./_components/theme-switcher";
 
 export default async function Layout({
@@ -14,6 +19,25 @@ export default async function Layout({
 	children: React.ReactNode;
 	breadcrumb: React.ReactNode;
 }>) {
+	const token = await getToken(createAuth);
+	console.log("token", token);
+
+	if (!token) {
+		redirect("/sign-in");
+	}
+
+	// Set the auth token on the client
+	convexClient.setAuth(token);
+
+	// Check if user has admin role
+	const hasAdminRole = await convexClient.query(api.queries.users.hasRole, {
+		role: "admin",
+	});
+
+	if (!hasAdminRole) {
+		redirect("/sign-in");
+	}
+
 	return (
 		<SidebarProvider>
 			<Sidebar />
