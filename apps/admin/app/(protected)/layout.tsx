@@ -1,6 +1,6 @@
 import { getToken } from "@convex-dev/better-auth/nextjs";
 import { api } from "@repo/convex/_generated/api";
-import { createAuth } from "@repo/convex/auth";
+import { createAuth } from "@repo/convex/domains/auth/setup";
 import { Separator } from "@repo/ui/registry/new-york-v4/ui/separator";
 import {
 	SidebarInset,
@@ -30,7 +30,7 @@ export default async function Layout({
 	convexClient.setAuth(token);
 
 	// Check if user has admin role
-	const hasAdminRole = await convexClient.query(api.queries.users.hasRole, {
+	const hasAdminRole = await convexClient.query(api.domains.users.queries.hasRole, {
 		role: "admin",
 	});
 

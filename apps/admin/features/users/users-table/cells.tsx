@@ -1,5 +1,7 @@
 import type { api } from "@repo/convex/_generated/api";
-import { authClient } from "@repo/convex/helpers/next/auth-client";
+import { createAuthClient } from "@repo/convex/helpers/auth-client";
+
+const authClient = createAuthClient(process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "");
 import { cn } from "@repo/ui/lib/utils";
 import { BanIcon, MoreHorizontalIcon } from "@repo/ui/registry/admin/icons";
 import { Badge } from "@repo/ui/registry/new-york-v4/ui/badge";
@@ -18,7 +20,7 @@ import Link from "next/link";
 import * as React from "react";
 import { BanUserDialog } from "../components/ban-user-dialog";
 
-type User = FunctionReturnType<typeof api.queries.users.listUsers>[number];
+type User = FunctionReturnType<typeof api.domains.users.queries.listUsers>[number];
 
 export function UserTableSelectHeaderCell({
 	isAllPageRowsSelected,

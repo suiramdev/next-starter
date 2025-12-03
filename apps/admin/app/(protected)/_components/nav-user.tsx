@@ -16,7 +16,7 @@ import {
 import { UserAvatar } from "@/features/users/components/user-avatar";
 
 type NavUserProps = {
-	preloadedQuery: Preloaded<typeof api.queries.users.getUser>;
+	preloadedQuery: Preloaded<typeof api.domains.users.queries.getUser>;
 };
 
 export function NavUser({ preloadedQuery }: NavUserProps) {

@@ -2,10 +2,10 @@
 
 import { v } from "convex/values";
 import { z } from "zod";
-import { components, internal } from "../_generated/api";
-import { action, internalAction } from "../_generated/server";
-import { authComponent } from "../auth";
-import { NotFoundError, UnauthorizedError } from "../utils/errors";
+import { components, internal } from "../../_generated/api";
+import { action, internalAction } from "../../_generated/server";
+import { authComponent } from "../auth/setup";
+import { NotFoundError, UnauthorizedError } from "../../shared/errors";
 
 export const getSpotifyAccessToken = internalAction({
 	args: {},
@@ -168,3 +168,4 @@ export const searchPlaylists = action({
 		return parsed.playlists.items.filter((item) => item !== null);
 	},
 });
+

@@ -1,6 +1,6 @@
 import { getToken } from "@convex-dev/better-auth/nextjs";
 import { api } from "@repo/convex/_generated/api";
-import { createAuth } from "@repo/convex/auth";
+import { createAuth } from "@repo/convex/domains/auth/setup";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -24,7 +24,7 @@ export default async function BreadcrumbSlot({ params }: BreadcrumbSlotProps) {
 	if (token) {
 		convexClient.setAuth(token);
 
-		user = await convexClient.query(api.queries.users.getUser, {
+		user = await convexClient.query(api.domains.users.queries.getUser, {
 			userId: id,
 		});
 	}

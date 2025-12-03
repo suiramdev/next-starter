@@ -17,12 +17,12 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 type RoomsTableProps = {
-	preloadedQuery: Preloaded<typeof api.queries.rooms.listRooms>;
+	preloadedQuery: Preloaded<typeof api.domains.rooms.queries.listRooms>;
 };
 
 export function RoomsTable({ preloadedQuery }: RoomsTableProps) {
 	const rooms = usePreloadedQuery(preloadedQuery);
-	const joinRoom = useMutation(api.mutations.rooms.joinRoom);
+	const joinRoom = useMutation(api.domains.rooms.mutations.joinRoom);
 	const router = useRouter();
 
 	const handleJoin = async (code: string | undefined) => {

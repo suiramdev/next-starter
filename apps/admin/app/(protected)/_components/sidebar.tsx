@@ -1,6 +1,6 @@
 import { getToken } from "@convex-dev/better-auth/nextjs";
 import { api } from "@repo/convex/_generated/api";
-import { createAuth } from "@repo/convex/auth";
+import { createAuth } from "@repo/convex/domains/auth/setup";
 import {
 	Sidebar as SidebarComponent,
 	SidebarContent,
@@ -13,7 +13,7 @@ import { NavUser } from "./nav-user";
 export async function Sidebar() {
 	const token = await getToken(createAuth);
 	const preloadedQuery = await preloadQuery(
-		api.queries.users.getUser,
+		api.domains.users.queries.getUser,
 		{},
 		{ token },
 	);

@@ -11,7 +11,7 @@ import {
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { authClient } from "../../../next/auth-client";
+import type { createAuthClient } from "../../auth-client";
 
 export const signInFormSchema = z.object({
 	email: z.email(),
@@ -24,12 +24,14 @@ type SignInFormProps = React.ComponentPropsWithoutRef<"form"> & {
 	onError?: (error: Error) => void;
 	onSuccess?: () => void;
 	enableAnonymousSignIn?: boolean;
+	authClient: ReturnType<typeof createAuthClient>;
 };
 
 export function SignInForm({
 	onSuccess,
 	onError,
 	enableAnonymousSignIn = false,
+	authClient,
 	...props
 }: SignInFormProps) {
 	const form = useForm<z.infer<typeof signInFormSchema>>({
@@ -146,3 +148,4 @@ export function SignInForm({
 		</Form>
 	);
 }
+

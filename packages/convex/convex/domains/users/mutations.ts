@@ -1,6 +1,6 @@
 import { v } from "convex/values";
-import { mutation } from "../_generated/server";
-import { authComponent, createAuth } from "../auth";
+import { mutation } from "../../_generated/server";
+import { authComponent, createAuth } from "../auth/setup";
 
 export const updateUser = mutation({
 	args: {
@@ -29,3 +29,4 @@ export const updateUser = mutation({
 		});
 	},
 });
+

@@ -10,7 +10,7 @@ import { useState } from "react";
 import { userTableColumns } from "./columns";
 
 type UsersTableProps = {
-	preloadedQuery: Preloaded<typeof api.queries.users.listUsers>;
+	preloadedQuery: Preloaded<typeof api.domains.users.queries.listUsers>;
 };
 
 export function UsersTable({ preloadedQuery }: UsersTableProps) {

@@ -11,55 +11,48 @@ import {
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { authClient } from "../../../next/auth-client";
+import type { createAuthClient } from "../../../auth-client";
 
-export const signUpFormSchema = z.object({
+export const signInFormSchema = z.object({
 	email: z.email(),
-	nickname: z
-		.string()
-		.min(1, { message: "Nickname must be at least 1 character long" }),
 	password: z
-		.string()
-		.min(8, { message: "Password must be at least 8 characters long" }),
-	confirmPassword: z
 		.string()
 		.min(8, { message: "Password must be at least 8 characters long" }),
 });
 
-type SignUpFormProps = React.ComponentPropsWithoutRef<"form"> & {
+type SignInFormProps = React.ComponentPropsWithoutRef<"form"> & {
 	onError?: (error: Error) => void;
 	onSuccess?: () => void;
+	enableAnonymousSignIn?: boolean;
+	authClient: ReturnType<typeof createAuthClient>;
 };
 
-export function SignUpForm({ onSuccess, onError, ...props }: SignUpFormProps) {
-	const form = useForm<z.infer<typeof signUpFormSchema>>({
-		resolver: zodResolver(signUpFormSchema),
+export function SignInForm({
+	onSuccess,
+	onError,
+	enableAnonymousSignIn = false,
+	authClient,
+	...props
+}: SignInFormProps) {
+	const form = useForm<z.infer<typeof signInFormSchema>>({
+		resolver: zodResolver(signInFormSchema),
 		defaultValues: {
 			email: "",
-			nickname: "",
 			password: "",
-			confirmPassword: "",
 		},
 	});
 
-	const onSubmit = async (values: z.infer<typeof signUpFormSchema>) => {
-		if (values.password !== values.confirmPassword) {
-			form.setError("confirmPassword", {
-				message: "Passwords do not match",
-			});
-			return;
-		}
-
-		await authClient.signUp.email({
+	const onSubmit = async (values: z.infer<typeof signInFormSchema>) => {
+		await authClient.signIn.email({
 			email: values.email,
 			password: values.password,
-			name: values.nickname,
 			fetchOptions: {
 				onError: ({ error }) => {
-					if (error.code === "USER_ALREADY_EXISTS") {
-						form.setError("email", {
-							message: "This email is already in use",
+					if (error.code === "INVALID_EMAIL_OR_PASSWORD") {
+						form.setError("root.serverError", {
+							message: "Invalid email or password",
 						});
+						form.resetField("password");
 					} else {
 						form.setError("root.serverError", {
 							...error,
@@ -68,9 +61,22 @@ export function SignUpForm({ onSuccess, onError, ...props }: SignUpFormProps) {
 						});
 					}
 
-					form.resetField("password");
-					form.resetField("confirmPassword");
+					onError?.(error);
+				},
+			},
+		});
 
+		onSuccess?.();
+	};
+
+	const handleAnonymousSignIn = async () => {
+		await authClient.signIn.anonymous({
+			fetchOptions: {
+				onError: ({ error }) => {
+					form.setError("root.serverError", {
+						...error,
+						message: error.message ?? "Something went wrong, please try again",
+					});
 					onError?.(error);
 				},
 			},
@@ -105,25 +111,6 @@ export function SignUpForm({ onSuccess, onError, ...props }: SignUpFormProps) {
 						/>
 						<FormField
 							control={form.control}
-							name="nickname"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Nickname</FormLabel>
-									<FormControl>
-										<Input
-											id="nickname"
-											type="text"
-											placeholder="Your nickname"
-											required
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
 							name="password"
 							render={({ field }) => (
 								<FormItem>
@@ -135,33 +122,27 @@ export function SignUpForm({ onSuccess, onError, ...props }: SignUpFormProps) {
 								</FormItem>
 							)}
 						/>
-						<FormField
-							control={form.control}
-							name="confirmPassword"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Confirm Password</FormLabel>
-									<FormControl>
-										<Input
-											id="confirmPassword"
-											type="password"
-											required
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+					</div>
+					<div className="flex flex-col gap-2">
+						<Button type="submit" className="w-full">
+							Sign in
+						</Button>
+						{enableAnonymousSignIn && (
+							<Button
+								type="button"
+								variant="outline"
+								className="w-full"
+								onClick={handleAnonymousSignIn}
+							>
+								Continue as guest
+							</Button>
+						)}
 						{form.formState.errors.root?.serverError && (
 							<FormMessage>
 								{form.formState.errors.root.serverError.message}
 							</FormMessage>
 						)}
 					</div>
-					<Button type="submit" className="w-full">
-						Sign up
-					</Button>
 				</div>
 			</form>
 		</Form>

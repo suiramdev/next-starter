@@ -21,7 +21,7 @@ import { toast } from "sonner";
 export function JoinRoomDialog() {
 	const [open, setOpen] = useState(false);
 	const [code, setCode] = useState("");
-	const joinRoom = useMutation(api.mutations.rooms.joinRoom);
+	const joinRoom = useMutation(api.domains.rooms.mutations.joinRoom);
 	const router = useRouter();
 
 	const handleJoin = async (e: React.FormEvent) => {

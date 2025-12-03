@@ -1,5 +1,7 @@
 import { api } from "@repo/convex/_generated/api";
-import { authClient } from "@repo/convex/helpers/next/auth-client";
+import { createAuthClient } from "@repo/convex/helpers/auth-client";
+
+const authClient = createAuthClient(process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "");
 import { LogOutIcon } from "@repo/ui/registry/admin/icons";
 import {
 	DropdownMenu,
@@ -25,7 +27,7 @@ export function CurrentUserDropdown({
 	const { data: session } = authClient.useSession();
 	const router = useRouter();
 
-	const hasSpotifyAccount = useQuery(api.queries.spotify.hasSpotifyAccount);
+	const hasSpotifyAccount = useQuery(api.domains.spotify.queries.hasSpotifyAccount);
 
 	const handleSignOut = () => {
 		authClient.signOut({

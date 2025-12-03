@@ -52,7 +52,7 @@ export function SpotifyPlaylistSelector({
 	const triggerRef = useRef<HTMLButtonElement>(null);
 	const triggerSize = useSize(triggerRef.current);
 
-	const searchPlaylists = useConvexAction(api.actions.spotify.searchPlaylists);
+	const searchPlaylists = useConvexAction(api.domains.spotify.actions.searchPlaylists);
 	const {
 		data: playlists,
 		mutate,

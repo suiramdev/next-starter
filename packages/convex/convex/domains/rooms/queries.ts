@@ -1,7 +1,7 @@
 import { v } from "convex/values";
-import { query } from "../_generated/server";
-import { authComponent } from "../auth";
-import { NotFoundError, UnauthorizedError } from "../utils/errors";
+import { query } from "../../_generated/server";
+import { authComponent } from "../auth/setup";
+import { NotFoundError, UnauthorizedError } from "../../shared/errors";
 
 export const listRooms = query({
 	args: {},
@@ -120,3 +120,4 @@ export const getRoom = query({
 		};
 	},
 });
+

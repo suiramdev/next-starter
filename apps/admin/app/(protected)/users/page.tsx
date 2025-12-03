@@ -3,7 +3,7 @@ import { preloadQuery } from "convex/nextjs";
 import { UsersTable } from "@/features/users/users-table";
 
 export default async function UsersPage() {
-	const listUsersQuery = await preloadQuery(api.queries.users.listUsers);
+	const listUsersQuery = await preloadQuery(api.domains.users.queries.listUsers);
 
 	return (
 		<section>

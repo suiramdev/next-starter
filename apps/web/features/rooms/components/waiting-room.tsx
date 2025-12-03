@@ -2,7 +2,12 @@
 
 import { api } from "@repo/convex/_generated/api";
 import type { Id } from "@repo/convex/_generated/dataModel";
-import { authClient } from "@repo/convex/helpers/next/auth-client";
+import { createAuthClient } from "@repo/convex/helpers/auth-client";
+
+const authClient = createAuthClient(
+	process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "",
+);
+
 import { Badge } from "@repo/ui/registry/new-york-v4/ui/badge";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import {
@@ -35,11 +40,11 @@ interface WaitingRoomProps {
 }
 
 export function WaitingRoom({ roomId }: WaitingRoomProps) {
-	const room = useQuery(api.queries.rooms.getRoom, { roomId });
-	const startGame = useMutation(api.mutations.rooms.start);
-	const leaveRoom = useMutation(api.mutations.rooms.leaveRoom);
-	const updateRoom = useMutation(api.mutations.rooms.updateRoom);
-	const kickUser = useMutation(api.mutations.rooms.kickUser);
+	const room = useQuery(api.domains.rooms.queries.getRoom, { roomId });
+	const startGame = useMutation(api.domains.rooms.mutations.start);
+	const leaveRoom = useMutation(api.domains.rooms.mutations.leaveRoom);
+	const updateRoom = useMutation(api.domains.rooms.mutations.updateRoom);
+	const kickUser = useMutation(api.domains.rooms.mutations.kickUser);
 	const { data: session } = authClient.useSession();
 	const router = useRouter();
 

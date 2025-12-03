@@ -10,7 +10,7 @@ import {
 	UserTableStatusCell,
 } from "./cells";
 
-type User = FunctionReturnType<typeof api.queries.users.listUsers>[number];
+type User = FunctionReturnType<typeof api.domains.users.queries.listUsers>[number];
 
 export const userTableColumns: ColumnDef<User>[] = [
 	{

@@ -1,11 +1,11 @@
 import { v } from "convex/values";
-import { mutation } from "../_generated/server";
-import { authComponent } from "../auth";
+import { mutation } from "../../_generated/server";
+import { authComponent } from "../auth/setup";
 import {
 	ForbiddenError,
 	NotFoundError,
 	UnauthorizedError,
-} from "../utils/errors";
+} from "../../shared/errors";
 
 export const createRoom = mutation({
 	args: {
@@ -239,3 +239,4 @@ export const leaveRoom = mutation({
 		}
 	},
 });
+

@@ -1,7 +1,9 @@
 "use client";
 
 import { api } from "@repo/convex/_generated/api";
-import { authClient } from "@repo/convex/helpers/next/auth-client";
+import { createAuthClient } from "@repo/convex/helpers/auth-client";
+
+const authClient = createAuthClient(process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "");
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import {
 	Dialog,
@@ -49,8 +51,8 @@ export function CreateRoomDialog() {
 		},
 	});
 
-	const createRoom = useMutation(api.mutations.rooms.createRoom);
-	const hasSpotifyAccount = useQuery(api.queries.spotify.hasSpotifyAccount);
+	const createRoom = useMutation(api.domains.rooms.mutations.createRoom);
+	const hasSpotifyAccount = useQuery(api.domains.spotify.queries.hasSpotifyAccount);
 	const router = useRouter();
 
 	const handleOpenChange = (isOpen: boolean) => {

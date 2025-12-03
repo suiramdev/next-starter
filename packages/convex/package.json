@@ -15,28 +15,24 @@
 			"types": "./convex/_generated/dataModel.d.ts",
 			"default": "./convex/_generated/dataModel.js"
 		},
-		"./auth": {
-			"types": "./convex/auth.ts",
-			"default": "./convex/auth.ts"
+		"./helpers/auth-client": {
+			"types": "./src/helpers/auth-client.ts",
+			"default": "./src/helpers/auth-client.ts"
 		},
-		"./helpers/next/auth-client": {
-			"types": "./convex/helpers/next/auth-client.ts",
-			"default": "./convex/helpers/next/auth-client.ts"
+		"./helpers/react/components/sign-in-form": {
+			"types": "./src/helpers/react/components/sign-in-form.tsx",
+			"default": "./src/helpers/react/components/sign-in-form.tsx"
 		},
-		"./helpers/react/components/forms/sign-in-form": {
-			"types": "./convex/helpers/react/components/forms/sign-in-form.tsx",
-			"default": "./convex/helpers/react/components/forms/sign-in-form.tsx"
-		},
-		"./helpers/react/components/forms/sign-up-form": {
-			"types": "./convex/helpers/react/components/forms/sign-up-form.tsx",
-			"default": "./convex/helpers/react/components/forms/sign-up-form.tsx"
+		"./helpers/react/components/sign-up-form": {
+			"types": "./src/helpers/react/components/sign-up-form.tsx",
+			"default": "./src/helpers/react/components/sign-up-form.tsx"
 		}
 	},
 	"scripts": {
 		"dev": "convex dev",
 		"deploy": "convex deploy",
 		"db:reset": "bash scripts/reset-data.sh",
-		"auth:generate": "cd convex/betterAuth && npx @better-auth/cli generate -y --output ./generatedSchema.ts"
+		"auth:generate": "cd convex/domains/auth/betterAuth && npx @better-auth/cli generate -y --output ./generatedSchema.ts"
 	},
 	"dependencies": {
 		"@convex-dev/better-auth": "^0.9.7",

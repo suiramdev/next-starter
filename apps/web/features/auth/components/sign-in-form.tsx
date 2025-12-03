@@ -1,7 +1,10 @@
 "use client";
 
-import { SignInForm as Form } from "@repo/convex/helpers/react/components/forms/sign-in-form";
+import { createAuthClient } from "@repo/convex/helpers/auth-client";
+import { SignInForm as Form } from "@repo/convex/helpers/react/components/sign-in-form";
 import { useRouter } from "next/navigation";
+
+const authClient = createAuthClient(process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "");
 
 export function SignInForm() {
 	const router = useRouter();
@@ -10,5 +13,7 @@ export function SignInForm() {
 		router.push("/");
 	};
 
-	return <Form enableAnonymousSignIn onSuccess={handleSuccess} />;
+	return (
+		<Form enableAnonymousSignIn onSuccess={handleSuccess} authClient={authClient} />
+	);
 }

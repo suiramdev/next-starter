@@ -1,8 +1,8 @@
-import { NotFoundError, UnauthorizedError } from "convex/utils/errors";
 import { v } from "convex/values";
-import { components } from "../_generated/api";
-import { query } from "../_generated/server";
-import { authComponent } from "../auth";
+import { components } from "../../_generated/api";
+import { query } from "../../_generated/server";
+import { NotFoundError, UnauthorizedError } from "../../shared/errors";
+import { authComponent } from "../auth/setup";
 
 export const listUsers = query({
 	args: {},

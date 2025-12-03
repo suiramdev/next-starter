@@ -5,7 +5,7 @@ import { JoinRoomDialog } from "@/features/lobby/components/join-room-dialog";
 import { RoomsTable } from "@/features/lobby/components/rooms-table";
 
 export default async function LobbyPage() {
-	const listRoomsQuery = await preloadQuery(api.queries.rooms.listRooms);
+	const listRoomsQuery = await preloadQuery(api.domains.rooms.queries.listRooms);
 
 	return (
 		<div className="container mx-auto w-full space-y-8 py-8">
