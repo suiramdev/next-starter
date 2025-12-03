@@ -2,11 +2,7 @@
 
 import { api } from "@repo/convex/_generated/api";
 import type { Id } from "@repo/convex/_generated/dataModel";
-import { createAuthClient } from "@repo/convex/helpers/auth-client";
-
-const authClient = createAuthClient(
-	process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "",
-);
+import { authClient } from "@/lib/auth-client";
 
 import { Badge } from "@repo/ui/registry/new-york-v4/ui/badge";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";

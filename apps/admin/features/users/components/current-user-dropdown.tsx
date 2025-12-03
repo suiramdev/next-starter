@@ -1,7 +1,5 @@
-import { createAuthClient } from "@repo/convex/helpers/auth-client";
-
-const authClient = createAuthClient(process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "");
 import { LogOutIcon } from "@repo/ui/registry/admin/icons";
+import { authClient } from "@/lib/auth-client";
 import {
 	DropdownMenu,
 	DropdownMenuContent,

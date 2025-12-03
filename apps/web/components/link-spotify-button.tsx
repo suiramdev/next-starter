@@ -1,9 +1,7 @@
 "use client";
 
-import { createAuthClient } from "@repo/convex/helpers/auth-client";
-
-const authClient = createAuthClient(process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "");
 import { cn } from "@repo/ui/lib/utils";
+import { authClient } from "@/lib/auth-client";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import { SpotifyIcon } from "@repo/ui/registry/web/icons";
 

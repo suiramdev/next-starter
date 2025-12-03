@@ -1,10 +1,8 @@
 "use client";
 
-import { createAuthClient } from "@repo/convex/helpers/auth-client";
 import { SignInForm as Form } from "@repo/convex/helpers/react/components/sign-in-form";
 import { useRouter } from "next/navigation";
-
-const authClient = createAuthClient(process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "");
+import { authClient } from "@/lib/auth-client";
 
 export function SignInForm() {
 	const router = useRouter();

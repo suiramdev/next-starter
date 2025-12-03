@@ -1,8 +1,6 @@
 import type { api } from "@repo/convex/_generated/api";
-import { createAuthClient } from "@repo/convex/helpers/auth-client";
-
-const authClient = createAuthClient(process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "");
 import { cn } from "@repo/ui/lib/utils";
+import { authClient } from "@/lib/auth-client";
 import { BanIcon, MoreHorizontalIcon } from "@repo/ui/registry/admin/icons";
 import { Badge } from "@repo/ui/registry/new-york-v4/ui/badge";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";

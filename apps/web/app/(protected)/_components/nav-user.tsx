@@ -1,9 +1,7 @@
 "use client";
 
-import { createAuthClient } from "@repo/convex/helpers/auth-client";
-
-const authClient = createAuthClient(process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "");
 import { Skeleton } from "@repo/ui/registry/new-york-v4/ui/skeleton";
+import { authClient } from "@/lib/auth-client";
 import {
 	CurrentUserDropdown,
 	CurrentUserDropdownTrigger,
