@@ -94,7 +94,7 @@ export function RoomsList({ preloadedQuery }: RoomsListProps) {
 										</div>
 									) : (
 										<span className="text-muted-foreground">
-											Choosing a playlist...
+											Host is choosing a playlist...
 										</span>
 									)}
 								</TableCell>
