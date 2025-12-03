@@ -1,9 +1,9 @@
 {
 	"extends": "@repo/typescript-config/base.json",
 	"compilerOptions": {
+		"jsx": "react-jsx",
 		"outDir": "dist",
-		"rootDir": "convex",
 		"baseUrl": "."
 	},
-	"include": ["convex/**/*"]
+	"include": ["convex", "src"]
 }

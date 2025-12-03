@@ -15,6 +15,10 @@
 			"types": "./convex/_generated/dataModel.d.ts",
 			"default": "./convex/_generated/dataModel.js"
 		},
+		"./domains/auth/setup": {
+			"types": "./convex/domains/auth/setup.ts",
+			"default": "./convex/domains/auth/setup.ts"
+		},
 		"./helpers/auth-client": {
 			"types": "./src/helpers/auth-client.ts",
 			"default": "./src/helpers/auth-client.ts"

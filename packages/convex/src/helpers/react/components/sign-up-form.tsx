@@ -1,15 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@repo/ui/registry/new-york-v4/ui/form";
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from "@repo/ui/registry/new-york-v4/ui/field";
+import { Form } from "@repo/ui/registry/new-york-v4/ui/form";
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import type { createAuthClient } from "../../auth-client";
 
@@ -61,7 +60,7 @@ export function SignUpForm({
 			password: values.password,
 			name: values.nickname,
 			fetchOptions: {
-				onError: ({ error }: { error: Error }) => {
+				onError: ({ error }) => {
 					if (error.code === "USER_ALREADY_EXISTS") {
 						form.setError("email", {
 							message: "This email is already in use",
@@ -89,82 +88,93 @@ export function SignUpForm({
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} {...props}>
 				<div className="flex flex-col gap-6">
-					<div className="grid gap-2">
-						<FormField
-							control={form.control}
+					<FieldGroup>
+						<Controller
 							name="email"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Email</FormLabel>
-									<FormControl>
-										<Input
-											id="email"
-											type="email"
-											placeholder="your@email.com"
-											required
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor="email">Email</FieldLabel>
+									<Input
+										{...field}
+										id="email"
+										type="email"
+										placeholder="your@email.com"
+										required
+										aria-invalid={fieldState.invalid}
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
 							)}
 						/>
-						<FormField
-							control={form.control}
+						<Controller
 							name="nickname"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Nickname</FormLabel>
-									<FormControl>
-										<Input
-											id="nickname"
-											type="text"
-											placeholder="Your nickname"
-											required
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor="nickname">Nickname</FieldLabel>
+									<Input
+										{...field}
+										id="nickname"
+										type="text"
+										placeholder="Your nickname"
+										required
+										aria-invalid={fieldState.invalid}
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
 							)}
 						/>
-						<FormField
-							control={form.control}
+						<Controller
 							name="password"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Password</FormLabel>
-									<FormControl>
-										<Input id="password" type="password" required {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor="password">Password</FieldLabel>
+									<Input
+										{...field}
+										id="password"
+										type="password"
+										required
+										aria-invalid={fieldState.invalid}
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
 							)}
 						/>
-						<FormField
-							control={form.control}
+						<Controller
 							name="confirmPassword"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Confirm Password</FormLabel>
-									<FormControl>
-										<Input
-											id="confirmPassword"
-											type="password"
-											required
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor="confirmPassword">
+										Confirm Password
+									</FieldLabel>
+									<Input
+										{...field}
+										id="confirmPassword"
+										type="password"
+										required
+										aria-invalid={fieldState.invalid}
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
 							)}
 						/>
 						{form.formState.errors.root?.serverError && (
-							<FormMessage>
+							<FieldError>
 								{form.formState.errors.root.serverError.message}
-							</FormMessage>
+							</FieldError>
 						)}
-					</div>
+					</FieldGroup>
 					<Button type="submit" className="w-full">
 						Sign up
 					</Button>
@@ -173,4 +183,3 @@ export function SignUpForm({
 		</Form>
 	);
 }
-

@@ -30,9 +30,12 @@ export default async function Layout({
 	convexClient.setAuth(token);
 
 	// Check if user has admin role
-	const hasAdminRole = await convexClient.query(api.domains.users.queries.hasRole, {
-		role: "admin",
-	});
+	const hasAdminRole = await convexClient.query(
+		api.domains.users.queries.hasRole,
+		{
+			role: "admin",
+		},
+	);
 
 	if (!hasAdminRole) {
 		redirect("/sign-in");

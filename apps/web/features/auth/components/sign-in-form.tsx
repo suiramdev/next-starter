@@ -12,6 +12,11 @@ export function SignInForm() {
 	};
 
 	return (
-		<Form enableAnonymousSignIn onSuccess={handleSuccess} authClient={authClient} />
+		<Form
+			authClient={authClient}
+			onSuccess={handleSuccess}
+			providers={["spotify"]}
+			anonymousSignIn
+		/>
 	);
 }

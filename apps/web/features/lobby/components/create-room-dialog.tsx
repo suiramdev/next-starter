@@ -2,7 +2,6 @@
 
 import { api } from "@repo/convex/_generated/api";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
-import { authClient } from "@/lib/auth-client";
 import {
 	Dialog,
 	DialogContent,
@@ -13,19 +12,20 @@ import {
 	DialogTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/dialog";
 import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-} from "@repo/ui/registry/new-york-v4/ui/form";
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from "@repo/ui/registry/new-york-v4/ui/field";
+import { Form } from "@repo/ui/registry/new-york-v4/ui/form";
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
 import { Switch } from "@repo/ui/registry/new-york-v4/ui/switch";
 import { useMutation, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { authClient } from "@/lib/auth-client";
 import { LinkSpotifyButton } from "../../../components/link-spotify-button";
 import { SpotifyPlaylistSelector } from "../../../components/spotify-playlist-selector";
 
@@ -40,6 +40,7 @@ interface CreateRoomFormValues {
 export function CreateRoomDialog() {
 	const session = authClient.useSession();
 	const [open, setOpen] = useState(false);
+	const router = useRouter();
 
 	const form = useForm<CreateRoomFormValues>({
 		defaultValues: {
@@ -50,8 +51,9 @@ export function CreateRoomDialog() {
 	});
 
 	const createRoom = useMutation(api.domains.rooms.mutations.createRoom);
-	const hasSpotifyAccount = useQuery(api.domains.spotify.queries.hasSpotifyAccount);
-	const router = useRouter();
+	const hasSpotifyAccount = useQuery(
+		api.domains.spotify.queries.hasSpotifyAccount,
+	);
 
 	const handleOpenChange = (isOpen: boolean) => {
 		if (isOpen && !form.getValues("name")) {
@@ -96,41 +98,52 @@ export function CreateRoomDialog() {
 				</DialogHeader>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-						<FormField
-							control={form.control}
-							name="name"
-							rules={{ required: true }}
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Room Name</FormLabel>
-									<FormControl>
-										<Input placeholder="My Awesome Room" {...field} />
-									</FormControl>
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="isPrivate"
-							render={({ field }) => (
-								<FormItem className="flex items-center justify-between space-x-2">
-									<FormLabel>Private Room</FormLabel>
-									<FormControl>
+						<FieldGroup>
+							<Controller
+								name="name"
+								control={form.control}
+								render={({ field, fieldState }) => (
+									<Field data-invalid={fieldState.invalid}>
+										<FieldLabel htmlFor="room-name">Room Name</FieldLabel>
+										<Input
+											{...field}
+											id="room-name"
+											placeholder="My Awesome Room"
+											aria-invalid={fieldState.invalid}
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
+							/>
+							<Controller
+								name="isPrivate"
+								control={form.control}
+								render={({ field, fieldState }) => (
+									<Field
+										data-invalid={fieldState.invalid}
+										orientation="horizontal"
+									>
+										<FieldLabel htmlFor="is-private">Private Room</FieldLabel>
 										<Switch
+											id="is-private"
 											checked={field.value}
 											onCheckedChange={field.onChange}
+											aria-invalid={fieldState.invalid}
 										/>
-									</FormControl>
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="playlistId"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Playlist</FormLabel>
-									<FormControl>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
+							/>
+							<Controller
+								name="playlistId"
+								control={form.control}
+								render={({ field, fieldState }) => (
+									<Field data-invalid={fieldState.invalid}>
+										<FieldLabel htmlFor="playlist">Playlist</FieldLabel>
 										{hasSpotifyAccount ? (
 											<SpotifyPlaylistSelector
 												value={field.value}
@@ -139,6 +152,7 @@ export function CreateRoomDialog() {
 													form.setValue("playlistName", name);
 													form.setValue("playlistImage", image);
 												}}
+												id="playlist"
 											/>
 										) : (
 											<div className="flex flex-col gap-2">
@@ -149,10 +163,13 @@ export function CreateRoomDialog() {
 												<LinkSpotifyButton className="w-full" />
 											</div>
 										)}
-									</FormControl>
-								</FormItem>
-							)}
-						/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
+							/>
+						</FieldGroup>
 						<DialogFooter>
 							<Button type="submit">Create</Button>
 						</DialogFooter>

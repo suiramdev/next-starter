@@ -1,6 +1,5 @@
 import { api } from "@repo/convex/_generated/api";
 import { LogOutIcon } from "@repo/ui/registry/admin/icons";
-import { authClient } from "@/lib/auth-client";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -12,6 +11,7 @@ import {
 import { SpotifyIcon } from "@repo/ui/registry/web/icons";
 import { useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 import { UserAvatar } from "./user-avatar";
 
 export type CurrentUserDropdownProps = React.ComponentProps<
@@ -25,7 +25,10 @@ export function CurrentUserDropdown({
 	const { data: session } = authClient.useSession();
 	const router = useRouter();
 
-	const hasSpotifyAccount = useQuery(api.domains.spotify.queries.hasSpotifyAccount);
+	const hasSpotifyAccount = useQuery(
+		api.domains.spotify.queries.hasSpotifyAccount,
+	);
+	console.log("hasSpotifyAccount", hasSpotifyAccount);
 
 	const handleSignOut = () => {
 		authClient.signOut({

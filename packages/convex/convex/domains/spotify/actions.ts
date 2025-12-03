@@ -4,8 +4,8 @@ import { v } from "convex/values";
 import { z } from "zod";
 import { components, internal } from "../../_generated/api";
 import { action, internalAction } from "../../_generated/server";
-import { authComponent } from "../auth/setup";
 import { NotFoundError, UnauthorizedError } from "../../shared/errors";
+import { authComponent } from "../auth/setup";
 
 export const getSpotifyAccessToken = internalAction({
 	args: {},
@@ -144,7 +144,7 @@ export const searchPlaylists = action({
 		}
 
 		const accessToken = await ctx.runAction(
-			internal.actions.spotify.getSpotifyAccessToken,
+			internal.domains.spotify.actions.getSpotifyAccessToken,
 		);
 
 		const response = await fetch(
@@ -168,4 +168,3 @@ export const searchPlaylists = action({
 		return parsed.playlists.items.filter((item) => item !== null);
 	},
 });
-

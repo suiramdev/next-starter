@@ -22,4 +22,3 @@ export function createAuthClient(baseURL: string) {
 		plugins: [convexClient(), adminClient(), anonymousClient()],
 	});
 }
-
