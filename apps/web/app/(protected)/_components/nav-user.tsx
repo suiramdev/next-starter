@@ -1,12 +1,12 @@
 "use client";
 
 import { Skeleton } from "@repo/ui/registry/new-york-v4/ui/skeleton";
-import { authClient } from "@/lib/auth-client";
 import {
 	CurrentUserDropdown,
 	CurrentUserDropdownTrigger,
 } from "@/features/users/components/current-user-dropdown";
 import { UserAvatar } from "@/features/users/components/user-avatar";
+import { authClient } from "@/lib/auth-client";
 
 export function NavUser() {
 	const { data: session } = authClient.useSession();
@@ -15,7 +15,7 @@ export function NavUser() {
 
 	return (
 		<CurrentUserDropdown>
-			<CurrentUserDropdownTrigger>
+			<CurrentUserDropdownTrigger className="cursor-pointer">
 				<UserAvatar
 					user={{
 						image: session.user.image,
