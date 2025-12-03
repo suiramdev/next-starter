@@ -2,14 +2,16 @@ import { api } from "@repo/convex/_generated/api";
 import { preloadQuery } from "convex/nextjs";
 import { CreateRoomDialog } from "@/features/lobby/components/create-room-dialog";
 import { JoinRoomDialog } from "@/features/lobby/components/join-room-dialog";
-import { RoomsTable } from "@/features/lobby/components/rooms-table";
+import { RoomsList } from "@/features/lobby/components/rooms-list";
 
 export default async function LobbyPage() {
-	const listRoomsQuery = await preloadQuery(api.domains.rooms.queries.listRooms);
+	const listRoomsQuery = await preloadQuery(
+		api.domains.rooms.queries.listRooms,
+	);
 
 	return (
-		<div className="container mx-auto w-full space-y-8 py-8">
-			<div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+		<div className="container mx-auto flex h-full w-full flex-col space-y-8 overflow-auto py-8">
+			<div className="flex flex-col justify-between gap-4 md:flex-row">
 				<div>
 					<h1 className="font-bold text-3xl tracking-tight">Game Lobby</h1>
 					<p className="mt-1 text-muted-foreground">
@@ -21,7 +23,7 @@ export default async function LobbyPage() {
 					<CreateRoomDialog />
 				</div>
 			</div>
-			<RoomsTable preloadedQuery={listRoomsQuery} />
+			<RoomsList preloadedQuery={listRoomsQuery} />
 		</div>
 	);
 }
