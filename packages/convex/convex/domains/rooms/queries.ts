@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { query } from "../../_generated/server";
-import { authComponent } from "../auth/setup";
 import { NotFoundError, UnauthorizedError } from "../../shared/errors";
+import { authComponent } from "../auth/setup";
 
 export const listRooms = query({
 	args: {},
@@ -71,10 +71,12 @@ export const getRoom = query({
 			v.literal("playing"),
 			v.literal("finished"),
 		),
+		hostId: v.string(),
 		code: v.optional(v.string()),
 		playlistId: v.optional(v.string()),
 		playlistName: v.optional(v.string()),
 		playlistImage: v.optional(v.string()),
+		playlistAuthor: v.optional(v.union(v.string(), v.null())),
 		players: v.array(
 			v.object({
 				_id: v.id("players"),
@@ -109,9 +111,11 @@ export const getRoom = query({
 			// Omit the code if the room is private and the user is not a player
 			code: !room.isPrivate || isPlayer ? room.code : undefined,
 			status: room.status,
+			hostId: room.hostId,
 			playlistId: room.playlistId,
 			playlistName: room.playlistName,
 			playlistImage: room.playlistImage,
+			playlistAuthor: room.playlistAuthor,
 			players: players.map((player) => ({
 				_id: player._id,
 				userId: player.userId,
@@ -120,4 +124,3 @@ export const getRoom = query({
 		};
 	},
 });
-

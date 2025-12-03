@@ -18,11 +18,7 @@ import {
 	PopoverTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/popover";
 import { Spinner } from "@repo/ui/registry/new-york-v4/ui/spinner";
-import {
-	ChevronsUpDownIcon,
-	DiscIcon,
-	MusicIcon,
-} from "@repo/ui/registry/web/icons";
+import { ChevronsUpDownIcon, DiscIcon } from "@repo/ui/registry/web/icons";
 import { useMutation } from "@tanstack/react-query";
 import Image from "next/image";
 import { useCallback, useRef, useState } from "react";
@@ -38,7 +34,12 @@ interface SpotifyPlaylist {
 
 interface SpotifyPlaylistSelectorProps {
 	value?: string;
-	onValueChange?: (value: string, name?: string, image?: string) => void;
+	onValueChange?: (
+		value: string,
+		name?: string,
+		image?: string,
+		author?: string | null,
+	) => void;
 	id?: string;
 }
 
@@ -52,7 +53,9 @@ export function SpotifyPlaylistSelector({
 	const triggerRef = useRef<HTMLButtonElement>(null);
 	const triggerSize = useSize(triggerRef.current);
 
-	const searchPlaylists = useConvexAction(api.domains.spotify.actions.searchPlaylists);
+	const searchPlaylists = useConvexAction(
+		api.domains.spotify.actions.searchPlaylists,
+	);
 	const {
 		data: playlists,
 		mutate,
@@ -70,7 +73,12 @@ export function SpotifyPlaylistSelector({
 	const handleSelect = useCallback(
 		(playlist: SpotifyPlaylist) => {
 			setSelectedPlaylist(playlist);
-			onValueChange?.(playlist.id, playlist.name, playlist.images[0]?.url);
+			onValueChange?.(
+				playlist.id,
+				playlist.name,
+				playlist.images[0]?.url,
+				playlist.owner?.display_name ?? null,
+			);
 			setOpen(false);
 		},
 		[onValueChange],

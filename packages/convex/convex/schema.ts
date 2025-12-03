@@ -15,6 +15,7 @@ export default defineSchema({
 		playlistId: v.optional(v.string()),
 		playlistName: v.optional(v.string()),
 		playlistImage: v.optional(v.string()),
+		playlistAuthor: v.optional(v.union(v.string(), v.null())),
 	})
 		.index("by_status", ["status"])
 		.index("by_code_and_status", ["code", "status"]),

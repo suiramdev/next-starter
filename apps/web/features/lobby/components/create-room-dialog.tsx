@@ -35,6 +35,7 @@ interface CreateRoomFormValues {
 	playlistId?: string;
 	playlistName?: string;
 	playlistImage?: string;
+	playlistAuthor?: string | null;
 }
 
 export function CreateRoomDialog() {
@@ -73,6 +74,7 @@ export function CreateRoomDialog() {
 				playlistId: data.playlistId,
 				playlistName: data.playlistName,
 				playlistImage: data.playlistImage,
+				playlistAuthor: data.playlistAuthor,
 			});
 			setOpen(false);
 			form.reset();
@@ -147,10 +149,11 @@ export function CreateRoomDialog() {
 										{hasSpotifyAccount ? (
 											<SpotifyPlaylistSelector
 												value={field.value}
-												onValueChange={(id, name, image) => {
+												onValueChange={(id, name, image, author) => {
 													field.onChange(id);
 													form.setValue("playlistName", name);
 													form.setValue("playlistImage", image);
+													form.setValue("playlistAuthor", author);
 												}}
 												id="playlist"
 											/>

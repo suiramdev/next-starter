@@ -42,20 +42,6 @@ export function RoomPreview({ roomId }: RoomPreviewProps) {
 		);
 	}
 
-	const statusLabel =
-		room.status === "waiting"
-			? "Waiting for players"
-			: room.status === "playing"
-				? "Game in progress"
-				: "Game finished";
-
-	const statusColor =
-		room.status === "waiting"
-			? "text-amber-500"
-			: room.status === "playing"
-				? "text-emerald-500"
-				: "text-muted-foreground";
-
 	return (
 		<div className="flex h-full flex-col">
 			<div className="flex-1 space-y-6 overflow-y-auto">
@@ -79,7 +65,7 @@ export function RoomPreview({ roomId }: RoomPreviewProps) {
 							<div className="flex-1 overflow-hidden">
 								<p className="truncate font-medium">{room.playlistName}</p>
 								<p className="text-muted-foreground text-sm">
-									Spotify Playlist
+									{room.playlistAuthor ?? "Unknown"}
 								</p>
 							</div>
 						</div>
@@ -145,7 +131,6 @@ export function RoomPreview({ roomId }: RoomPreviewProps) {
 					size="lg"
 					disabled={room.status !== "waiting" || !room.code}
 				>
-					<LogInIcon className="size-4" />
 					{room.status === "waiting" ? "Join Room" : "Game in Progress"}
 				</Button>
 			</div>

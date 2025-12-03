@@ -1,11 +1,11 @@
 import { v } from "convex/values";
 import { mutation } from "../../_generated/server";
-import { authComponent } from "../auth/setup";
 import {
 	ForbiddenError,
 	NotFoundError,
 	UnauthorizedError,
 } from "../../shared/errors";
+import { authComponent } from "../auth/setup";
 
 export const createRoom = mutation({
 	args: {
@@ -14,6 +14,7 @@ export const createRoom = mutation({
 		playlistId: v.optional(v.string()),
 		playlistName: v.optional(v.string()),
 		playlistImage: v.optional(v.string()),
+		playlistAuthor: v.optional(v.union(v.string(), v.null())),
 	},
 	handler: async (ctx, args) => {
 		const user = await authComponent.safeGetAuthUser(ctx);
@@ -31,6 +32,7 @@ export const createRoom = mutation({
 			playlistId: args.playlistId,
 			playlistName: args.playlistName,
 			playlistImage: args.playlistImage,
+			playlistAuthor: args.playlistAuthor,
 		});
 
 		await ctx.db.insert("players", {
@@ -239,4 +241,3 @@ export const leaveRoom = mutation({
 		}
 	},
 });
-

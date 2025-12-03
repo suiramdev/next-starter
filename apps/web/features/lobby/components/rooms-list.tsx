@@ -118,8 +118,7 @@ export function RoomsList({ preloadedQuery }: RoomsListProps) {
 								</TableCell>
 								<TableCell className="text-right">
 									<Button onClick={(e) => handleJoin(e, room.code)}>
-										<LogInIcon className="h-4 w-4" />
-										Play
+										Join
 									</Button>
 								</TableCell>
 							</TableRow>

@@ -14,7 +14,6 @@ import {
 	DropdownMenuTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/dropdown-menu";
 import {
-	BanIcon,
 	CrownIcon,
 	MoreHorizontalIcon,
 	UserXIcon,
@@ -32,7 +31,6 @@ interface PlayerListProps {
 	currentUserId?: string;
 	hostId: string;
 	onKick: (userId: string) => void;
-	onBan: (userId: string) => void;
 }
 
 export function PlayerList({
@@ -40,7 +38,6 @@ export function PlayerList({
 	currentUserId,
 	hostId,
 	onKick,
-	onBan,
 }: PlayerListProps) {
 	return (
 		<div className="space-y-4">
@@ -97,13 +94,6 @@ export function PlayerList({
 										>
 											<UserXIcon className="mr-2 size-4" />
 											Kick
-										</DropdownMenuItem>
-										<DropdownMenuItem
-											onClick={() => onBan(player.userId)}
-											className="text-destructive"
-										>
-											<BanIcon className="mr-2 size-4" />
-											Ban
 										</DropdownMenuItem>
 									</DropdownMenuContent>
 								</DropdownMenu>
