@@ -1,6 +1,6 @@
 "use client";
 
-import { SignInForm as Form } from "@repo/auth/helpers/react/components/forms/sign-in-form";
+import { SignInForm as Form } from "@repo/convex/helpers/react/components/forms/sign-in-form";
 import { useRouter } from "next/navigation";
 
 export function SignInForm() {

@@ -11,7 +11,7 @@ import {
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { authClient } from "#src/helpers/react/client";
+import { authClient } from "../../../next/auth-client";
 
 export const signUpFormSchema = z.object({
 	email: z.email(),

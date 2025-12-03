@@ -1,5 +1,5 @@
-import { authClient } from "@repo/auth/helpers/react/client";
 import { api } from "@repo/convex/_generated/api";
+import { authClient } from "@repo/convex/helpers/next/auth-client";
 import { LogOutIcon } from "@repo/ui/registry/admin/icons";
 import {
 	DropdownMenu,

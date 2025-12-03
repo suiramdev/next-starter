@@ -1,11 +1,7 @@
-import { authClient } from "@repo/auth/helpers/react/client";
 import type { api } from "@repo/convex/_generated/api";
+import { authClient } from "@repo/convex/helpers/next/auth-client";
 import { cn } from "@repo/ui/lib/utils";
-import {
-	BanIcon,
-	MoreHorizontalIcon,
-	TrashIcon,
-} from "@repo/ui/registry/admin/icons";
+import { BanIcon, MoreHorizontalIcon } from "@repo/ui/registry/admin/icons";
 import { Badge } from "@repo/ui/registry/new-york-v4/ui/badge";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import { Checkbox } from "@repo/ui/registry/new-york-v4/ui/checkbox";

@@ -14,7 +14,6 @@
 		"@convex-dev/react-query": "^0.1.0",
 		"@hookform/resolvers": "^5.2.2",
 		"@radix-ui/react-use-size": "^1.1.1",
-		"@repo/auth": "workspace:^",
 		"@repo/convex": "workspace:^",
 		"@repo/ui": "workspace:*",
 		"@tanstack/react-query": "^5.90.10",

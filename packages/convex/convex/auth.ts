@@ -8,7 +8,6 @@ import { betterAuth } from "better-auth";
 import { admin, anonymous } from "better-auth/plugins";
 import { components, internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
-import { query } from "./_generated/server";
 import authSchema from "./betterAuth/generatedSchema";
 
 const authFunctions: AuthFunctions = internal.auth;
@@ -69,14 +68,5 @@ export const createAuth = (
 		],
 	});
 };
-
-// Example function for getting the current user
-// Feel free to edit, omit, etc.
-export const getCurrentUser = query({
-	args: {},
-	handler: async (ctx) => {
-		return authComponent.getAuthUser(ctx);
-	},
-});
 
 export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi();

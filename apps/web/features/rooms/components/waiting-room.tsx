@@ -2,6 +2,7 @@
 
 import { api } from "@repo/convex/_generated/api";
 import type { Id } from "@repo/convex/_generated/dataModel";
+import { authClient } from "@repo/convex/helpers/next/auth-client";
 import { Badge } from "@repo/ui/registry/new-york-v4/ui/badge";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import {
@@ -26,7 +27,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { SpotifyPlaylistSelector } from "@/components/spotify-playlist-selector";
-import { authClient } from "@/lib/auth-client";
 import { PlayerList } from "./player-list";
 import { RoomSettings } from "./room-settings";
 
@@ -40,7 +40,6 @@ export function WaitingRoom({ roomId }: WaitingRoomProps) {
 	const leaveRoom = useMutation(api.mutations.rooms.leaveRoom);
 	const updateRoom = useMutation(api.mutations.rooms.updateRoom);
 	const kickUser = useMutation(api.mutations.rooms.kickUser);
-	const banUser = useMutation(api.mutations.rooms.banUser);
 	const { data: session } = authClient.useSession();
 	const router = useRouter();
 
@@ -135,15 +134,6 @@ export function WaitingRoom({ roomId }: WaitingRoomProps) {
 			toast.success("Player kicked");
 		} catch (error) {
 			toast.error("Failed to kick player");
-		}
-	};
-
-	const handleBan = async (userId: string) => {
-		try {
-			await banUser({ roomId, userId });
-			toast.success("Player banned");
-		} catch (error) {
-			toast.error("Failed to ban player");
 		}
 	};
 

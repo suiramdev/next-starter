@@ -1,4 +1,3 @@
-import { roles } from "@repo/auth/permissions";
 import { NotFoundError, UnauthorizedError } from "convex/utils/errors";
 import { v } from "convex/values";
 import { components } from "../_generated/api";

@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "@repo/convex/_generated/api";
+import { authClient } from "@repo/convex/helpers/next/auth-client";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import {
 	Dialog,
@@ -25,7 +26,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { authClient } from "@/lib/auth-client";
 import { LinkSpotifyButton } from "../../../components/link-spotify-button";
 import { SpotifyPlaylistSelector } from "../../../components/spotify-playlist-selector";
 

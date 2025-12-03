@@ -1,9 +1,9 @@
 "use client";
 
+import { authClient } from "@repo/convex/helpers/next/auth-client";
 import { cn } from "@repo/ui/lib/utils";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import { SpotifyIcon } from "@repo/ui/registry/web/icons";
-import { authClient } from "@/lib/auth-client";
 
 export function LinkSpotifyButton({
 	className,

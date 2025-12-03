@@ -1,6 +1,6 @@
 "use client";
 
-import { SignUpForm as Form } from "@repo/auth/helpers/react/components/forms/sign-up-form";
+import { SignUpForm as Form } from "@repo/convex/helpers/react/components/forms/sign-up-form";
 import { useRouter } from "next/navigation";
 
 export function SignUpForm() {

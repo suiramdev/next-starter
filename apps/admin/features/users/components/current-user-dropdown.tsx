@@ -1,4 +1,4 @@
-import { authClient } from "@repo/auth/helpers/react/client";
+import { authClient } from "@repo/convex/helpers/next/auth-client";
 import { LogOutIcon } from "@repo/ui/registry/admin/icons";
 import {
 	DropdownMenu,

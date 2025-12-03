@@ -2,10 +2,10 @@
 
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { ConvexQueryClient } from "@convex-dev/react-query";
+import { authClient } from "@repo/convex/helpers/next/auth-client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConvexReactClient } from "convex/react";
 import type { ReactNode } from "react";
-import { authClient } from "@/lib/auth-client";
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL ?? "", {
 	// Optionally pause queries until the user is authenticated

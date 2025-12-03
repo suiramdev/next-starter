@@ -1,8 +1,4 @@
-import {
-	LayoutDashboardIcon,
-	SettingsIcon,
-	UsersIcon,
-} from "@repo/ui/registry/admin/icons";
+import { LayoutDashboardIcon, UsersIcon } from "@repo/ui/registry/admin/icons";
 import {
 	SidebarGroup,
 	SidebarGroupContent,

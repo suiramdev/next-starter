@@ -1,6 +1,6 @@
 "use client";
 
-import { authClient } from "@repo/auth/helpers/react/client";
+import { authClient } from "@repo/convex/helpers/next/auth-client";
 import { Skeleton } from "@repo/ui/registry/new-york-v4/ui/skeleton";
 import {
 	CurrentUserDropdown,
