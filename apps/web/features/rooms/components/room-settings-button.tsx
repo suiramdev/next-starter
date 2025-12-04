@@ -1,5 +1,6 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "@repo/convex/_generated/api";
 import type { Id } from "@repo/convex/_generated/dataModel";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
@@ -22,8 +23,15 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/drawer";
+import {
+	Field,
+	FieldContent,
+	FieldDescription,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from "@repo/ui/registry/new-york-v4/ui/field";
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
-import { Label } from "@repo/ui/registry/new-york-v4/ui/label";
 import { Switch } from "@repo/ui/registry/new-york-v4/ui/switch";
 import { SettingsIcon } from "@repo/ui/registry/web/icons";
 import {
@@ -33,10 +41,26 @@ import {
 	useQuery,
 } from "convex/react";
 import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
 import { LinkSpotifyButton } from "@/features/spotify/components/link-spotify-button";
 import { SpotifyPlaylistSelector } from "@/features/spotify/components/spotify-playlist-selector";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { authClient } from "@/lib/auth-client";
+
+const formSchema = z.object({
+	name: z
+		.string()
+		.min(1, "Room name is required")
+		.max(50, "Room name must be at most 50 characters"),
+	isPrivate: z.boolean(),
+	playlistId: z.string().optional(),
+	playlistName: z.string().optional(),
+	playlistImage: z.string().optional(),
+	playlistTotalTracks: z.number().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 interface RoomSettingsButtonProps {
 	preloadedQuery: Preloaded<typeof api.domains.rooms.queries.getRoom>;
@@ -58,23 +82,31 @@ export function RoomSettingsButton({
 	const [isSaving, setIsSaving] = useState(false);
 	const isDesktop = useMediaQuery("(min-width: 768px)");
 
-	// Form state
-	const [name, setName] = useState(room.name);
-	const [isPrivate, setIsPrivate] = useState(room.isPrivate);
-	const [playlistId, setPlaylistId] = useState(room.playlistId);
-	const [playlistName, setPlaylistName] = useState(room.playlistName);
-	const [playlistImage, setPlaylistImage] = useState(room.playlistImage);
+	const form = useForm<FormValues>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			name: room.name,
+			isPrivate: room.isPrivate,
+			playlistId: room.playlistId ?? undefined,
+			playlistName: room.playlistName ?? undefined,
+			playlistImage: room.playlistImage ?? undefined,
+			playlistTotalTracks: room.playlistTotalTracks ?? undefined,
+		},
+	});
 
 	// Reset form when dialog opens
 	useEffect(() => {
 		if (open) {
-			setName(room.name);
-			setIsPrivate(room.isPrivate);
-			setPlaylistId(room.playlistId);
-			setPlaylistName(room.playlistName);
-			setPlaylistImage(room.playlistImage);
+			form.reset({
+				name: room.name,
+				isPrivate: room.isPrivate,
+				playlistId: room.playlistId ?? undefined,
+				playlistName: room.playlistName ?? undefined,
+				playlistImage: room.playlistImage ?? undefined,
+				playlistTotalTracks: room.playlistTotalTracks ?? undefined,
+			});
 		}
-	}, [open, room]);
+	}, [open, room, form]);
 
 	const isHost = session?.user?.id === room.hostId;
 
@@ -87,24 +119,37 @@ export function RoomSettingsButton({
 		id: string,
 		pName?: string,
 		pImage?: string,
+		_pAuthor?: string | null,
+		pTotalTracks?: number,
 	) => {
-		setPlaylistId(id);
-		setPlaylistName(pName);
-		setPlaylistImage(pImage);
+		form.setValue("playlistId", id);
+		form.setValue("playlistName", pName);
+		form.setValue("playlistImage", pImage);
+		form.setValue("playlistTotalTracks", pTotalTracks);
 	};
 
-	const handleSave = async () => {
+	const onSubmit = async (data: FormValues) => {
 		setIsSaving(true);
 		try {
 			await updateRoom({
 				roomId,
-				name: name !== room.name ? name : undefined,
-				isPrivate: isPrivate !== room.isPrivate ? isPrivate : undefined,
-				playlistId: playlistId !== room.playlistId ? playlistId : undefined,
+				name: data.name !== room.name ? data.name : undefined,
+				isPrivate:
+					data.isPrivate !== room.isPrivate ? data.isPrivate : undefined,
+				playlistId:
+					data.playlistId !== room.playlistId ? data.playlistId : undefined,
 				playlistName:
-					playlistName !== room.playlistName ? playlistName : undefined,
+					data.playlistName !== room.playlistName
+						? data.playlistName
+						: undefined,
 				playlistImage:
-					playlistImage !== room.playlistImage ? playlistImage : undefined,
+					data.playlistImage !== room.playlistImage
+						? data.playlistImage
+						: undefined,
+				playlistTotalTracks:
+					data.playlistTotalTracks !== room.playlistTotalTracks
+						? data.playlistTotalTracks
+						: undefined,
 			});
 			setOpen(false);
 		} finally {
@@ -113,52 +158,80 @@ export function RoomSettingsButton({
 	};
 
 	const formContent = (
-		<div className="flex flex-col gap-6">
-			{/* Room Name */}
-			<div className="flex flex-col gap-2">
-				<Label htmlFor="room-name">Room Name</Label>
-				<Input
-					id="room-name"
-					value={name}
-					onChange={(e) => setName(e.target.value)}
-					placeholder="Enter room name"
+		<form
+			id="room-settings-form"
+			onSubmit={form.handleSubmit(onSubmit)}
+			className="flex min-w-0 flex-col gap-6 overflow-hidden"
+		>
+			<FieldGroup>
+				{/* Room Name */}
+				<Controller
+					name="name"
+					control={form.control}
+					render={({ field, fieldState }) => (
+						<Field data-invalid={fieldState.invalid}>
+							<FieldLabel htmlFor="room-name">Room Name</FieldLabel>
+							<Input
+								{...field}
+								id="room-name"
+								aria-invalid={fieldState.invalid}
+								placeholder="Enter room name"
+							/>
+							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+						</Field>
+					)}
 				/>
-			</div>
 
-			{/* Private Toggle */}
-			<div className="flex items-center justify-between gap-4">
-				<div className="flex flex-col gap-1">
-					<Label htmlFor="is-private">Private Room</Label>
-					<p className="text-muted-foreground text-sm">
-						Only players with the code can join
-					</p>
-				</div>
-				<Switch
-					id="is-private"
-					checked={isPrivate}
-					onCheckedChange={setIsPrivate}
+				{/* Private Toggle */}
+				<Controller
+					name="isPrivate"
+					control={form.control}
+					render={({ field }) => (
+						<Field orientation="horizontal">
+							<FieldContent>
+								<FieldLabel htmlFor="is-private">Private Room</FieldLabel>
+								<FieldDescription>
+									Only players with the code can join
+								</FieldDescription>
+							</FieldContent>
+							<Switch
+								id="is-private"
+								checked={field.value}
+								onCheckedChange={field.onChange}
+							/>
+						</Field>
+					)}
 				/>
-			</div>
 
-			{/* Playlist Selector */}
-			<div className="flex flex-col gap-2">
-				<Label htmlFor="playlist">Playlist</Label>
-				{hasSpotifyLinked ? (
-					<SpotifyPlaylistSelector
-						id="playlist"
-						value={playlistId}
-						onValueChange={handlePlaylistChange}
-					/>
-				) : (
-					<div className="flex flex-col gap-2">
-						<p className="text-muted-foreground text-sm">
-							Link your Spotify account to select a playlist
-						</p>
-						<LinkSpotifyButton className="w-full" />
-					</div>
-				)}
-			</div>
-		</div>
+				{/* Playlist Selector */}
+				<Field>
+					<FieldLabel htmlFor="playlist">Playlist</FieldLabel>
+					{hasSpotifyLinked ? (
+						<SpotifyPlaylistSelector
+							id="playlist"
+							value={form.watch("playlistId")}
+							onValueChange={handlePlaylistChange}
+							initialPlaylist={
+								form.watch("playlistId")
+									? {
+											name: form.watch("playlistName") ?? "Unknown Playlist",
+											image: form.watch("playlistImage") ?? undefined,
+											totalTracks: form.watch("playlistTotalTracks"),
+										}
+									: undefined
+							}
+						/>
+					) : (
+						<div className="flex flex-col gap-2">
+							<FieldDescription>
+								Link your Spotify account to select a playlist
+							</FieldDescription>
+							<LinkSpotifyButton className="w-full" />
+						</div>
+					)}
+				</Field>
+			</FieldGroup>
+		</form>
 	);
 
 	if (isDesktop) {
@@ -182,7 +255,7 @@ export function RoomSettingsButton({
 						<Button variant="outline" onClick={() => setOpen(false)}>
 							Cancel
 						</Button>
-						<Button onClick={handleSave} disabled={isSaving}>
+						<Button type="submit" form="room-settings-form" disabled={isSaving}>
 							{isSaving ? "Saving..." : "Save Changes"}
 						</Button>
 					</DialogFooter>
@@ -205,7 +278,7 @@ export function RoomSettingsButton({
 				</DrawerHeader>
 				<div className="px-4">{formContent}</div>
 				<DrawerFooter>
-					<Button onClick={handleSave} disabled={isSaving}>
+					<Button type="submit" form="room-settings-form" disabled={isSaving}>
 						{isSaving ? "Saving..." : "Save Changes"}
 					</Button>
 					<DrawerClose asChild>

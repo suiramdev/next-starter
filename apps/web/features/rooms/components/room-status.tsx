@@ -61,6 +61,7 @@ export function RoomStatus({ preloadedQuery, roomId }: RoomStatusProps) {
 		playlistName?: string,
 		playlistImage?: string,
 		playlistAuthor?: string | null,
+		playlistTotalTracks?: number,
 	) => {
 		await updateRoom({
 			roomId,
@@ -68,6 +69,7 @@ export function RoomStatus({ preloadedQuery, roomId }: RoomStatusProps) {
 			playlistName,
 			playlistImage,
 			playlistAuthor: playlistAuthor ?? undefined,
+			playlistTotalTracks,
 		});
 	};
 
@@ -100,20 +102,50 @@ export function RoomStatus({ preloadedQuery, roomId }: RoomStatusProps) {
 				</span>
 			</div>
 
-			{/* Playlist Section */}
-			{hasPlaylist ? (
-				<div className="flex items-center gap-3">
+			{/* Playlist Section - Host can select, others just view */}
+			{isHost && room.status === "waiting" ? (
+				<div className="flex flex-col gap-2">
+					{hasSpotifyLinked ? (
+						<SpotifyPlaylistSelector
+							onValueChange={handlePlaylistChange}
+							initialPlaylist={
+								hasPlaylist
+									? {
+											name: room.playlistName ?? "Unknown Playlist",
+											image: room.playlistImage ?? undefined,
+											author: room.playlistAuthor ?? undefined,
+											totalTracks: room.playlistTotalTracks,
+										}
+									: undefined
+							}
+						/>
+					) : (
+						<LinkSpotifyButton className="w-full" />
+					)}
+					{hasPlaylist && (
+						<Button
+							onClick={handleStartGame}
+							disabled={!canStart || isStarting}
+							className="w-full"
+						>
+							<PlayIcon className="mr-2 size-4" />
+							{isStarting ? "Starting..." : "Start Game"}
+						</Button>
+					)}
+				</div>
+			) : hasPlaylist ? (
+				<div className="flex items-center gap-3 rounded-lg border border-dashed bg-muted/30 p-3">
 					{room.playlistImage ? (
 						<Image
 							src={room.playlistImage}
 							alt={room.playlistName ?? "Playlist"}
-							width={48}
-							height={48}
-							className="rounded-md object-cover shadow-sm"
+							width={40}
+							height={40}
+							className="rounded-md object-cover"
 						/>
 					) : (
-						<div className="flex size-12 items-center justify-center rounded-md bg-primary/10">
-							<DiscIcon className="size-5 text-primary" />
+						<div className="flex size-10 items-center justify-center rounded-md bg-muted">
+							<DiscIcon className="size-5 text-muted-foreground" />
 						</div>
 					)}
 					<div className="min-w-0 flex-1">
@@ -131,32 +163,8 @@ export function RoomStatus({ preloadedQuery, roomId }: RoomStatusProps) {
 						<DiscIcon className="size-5 text-muted-foreground" />
 					</div>
 					<p className="text-muted-foreground text-sm">
-						{isHost
-							? "Choose a playlist to start"
-							: "Waiting for host to choose a playlist..."}
+						Waiting for host to choose a playlist...
 					</p>
-				</div>
-			)}
-
-			{/* Host Actions */}
-			{isHost && room.status === "waiting" && (
-				<div className="flex flex-col gap-2">
-					{!hasPlaylist && !hasSpotifyLinked && (
-						<LinkSpotifyButton className="w-full" />
-					)}
-					{!hasPlaylist && hasSpotifyLinked && (
-						<SpotifyPlaylistSelector onValueChange={handlePlaylistChange} />
-					)}
-					{hasPlaylist && (
-						<Button
-							onClick={handleStartGame}
-							disabled={!canStart || isStarting}
-							className="w-full"
-						>
-							<PlayIcon className="mr-2 size-4" />
-							{isStarting ? "Starting..." : "Start Game"}
-						</Button>
-					)}
 				</div>
 			)}
 

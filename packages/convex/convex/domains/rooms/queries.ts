@@ -19,6 +19,7 @@ export const listRooms = query({
 			playlistName: v.optional(v.string()),
 			playlistImage: v.optional(v.string()),
 			playlistAuthor: v.optional(v.union(v.string(), v.null())),
+			playlistTotalTracks: v.optional(v.number()),
 			playerCount: v.number(),
 		}),
 	),
@@ -47,6 +48,7 @@ export const listRooms = query({
 					playlistName: room.playlistName,
 					playlistImage: room.playlistImage,
 					playlistAuthor: room.playlistAuthor,
+					playlistTotalTracks: room.playlistTotalTracks,
 					playerCount: players.length,
 				};
 			}),
@@ -75,6 +77,7 @@ export const getRoom = query({
 		playlistName: v.optional(v.string()),
 		playlistImage: v.optional(v.string()),
 		playlistAuthor: v.optional(v.union(v.string(), v.null())),
+		playlistTotalTracks: v.optional(v.number()),
 		playerCount: v.number(),
 	}),
 	handler: async (ctx, args) => {
@@ -104,6 +107,7 @@ export const getRoom = query({
 			playlistName: room.playlistName,
 			playlistImage: room.playlistImage,
 			playlistAuthor: room.playlistAuthor,
+			playlistTotalTracks: room.playlistTotalTracks,
 			playerCount: players.length,
 		};
 	},

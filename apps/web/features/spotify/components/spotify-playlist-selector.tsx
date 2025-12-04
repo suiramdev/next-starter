@@ -3,22 +3,17 @@
 import { useConvexAction } from "@convex-dev/react-query";
 import { useSize } from "@radix-ui/react-use-size";
 import { api } from "@repo/convex/_generated/api";
-import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "@repo/ui/registry/new-york-v4/ui/command";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@repo/ui/registry/new-york-v4/ui/popover";
-import { Spinner } from "@repo/ui/registry/new-york-v4/ui/spinner";
-import { ChevronsUpDownIcon } from "@repo/ui/registry/web/icons";
+	DashedSelector,
+	DashedSelectorContent,
+	DashedSelectorPlaceholder,
+	DashedSelectorTrigger,
+	DashedSelectorValue,
+	SearchableList,
+	SearchableListGroup,
+	SearchableListItem,
+} from "@repo/ui/registry/web/dashed-selector";
+import { DiscIcon } from "@repo/ui/registry/web/icons";
 import { SpotifyPlaylistItem } from "@repo/ui/registry/web/spotify-playlist-item";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useRef, useState } from "react";
@@ -32,24 +27,51 @@ interface SpotifyPlaylist {
 	owner?: { display_name?: string | null };
 }
 
+interface InitialPlaylist {
+	name: string;
+	image?: string;
+	author?: string;
+	totalTracks?: number;
+}
+
 interface SpotifyPlaylistSelectorProps {
 	value?: string;
+	initialPlaylist?: InitialPlaylist;
 	onValueChange?: (
 		value: string,
 		name?: string,
 		image?: string,
 		author?: string | null,
+		totalTracks?: number,
 	) => void;
 	id?: string;
 }
 
 export function SpotifyPlaylistSelector({
+	initialPlaylist,
 	onValueChange,
 	id,
 }: SpotifyPlaylistSelectorProps) {
 	const [open, setOpen] = useState(false);
 	const [selectedPlaylist, setSelectedPlaylist] =
 		useState<SpotifyPlaylist | null>(null);
+
+	// Use initial playlist data if no selection has been made yet
+	const displayPlaylist = selectedPlaylist
+		? {
+				name: selectedPlaylist.name,
+				image: selectedPlaylist.images[0]?.url,
+				totalTracks: selectedPlaylist.tracks.total,
+				ownerName: selectedPlaylist.owner?.display_name ?? undefined,
+			}
+		: initialPlaylist
+			? {
+					name: initialPlaylist.name,
+					image: initialPlaylist.image,
+					totalTracks: initialPlaylist.totalTracks ?? 0,
+					ownerName: initialPlaylist.author,
+				}
+			: null;
 	const triggerRef = useRef<HTMLButtonElement>(null);
 	const triggerSize = useSize(triggerRef.current);
 
@@ -78,64 +100,61 @@ export function SpotifyPlaylistSelector({
 				playlist.name,
 				playlist.images[0]?.url,
 				playlist.owner?.display_name ?? null,
+				playlist.tracks.total,
 			);
 			setOpen(false);
 		},
 		[onValueChange],
 	);
 
+	// Transform raw Spotify API playlist to SpotifyPlaylistItem format
+	const toPlaylistItemProps = (playlist: SpotifyPlaylist) => ({
+		name: playlist.name,
+		image: playlist.images[0]?.url,
+		totalTracks: playlist.tracks.total,
+		ownerName: playlist.owner?.display_name ?? undefined,
+	});
+
 	return (
-		<Popover open={open} onOpenChange={setOpen}>
-			<PopoverTrigger asChild>
-				<Button
-					id={id}
-					variant="outline"
-					role="combobox"
-					aria-expanded={open}
-					className="h-auto min-h-10 w-full justify-between overflow-hidden py-2 text-left"
-					ref={triggerRef}
+		<DashedSelector open={open} onOpenChange={setOpen}>
+			<DashedSelectorTrigger id={id} ref={triggerRef}>
+				{displayPlaylist ? (
+					<DashedSelectorValue>
+						<SpotifyPlaylistItem playlist={displayPlaylist} />
+					</DashedSelectorValue>
+				) : (
+					<DashedSelectorPlaceholder
+						icon={<DiscIcon className="size-5 text-muted-foreground" />}
+					>
+						Choose a playlist to start
+					</DashedSelectorPlaceholder>
+				)}
+			</DashedSelectorTrigger>
+
+			<DashedSelectorContent style={{ width: triggerSize?.width }}>
+				<SearchableList
+					onSearch={debouncedSearch}
+					placeholder="Search playlists..."
+					emptyMessage="No playlists found."
+					isLoading={isPending}
 				>
-					{selectedPlaylist ? (
-						<SpotifyPlaylistItem playlist={selectedPlaylist} />
-					) : (
-						<span className="text-muted-foreground">
-							Search for a playlist...
-						</span>
+					{playlists && playlists.length > 0 && (
+						<SearchableListGroup heading="Playlists">
+							{playlists.map((playlist) => (
+								<SearchableListItem
+									key={playlist.id}
+									value={playlist.id}
+									onSelect={() => handleSelect(playlist)}
+								>
+									<SpotifyPlaylistItem
+										playlist={toPlaylistItemProps(playlist)}
+									/>
+								</SearchableListItem>
+							))}
+						</SearchableListGroup>
 					)}
-					<ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
-				</Button>
-			</PopoverTrigger>
-			<PopoverContent
-				className="p-0"
-				align="start"
-				style={{ width: triggerSize?.width }}
-			>
-				<Command shouldFilter={false}>
-					<CommandInput
-						placeholder="Search playlists..."
-						onValueChange={debouncedSearch}
-					/>
-					<CommandList>
-						<CommandEmpty className="flex items-center justify-center py-6 text-center text-sm">
-							{isPending ? <Spinner /> : <span>No playlists found.</span>}
-						</CommandEmpty>
-						{playlists && playlists.length > 0 && (
-							<CommandGroup heading="Playlists">
-								{playlists.map((playlist) => (
-									<CommandItem
-										key={playlist.id}
-										value={playlist.id}
-										onSelect={() => handleSelect(playlist)}
-										className="flex items-center gap-3"
-									>
-										<SpotifyPlaylistItem playlist={playlist} />
-									</CommandItem>
-								))}
-							</CommandGroup>
-						)}
-					</CommandList>
-				</Command>
-			</PopoverContent>
-		</Popover>
+				</SearchableList>
+			</DashedSelectorContent>
+		</DashedSelector>
 	);
 }

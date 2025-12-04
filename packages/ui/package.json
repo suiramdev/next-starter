@@ -14,6 +14,8 @@
 		"./registry/admin/icons/*": "./src/registry/admin/icons/*.tsx",
 		"./registry/web/chat": "./src/registry/web/chat/index.tsx",
 		"./registry/web/chat/*": "./src/registry/web/chat/*.tsx",
+		"./registry/web/dashed-selector": "./src/registry/web/dashed-selector/index.tsx",
+		"./registry/web/dashed-selector/*": "./src/registry/web/dashed-selector/*.tsx",
 		"./registry/web/icons": "./src/registry/web/icons/index.tsx",
 		"./registry/web/icons/*": "./src/registry/web/icons/*.tsx",
 		"./lib/*": "./src/lib/*.ts"

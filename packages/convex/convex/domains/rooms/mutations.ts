@@ -15,6 +15,7 @@ export const createRoom = mutation({
 		playlistName: v.optional(v.string()),
 		playlistImage: v.optional(v.string()),
 		playlistAuthor: v.optional(v.union(v.string(), v.null())),
+		playlistTotalTracks: v.optional(v.number()),
 	},
 	handler: async (ctx, args) => {
 		const user = await authComponent.safeGetAuthUser(ctx);
@@ -33,6 +34,7 @@ export const createRoom = mutation({
 			playlistName: args.playlistName,
 			playlistImage: args.playlistImage,
 			playlistAuthor: args.playlistAuthor,
+			playlistTotalTracks: args.playlistTotalTracks,
 		});
 
 		await ctx.db.insert("players", {
@@ -97,6 +99,7 @@ export const updateRoom = mutation({
 		playlistName: v.optional(v.string()),
 		playlistImage: v.optional(v.string()),
 		playlistAuthor: v.optional(v.string()),
+		playlistTotalTracks: v.optional(v.number()),
 	},
 	handler: async (ctx, args) => {
 		const user = await authComponent.safeGetAuthUser(ctx);
@@ -121,6 +124,9 @@ export const updateRoom = mutation({
 			...(args.playlistName && { playlistName: args.playlistName }),
 			...(args.playlistImage && { playlistImage: args.playlistImage }),
 			...(args.playlistAuthor && { playlistAuthor: args.playlistAuthor }),
+			...(args.playlistTotalTracks !== undefined && {
+				playlistTotalTracks: args.playlistTotalTracks,
+			}),
 		});
 	},
 });

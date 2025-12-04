@@ -61,10 +61,10 @@ export default async function RoomPage({ params }: RoomPageProps) {
 			<div className="flex min-h-0 flex-1 flex-col gap-4 md:flex-row md:gap-6">
 				{/* Players - full width on mobile, half on desktop */}
 				<aside className="min-h-0 shrink-0 overflow-auto md:w-1/2">
-					<PlayersList
-						preloadedQuery={playersPreloadedQuery}
-						hostId={room.hostId}
-					/>
+				<PlayersList
+					preloadedQuery={playersPreloadedQuery}
+					hostId={room.hostId}
+				/>
 				</aside>
 
 				{/* Room status + Chat */}
