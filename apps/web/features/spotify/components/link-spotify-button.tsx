@@ -20,7 +20,7 @@ export function LinkSpotifyButton({
 			{...props}
 			type="button"
 			onClick={handleLinkSpotify}
-			className={cn("bg-[#1DB954] text-white hover:bg-[#1ed760]", className)}
+			className={cn("bg-[#1DB954] text-black hover:bg-[#1ed760]", className)}
 		>
 			<SpotifyIcon className="size-4" />
 			Link with Spotify

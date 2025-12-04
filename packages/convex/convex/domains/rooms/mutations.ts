@@ -96,6 +96,7 @@ export const updateRoom = mutation({
 		playlistId: v.optional(v.string()),
 		playlistName: v.optional(v.string()),
 		playlistImage: v.optional(v.string()),
+		playlistAuthor: v.optional(v.string()),
 	},
 	handler: async (ctx, args) => {
 		const user = await authComponent.safeGetAuthUser(ctx);
@@ -119,6 +120,7 @@ export const updateRoom = mutation({
 			...(args.playlistId && { playlistId: args.playlistId }),
 			...(args.playlistName && { playlistName: args.playlistName }),
 			...(args.playlistImage && { playlistImage: args.playlistImage }),
+			...(args.playlistAuthor && { playlistAuthor: args.playlistAuthor }),
 		});
 	},
 });

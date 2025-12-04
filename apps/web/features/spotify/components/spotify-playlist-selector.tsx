@@ -92,7 +92,7 @@ export function SpotifyPlaylistSelector({
 					variant="outline"
 					role="combobox"
 					aria-expanded={open}
-					className="h-full w-full justify-between overflow-hidden text-left"
+					className="h-auto min-h-10 w-full justify-between overflow-hidden py-2 text-left"
 					ref={triggerRef}
 				>
 					{selectedPlaylist ? (

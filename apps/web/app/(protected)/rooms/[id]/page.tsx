@@ -5,9 +5,9 @@ import { createAuth } from "@repo/convex/domains/auth/setup";
 import { fetchQuery, preloadQuery } from "convex/nextjs";
 import { notFound, redirect } from "next/navigation";
 import { ChatBox } from "@/features/rooms/components/chat-box";
-import { InviteFriendsButton } from "@/features/rooms/components/invite-friends-button";
-import { LeaveRoomButton } from "@/features/rooms/components/leave-room-button";
 import { PlayersList } from "@/features/rooms/components/players-list";
+import { RoomHeader } from "@/features/rooms/components/room-header";
+import { RoomStatus } from "@/features/rooms/components/room-status";
 
 interface RoomPageProps {
 	params: Promise<{
@@ -34,6 +34,12 @@ export default async function RoomPage({ params }: RoomPageProps) {
 	}
 
 	// Preload data for client-side
+	const roomPreloadedQuery = await preloadQuery(
+		api.domains.rooms.queries.getRoom,
+		{ roomId: id },
+		{ token },
+	);
+
 	const playersPreloadedQuery = await preloadQuery(
 		api.domains.players.queries.listPlayers,
 		{ roomId: id },
@@ -47,17 +53,9 @@ export default async function RoomPage({ params }: RoomPageProps) {
 	);
 
 	return (
-		<div className="container mx-auto flex min-h-0 flex-1 flex-col overflow-hidden px-4 pb-4 md:px-6 md:pb-6">
+		<div className="container mx-auto flex min-h-0 flex-1 flex-col overflow-hidden py-6">
 			{/* Header */}
-			<header className="flex shrink-0 items-center justify-between py-4 md:py-6">
-				<h1 className="font-bold text-xl tracking-tight md:text-2xl">
-					{room.name}
-				</h1>
-				<div className="flex items-center gap-2">
-					<InviteFriendsButton roomId={id} />
-					<LeaveRoomButton roomId={id} />
-				</div>
-			</header>
+			<RoomHeader preloadedQuery={roomPreloadedQuery} roomId={id} />
 
 			{/* Content - stacked on mobile, 50/50 on desktop */}
 			<div className="flex min-h-0 flex-1 flex-col gap-4 md:flex-row md:gap-6">
@@ -69,8 +67,9 @@ export default async function RoomPage({ params }: RoomPageProps) {
 					/>
 				</aside>
 
-				{/* Chat - full width on mobile, half on desktop */}
-				<main className="min-h-0 min-w-0 flex-1 md:w-1/2">
+				{/* Room status + Chat */}
+				<main className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 md:w-1/2">
+					<RoomStatus preloadedQuery={roomPreloadedQuery} roomId={id} />
 					<ChatBox preloadedQuery={messagesPreloadedQuery} roomId={id} />
 				</main>
 			</div>
