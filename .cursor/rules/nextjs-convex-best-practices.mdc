@@ -1,0 +1,102 @@
+---
+description: Best practices for Next.js apps using Server Components and Convex for data fetching
+globs: apps/**/*.ts,apps/**/*.tsx
+alwaysApply: false
+---
+# Next.js & Convex Best Practices
+
+This rule outlines the recommended patterns for building Next.js applications with Convex, focusing on Server Components and efficient data fetching.
+
+## Next.js Server Components
+
+1.  **Async Components**: Make Server Components `async` to allow awaiting data fetches directly.
+2.  **Server-Side Fetching**: Prefer fetching data on the server (in `page.tsx` or `layout.tsx`) whenever possible to reduce client waterfalls and improve initial load performance.
+
+## Convex Integration with Next.js
+
+The preferred pattern for integrating Convex with Next.js App Router is **Preloading** for reactive data, and **Static Fetching** for non-reactive data.
+
+### 1. Preloading Queries (Recommended)
+
+Instead of fetching data only on the client, preload the query in the Server Component and pass the result to a Client Component (Organism). This ensures data is available immediately upon rendering while maintaining Convex's real-time capabilities.
+
+**Pattern:**
+
+1.  **Server Component (`page.tsx`)**:
+    - Import `preloadQuery` from `convex/nextjs`.
+    - Preload the query.
+    - Pass the `preloadedQuery` reference to the Client Component.
+
+```typescript:app/some-page/page.tsx
+import { preloadQuery } from "convex/nextjs";
+import { api } from "@repo/convex/_generated/api";
+import { MyFeatureComponent } from "@/features/my-feature/components/my-feature-component";
+
+export default async function Page() {
+  const preloadedData = await preloadQuery(api.some.query, { arg: "value" });
+
+  return <MyFeatureComponent preloadedQuery={preloadedData} />;
+}
+```
+
+2.  **Client Component (Organism)**:
+    - Accept `preloadedQuery` as a prop.
+    - Use `usePreloadedQuery` (from `convex/react`) to consume the data.
+    - OR use `useQuery` from Tanstack Query if using `@convex-dev/react-query` (though `usePreloadedQuery` is standard).
+
+**Option A: Standard Convex React (Preferred)**
+```typescript:features/my-feature/components/my-feature-component.tsx
+"use client";
+
+import { Preloaded, usePreloadedQuery } from "convex/react";
+import { api } from "@repo/convex/_generated/api";
+
+interface Props {
+  preloadedQuery: Preloaded<typeof api.some.query>;
+}
+
+export function MyFeatureComponent({ preloadedQuery }: Props) {
+  const data = usePreloadedQuery(preloadedQuery);
+  // data is strongly typed and reactive
+  return <div>{data.someField}</div>;
+}
+```
+
+### 2. Static Fetching (No Sync)
+
+If you need a snapshot of data that **does not need to be real-time** (no subscription) or are performing a one-off check on the server:
+
+- Use `fetchQuery` from `convex/nextjs` (or your configured `convexClient` if `fetchQuery` is not available/configured).
+- This is useful for generating metadata, checking permissions, or static site generation.
+
+```typescript:app/some-page/page.tsx
+import { fetchQuery } from "convex/nextjs";
+import { api } from "@repo/convex/_generated/api";
+
+export default async function Page() {
+  // Fetches once, no subscription
+  const data = await fetchQuery(api.some.query, { arg: "value" });
+  
+  return <div>Static Data: {data.someField}</div>;
+}
+```
+
+### 3. Authentication on Server
+
+When fetching on the server (Preload or Static), ensure you pass the authentication token if the query requires it.
+
+```typescript
+import { getToken } from "@convex-dev/better-auth/nextjs";
+import { createAuth } from "@repo/convex/domains/auth/setup";
+import { preloadQuery } from "convex/nextjs";
+
+export default async function Page() {
+  const token = await getToken(createAuth);
+  
+  const data = await preloadQuery(
+    api.protected.query, 
+    {}, 
+    { token } // Pass token here
+  );
+}
+```
