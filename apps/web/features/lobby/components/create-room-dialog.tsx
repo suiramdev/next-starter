@@ -26,8 +26,8 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-import { LinkSpotifyButton } from "../../../components/link-spotify-button";
-import { SpotifyPlaylistSelector } from "../../../components/spotify-playlist-selector";
+import { LinkSpotifyButton } from "../../spotify/components/link-spotify-button";
+import { SpotifyPlaylistSelector } from "../../spotify/components/spotify-playlist-selector";
 
 interface CreateRoomFormValues {
 	name: string;

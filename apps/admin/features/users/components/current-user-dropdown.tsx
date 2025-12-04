@@ -1,5 +1,4 @@
 import { LogOutIcon } from "@repo/ui/registry/admin/icons";
-import { authClient } from "@/lib/auth-client";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -9,6 +8,7 @@ import {
 	DropdownMenuTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 import { UserAvatar } from "./user-avatar";
 
 export type CurrentUserDropdownProps = React.ComponentProps<

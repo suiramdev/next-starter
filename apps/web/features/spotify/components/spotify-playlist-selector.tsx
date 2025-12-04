@@ -3,6 +3,7 @@
 import { useConvexAction } from "@convex-dev/react-query";
 import { useSize } from "@radix-ui/react-use-size";
 import { api } from "@repo/convex/_generated/api";
+import { SpotifyPlaylistItem } from "@repo/ui/registry/app/ui/spotify-playlist-item";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import {
 	Command,
@@ -18,11 +19,10 @@ import {
 	PopoverTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/popover";
 import { Spinner } from "@repo/ui/registry/new-york-v4/ui/spinner";
-import { ChevronsUpDownIcon, DiscIcon } from "@repo/ui/registry/web/icons";
+import { ChevronsUpDownIcon } from "@repo/ui/registry/web/icons";
 import { useMutation } from "@tanstack/react-query";
-import Image from "next/image";
 import { useCallback, useRef, useState } from "react";
-import { useDebouncedCallback } from "../hooks/use-debounce";
+import { useDebouncedCallback } from "../../../hooks/use-debounce";
 
 interface SpotifyPlaylist {
 	id: string;
@@ -137,32 +137,5 @@ export function SpotifyPlaylistSelector({
 				</Command>
 			</PopoverContent>
 		</Popover>
-	);
-}
-
-function SpotifyPlaylistItem({ playlist }: { playlist: SpotifyPlaylist }) {
-	return (
-		<div className="flex min-w-0 gap-2">
-			{playlist.images[0] ? (
-				<Image
-					src={playlist.images[0].url}
-					alt={playlist.name}
-					className="rounded object-cover"
-					width={32}
-					height={32}
-				/>
-			) : (
-				<div className="relative aspect-square size-8 rounded-xs bg-primary/20">
-					<DiscIcon className="absolute inset-0 m-auto size-4 text-muted-foreground" />
-				</div>
-			)}
-			<div className="flex min-w-0 flex-col">
-				<span className="truncate font-medium">{playlist.name}</span>
-				<span className="truncate text-muted-foreground text-xs">
-					{playlist.tracks.total} tracks
-					{playlist.owner?.display_name && ` • ${playlist.owner.display_name}`}
-				</span>
-			</div>
-		</div>
 	);
 }

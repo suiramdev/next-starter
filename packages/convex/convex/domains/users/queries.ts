@@ -167,7 +167,7 @@ export const hasPermission = query({
 		}
 
 		// Get the role from the roles object
-		const userRole = roles[fullUser.role as keyof typeof roles];
+		const userRole = fullUser.role[fullUser.role as keyof typeof fullUser.role];
 		if (!userRole) {
 			return false;
 		}

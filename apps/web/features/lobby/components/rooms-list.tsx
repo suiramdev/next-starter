@@ -12,7 +12,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@repo/ui/registry/new-york-v4/ui/table";
-import { DiscIcon, LogInIcon, Users } from "@repo/ui/registry/web/icons";
+import { DiscIcon, Users } from "@repo/ui/registry/web/icons";
 import { type Preloaded, useMutation, usePreloadedQuery } from "convex/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -111,8 +111,8 @@ export function RoomsList({ preloadedQuery }: RoomsListProps) {
 									<div className="flex items-center gap-2 text-muted-foreground">
 										<Users className="h-4 w-4" />
 										<span>
-											{room.players.length} player
-											{room.players.length !== 1 ? "s" : ""}
+											{room.playerCount} player
+											{room.playerCount !== 1 ? "s" : ""}
 										</span>
 									</div>
 								</TableCell>

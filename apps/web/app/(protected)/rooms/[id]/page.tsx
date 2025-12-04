@@ -1,13 +1,72 @@
+import { getToken } from "@convex-dev/better-auth/nextjs";
+import { api } from "@repo/convex/_generated/api";
 import type { Id } from "@repo/convex/_generated/dataModel";
+import { createAuth } from "@repo/convex/domains/auth/setup";
+import { fetchQuery, preloadQuery } from "convex/nextjs";
+import { notFound, redirect } from "next/navigation";
+import { InviteFriendsButton } from "@/features/rooms/components/invite-friends-button";
+import { LeaveRoomButton } from "@/features/rooms/components/leave-room-button";
+import { PlayersList } from "@/features/rooms/components/players-list";
+import { RoomDetails } from "@/features/rooms/components/room-details";
+import { convexClient } from "@/lib/convex-server";
 
 interface RoomPageProps {
 	params: Promise<{
-		id: string;
+		id: Id<"rooms">;
 	}>;
 }
 
 export default async function RoomPage({ params }: RoomPageProps) {
 	const { id } = await params;
 
-	return <div>RoomPage</div>;
+	// Get auth token for server-side queries
+	const token = await getToken(createAuth);
+	if (!token) {
+		redirect("/sign-in");
+	}
+
+	// Set auth on the convex client for server-side queries
+	convexClient.setAuth(token);
+
+	// Fetch room data server-side
+	const room = await fetchQuery(api.domains.rooms.queries.getRoom, {
+		roomId: id,
+	});
+
+	if (!room) {
+		notFound();
+	}
+
+	// Preload room data for client-side
+	const roomPreloadedQuery = await preloadQuery(
+		api.domains.rooms.queries.getRoom,
+		{
+			roomId: id,
+		},
+		{ token: token },
+	);
+
+	const playersPreloadedQuery = await preloadQuery(
+		api.domains.players.queries.listPlayers,
+		{
+			roomId: id,
+		},
+		{ token: token },
+	);
+
+	return (
+		<div className="container mx-auto flex h-full flex-col overflow-hidden">
+			<div className="flex items-center justify-between py-8">
+				<h1 className="font-bold text-2xl tracking-tight">{room.name}</h1>
+				<div className="flex items-center gap-2">
+					<InviteFriendsButton roomId={id} />
+					<LeaveRoomButton roomId={id} />
+				</div>
+			</div>
+			<div>
+				<PlayersList preloadedQuery={playersPreloadedQuery} />
+				<RoomDetails preloadedQuery={roomPreloadedQuery} />
+			</div>
+		</div>
+	);
 }

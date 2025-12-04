@@ -8,9 +8,11 @@ import {
 	UserTableSelectCell,
 	UserTableSelectHeaderCell,
 	UserTableStatusCell,
-} from "./cells";
+} from "./users-table-cells";
 
-type User = FunctionReturnType<typeof api.domains.users.queries.listUsers>[number];
+type User = FunctionReturnType<
+	typeof api.domains.users.queries.listUsers
+>[number];
 
 export const userTableColumns: ColumnDef<User>[] = [
 	{

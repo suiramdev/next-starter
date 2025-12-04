@@ -1,6 +1,7 @@
 // This file has been automatically migrated to valid ESM format by Storybook.
 import { createRequire } from "node:module";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { StorybookConfig } from "@storybook/react-vite";
 
 const require = createRequire(import.meta.url);
@@ -26,6 +27,16 @@ const config: StorybookConfig = {
 	framework: {
 		name: getAbsolutePath("@storybook/react-vite"),
 		options: {},
+	},
+	async viteFinal(config) {
+		if (config.resolve) {
+			const __dirname = dirname(fileURLToPath(import.meta.url));
+			config.resolve.alias = {
+				...config.resolve.alias,
+				"next/image": resolve(__dirname, "./mocks/next-image.tsx"),
+			};
+		}
+		return config;
 	},
 };
 

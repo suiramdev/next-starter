@@ -1,0 +1,141 @@
+---
+description: Component organization guidelines for Next.js apps using the features/ and apps/ folder structure
+globs: apps/**/*.ts,apps/**/*.tsx
+---
+
+# Component Organization Guidelines
+
+This project uses a **Hybrid Component Architecture** optimized for Next.js + Convex. It balances clean UI separation with the developer velocity of Convex's reactive data fetching.
+
+## Directory Structure
+
+```
+apps/
+├── web/                              # Next.js application (uses 'new-york-v4')
+│   ├── app/
+│   │   └── (protected)/
+│   │       └── rooms/
+│   │           └── [id]/
+│   │               └── page.tsx      # Server component (preloads data)
+│   └── features/
+│       └── rooms/
+│           └── components/
+│               └── rooms-list.tsx    # Smart Feature (Organism) - handles data
+packages/
+└── ui/
+    └── src/
+        └── registry/
+            ├── new-york-v4/          # BASE Style System (Primitives)
+            ├── admin/                # Derived Style System (e.g., for admin apps)
+            └── [style-system]/       # Other style systems
+                └── ui/
+                    └── room-card.tsx # Pure UI (Atom/Molecule)
+```
+
+## 1. Pure UI Components ("Atoms/Molecules")
+
+Low-level components must remain **strictly presentational** and **must reside in the shared UI package**.
+*   **Location**: `packages/ui/src/registry/[style-system]/ui/` (imported as `@repo/ui/registry/[style-system]/ui/...`)
+*   **Responsibilities**: Rendering UI based on props.
+*   **Restrictions**: No data fetching hooks (`useQuery`, etc.). No backend dependencies.
+*   **Props**: Primitives, simple objects, or callback functions.
+
+### Style Systems & Inheritance
+*   **Base Registry (`new-york-v4`)**: This is the source of truth for atomic primitives (Button, Input, etc.).
+*   **Derived Registries (e.g., `admin`)**: These may import and compose base primitives from `new-york-v4` to build higher-order components (e.g., `admin` might use `new-york-v4/ui/button`).
+*   **Usage Rule**: Apps should import from their **specific assigned registry** to ensure consistency.
+    *   Example: The `admin` app should import from `@repo/ui/registry/admin`.
+    *   Example: The `web` app should import from `@repo/ui/registry/new-york-v4/ui`.
+
+### Example: Pure Component
+```tsx
+// packages/ui/src/registry/new-york-v4/ui/room-card.tsx
+export function RoomCard({ name, playerCount, onClick }: RoomCardProps) {
+  return (
+    <div onClick={onClick} className="border p-4 rounded">
+      <h3>{name}</h3>
+      <span>{playerCount} players</span>
+    </div>
+  );
+}
+```
+
+## 2. Smart Feature Components ("Organisms")
+
+High-level feature components act as **containers** for their domain. They "own" the data requirements for that feature.
+*   **Location**: `features/<feature>/components/`
+*   **Responsibilities**:
+    *   Accepting `Preloaded` query references or ID props.
+    *   Calling `usePreloadedQuery`, `useQuery`, or `useMutation`.
+    *   Managing complex local state.
+    *   Composing Pure UI components from `@repo/ui` using the **app-appropriate style system registry**.
+*   **Benefit**: Encapsulates the feature completely. You can drop `<RoomsList />` on any page, pass it the query ref, and it works.
+
+### Example: Smart Component
+```tsx
+// features/rooms/components/rooms-list.tsx
+"use client";
+import { usePreloadedQuery, type Preloaded } from "convex/react";
+import { api } from "@repo/convex/_generated/api";
+// Import from the APP-SPECIFIC registry (e.g., new-york-v4 for web app)
+import { RoomCard } from "@repo/ui/registry/new-york-v4/ui/room-card";
+
+interface RoomsListProps {
+  preloadedQuery: Preloaded<typeof api.domains.rooms.queries.listRooms>;
+}
+
+export function RoomsList({ preloadedQuery }: RoomsListProps) {
+  const rooms = usePreloadedQuery(preloadedQuery); // Reactive data!
+
+  return (
+    <div className="grid gap-4">
+      {rooms.map(room => (
+        <RoomCard
+          key={room._id}
+          name={room.name}
+          playerCount={room.playerCount}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+## 3. Page Components (Server)
+
+Pages serve as the **data entry point** and **layout composer**.
+*   **Location**: `app/.../page.tsx`
+*   **Responsibilities**:
+    *   **Server-Side Preloading**: Use `preloadQuery` to fetch initial data.
+    *   **Routing**: Access route params.
+    *   **Composition**: Pass preloaded references to Smart Feature components.
+
+### Example: Page Component
+```tsx
+// app/(protected)/rooms/page.tsx
+import { preloadQuery } from "convex/nextjs";
+import { api } from "@repo/convex/_generated/api";
+import { RoomsList } from "@/features/rooms/components/rooms-list";
+
+export default async function RoomsPage() {
+  const preloadedRooms = await preloadQuery(api.domains.rooms.queries.listRooms);
+
+  return (
+    <main>
+      <h1>Active Rooms</h1>
+      <RoomsList preloadedQuery={preloadedRooms} />
+    </main>
+  );
+}
+```
+
+## When to use `_components/`?
+The `_components/` folder (colocated with `page.tsx`) is optional. Use it only for:
+*   Page-specific layout parts that aren't reusable features.
+*   One-off wrappers if a feature component *can't* accept a preloaded query for some reason (rare).
+
+## Benefits of Hybrid Approach
+1.  **Colocation**: Data logic sits with the feature that uses it.
+2.  **Velocity**: No need to create a `_components` wrapper for every single feature.
+3.  **Performance**: Components subscribe to exactly the data they need.
+4.  **Reusability**: "Smart" components are self-contained and easy to reuse across pages.

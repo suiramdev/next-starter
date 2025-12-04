@@ -1,9 +1,11 @@
 import { api } from "@repo/convex/_generated/api";
 import { preloadQuery } from "convex/nextjs";
-import { UsersTable } from "@/features/users/users-table";
+import { UsersTable } from "@/features/users/components/users-table";
 
 export default async function UsersPage() {
-	const listUsersQuery = await preloadQuery(api.domains.users.queries.listUsers);
+	const listUsersQuery = await preloadQuery(
+		api.domains.users.queries.listUsers,
+	);
 
 	return (
 		<section>

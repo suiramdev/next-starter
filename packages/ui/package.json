@@ -8,6 +8,7 @@
 	"exports": {
 		"./styles/globals.css": "./dist/styles/globals.css",
 		"./registry/new-york-v4/ui/*": "./src/registry/new-york-v4/ui/*.tsx",
+		"./registry/web/*": "./src/registry/web/*.tsx",
 		"./registry/admin/ui/*": "./src/registry/admin/ui/*.tsx",
 		"./registry/admin/icons": "./src/registry/admin/icons/index.tsx",
 		"./registry/admin/icons/*": "./src/registry/admin/icons/*.tsx",
@@ -22,10 +23,12 @@
 	},
 	"devDependencies": {
 		"@repo/typescript-config": "workspace:*",
+		"@storybook/react-vite": "^10.1.4",
 		"@turbo/gen": "^2.6.1",
 		"@types/node": "^24.10.1",
 		"@types/react": "19.1.11",
 		"@types/react-dom": "19.1.8",
+		"next": "^16.0.7",
 		"typescript": "5.9.2"
 	},
 	"dependencies": {
@@ -67,9 +70,9 @@
 		"lucide-react": "^0.553.0",
 		"next-themes": "^0.4.6",
 		"postcss": "^8.5.6",
-		"react": "^19.2.0",
+		"react": "^19.2.1",
 		"react-day-picker": "9.11.1",
-		"react-dom": "^19.2.0",
+		"react-dom": "^19.2.1",
 		"react-hook-form": "^7.66.0",
 		"react-resizable-panels": "^3.0.6",
 		"recharts": "^2.15.4",

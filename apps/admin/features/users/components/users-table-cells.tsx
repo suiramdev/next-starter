@@ -1,6 +1,5 @@
 import type { api } from "@repo/convex/_generated/api";
 import { cn } from "@repo/ui/lib/utils";
-import { authClient } from "@/lib/auth-client";
 import { BanIcon, MoreHorizontalIcon } from "@repo/ui/registry/admin/icons";
 import { Badge } from "@repo/ui/registry/new-york-v4/ui/badge";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
@@ -16,9 +15,12 @@ import type { CellContext } from "@tanstack/react-table";
 import type { FunctionReturnType } from "convex/server";
 import Link from "next/link";
 import * as React from "react";
+import { authClient } from "@/lib/auth-client";
 import { BanUserDialog } from "../components/ban-user-dialog";
 
-type User = FunctionReturnType<typeof api.domains.users.queries.listUsers>[number];
+type User = FunctionReturnType<
+	typeof api.domains.users.queries.listUsers
+>[number];
 
 export function UserTableSelectHeaderCell({
 	isAllPageRowsSelected,

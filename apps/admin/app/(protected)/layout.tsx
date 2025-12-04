@@ -8,9 +8,9 @@ import {
 	SidebarTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/sidebar";
 import { redirect } from "next/navigation";
-import { Sidebar } from "@/app/(protected)/_components/sidebar";
+import { Sidebar } from "@/features/layout/components/sidebar";
+import { ThemeSwitcher } from "@/features/layout/components/theme-switcher";
 import { convexClient } from "@/lib/convex-server";
-import { ThemeSwitcher } from "./_components/theme-switcher";
 
 export default async function Layout({
 	children,

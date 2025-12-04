@@ -8,7 +8,6 @@ export const hasSpotifyAccount = query({
 	returns: v.boolean(),
 	handler: async (ctx) => {
 		const user = await authComponent.safeGetAuthUser(ctx);
-		console.log("user", user);
 
 		if (!user) {
 			return false;

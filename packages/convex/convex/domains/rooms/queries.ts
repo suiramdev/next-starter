@@ -1,7 +1,6 @@
 import { v } from "convex/values";
 import { query } from "../../_generated/server";
-import { NotFoundError, UnauthorizedError } from "../../shared/errors";
-import { authComponent } from "../auth/setup";
+import { NotFoundError } from "../../shared/errors";
 
 export const listRooms = query({
 	args: {},
@@ -9,6 +8,7 @@ export const listRooms = query({
 		v.object({
 			_id: v.id("rooms"),
 			name: v.string(),
+			isPrivate: v.boolean(),
 			status: v.union(
 				v.literal("waiting"),
 				v.literal("playing"),
@@ -18,16 +18,13 @@ export const listRooms = query({
 			playlistId: v.optional(v.string()),
 			playlistName: v.optional(v.string()),
 			playlistImage: v.optional(v.string()),
-			players: v.array(
-				v.object({
-					_id: v.id("players"),
-					userId: v.string(),
-					score: v.number(),
-				}),
-			),
+			playlistAuthor: v.optional(v.union(v.string(), v.null())),
+			playerCount: v.number(),
 		}),
 	),
 	handler: async (ctx) => {
+		const user = await ctx.auth.getUserIdentity();
+
 		const rooms = await ctx.db.query("rooms").collect();
 
 		const enrichedRooms = await Promise.all(
@@ -37,20 +34,20 @@ export const listRooms = query({
 					.withIndex("by_roomId", (q) => q.eq("roomId", room._id))
 					.collect();
 
+				const isPlayer = players.some((p) => p.userId === user?._id);
+
 				return {
 					_id: room._id,
 					name: room.name,
-					// Omit the code if the room is private
-					code: room.isPrivate ? undefined : room.code,
+					isPrivate: room.isPrivate,
 					status: room.status,
+					// Omit the code if the room is private and the user is not a player
+					code: !room.isPrivate || isPlayer ? room.code : undefined,
 					playlistId: room.playlistId,
 					playlistName: room.playlistName,
 					playlistImage: room.playlistImage,
-					players: players.map((player) => ({
-						_id: player._id,
-						userId: player.userId,
-						score: player.score,
-					})),
+					playlistAuthor: room.playlistAuthor,
+					playerCount: players.length,
 				};
 			}),
 		);
@@ -66,6 +63,7 @@ export const getRoom = query({
 	returns: v.object({
 		_id: v.id("rooms"),
 		name: v.string(),
+		isPrivate: v.boolean(),
 		status: v.union(
 			v.literal("waiting"),
 			v.literal("playing"),
@@ -77,20 +75,10 @@ export const getRoom = query({
 		playlistName: v.optional(v.string()),
 		playlistImage: v.optional(v.string()),
 		playlistAuthor: v.optional(v.union(v.string(), v.null())),
-		players: v.array(
-			v.object({
-				_id: v.id("players"),
-				userId: v.string(),
-				score: v.number(),
-			}),
-		),
+		playerCount: v.number(),
 	}),
 	handler: async (ctx, args) => {
-		const user = await authComponent.safeGetAuthUser(ctx);
-
-		if (!user) {
-			throw new UnauthorizedError();
-		}
+		const user = await ctx.auth.getUserIdentity();
 
 		const room = await ctx.db.get(args.roomId);
 
@@ -108,19 +96,15 @@ export const getRoom = query({
 		return {
 			_id: room._id,
 			name: room.name,
-			// Omit the code if the room is private and the user is not a player
-			code: !room.isPrivate || isPlayer ? room.code : undefined,
+			isPrivate: room.isPrivate,
 			status: room.status,
 			hostId: room.hostId,
+			code: !room.isPrivate || isPlayer ? room.code : undefined,
 			playlistId: room.playlistId,
 			playlistName: room.playlistName,
 			playlistImage: room.playlistImage,
 			playlistAuthor: room.playlistAuthor,
-			players: players.map((player) => ({
-				_id: player._id,
-				userId: player.userId,
-				score: player.score,
-			})),
+			playerCount: players.length,
 		};
 	},
 });
