@@ -4,11 +4,10 @@ import type { Id } from "@repo/convex/_generated/dataModel";
 import { createAuth } from "@repo/convex/domains/auth/setup";
 import { fetchQuery, preloadQuery } from "convex/nextjs";
 import { notFound, redirect } from "next/navigation";
+import { ChatBox } from "@/features/rooms/components/chat-box";
 import { InviteFriendsButton } from "@/features/rooms/components/invite-friends-button";
 import { LeaveRoomButton } from "@/features/rooms/components/leave-room-button";
 import { PlayersList } from "@/features/rooms/components/players-list";
-import { RoomDetails } from "@/features/rooms/components/room-details";
-import { convexClient } from "@/lib/convex-server";
 
 interface RoomPageProps {
 	params: Promise<{
@@ -24,9 +23,6 @@ export default async function RoomPage({ params }: RoomPageProps) {
 	if (!token) {
 		redirect("/sign-in");
 	}
-
-	// Set auth on the convex client for server-side queries
-	convexClient.setAuth(token);
 
 	// Fetch room data server-side
 	const room = await fetchQuery(api.domains.rooms.queries.getRoom, {
@@ -55,7 +51,7 @@ export default async function RoomPage({ params }: RoomPageProps) {
 	);
 
 	return (
-		<div className="container mx-auto flex h-full flex-col overflow-hidden">
+		<div className="container mx-auto flex h-full flex-col overflow-hidden pb-6">
 			<div className="flex items-center justify-between py-8">
 				<h1 className="font-bold text-2xl tracking-tight">{room.name}</h1>
 				<div className="flex items-center gap-2">
@@ -63,9 +59,14 @@ export default async function RoomPage({ params }: RoomPageProps) {
 					<LeaveRoomButton roomId={id} />
 				</div>
 			</div>
-			<div>
-				<PlayersList preloadedQuery={playersPreloadedQuery} />
-				<RoomDetails preloadedQuery={roomPreloadedQuery} />
+			<div className="flex h-full flex-col gap-8 md:flex-row">
+				<PlayersList
+					preloadedQuery={playersPreloadedQuery}
+					hostId={room.hostId}
+				/>
+				<div className="flex h-full flex-col md:w-2/3">
+					<ChatBox />
+				</div>
 			</div>
 		</div>
 	);

@@ -42,5 +42,24 @@ export function RoomPreview({ roomId }: RoomPreviewProps) {
 		return <RoomPreviewCardSkeleton />;
 	}
 
-	return <RoomPreviewCard room={room} players={players} onJoin={handleJoin} />;
+	return (
+		<RoomPreviewCard
+			room={{
+				name: room.name,
+				playlistName: room.playlistName,
+				playlistImage: room.playlistImage,
+				playlistAuthor: room.playlistAuthor ?? "Unknown",
+				playerCount: room.playerCount,
+				status: room.status,
+				code: room.code,
+			}}
+			players={players?.map((player) => ({
+				id: player._id,
+				name: player.user?.name,
+				score: player.score,
+				isHost: player.isHost,
+			}))}
+			onJoin={handleJoin}
+		/>
+	);
 }

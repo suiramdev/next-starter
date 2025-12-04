@@ -12,6 +12,8 @@
 		"./registry/admin/ui/*": "./src/registry/admin/ui/*.tsx",
 		"./registry/admin/icons": "./src/registry/admin/icons/index.tsx",
 		"./registry/admin/icons/*": "./src/registry/admin/icons/*.tsx",
+		"./registry/web/chat": "./src/registry/web/chat/index.tsx",
+		"./registry/web/chat/*": "./src/registry/web/chat/*.tsx",
 		"./registry/web/icons": "./src/registry/web/icons/index.tsx",
 		"./registry/web/icons/*": "./src/registry/web/icons/*.tsx",
 		"./lib/*": "./src/lib/*.ts"

@@ -17,7 +17,7 @@ interface RoomPreviewCardProps {
 	};
 	players?: {
 		id: string;
-		name: string;
+		name?: string;
 		score: number;
 		isHost: boolean;
 	}[];

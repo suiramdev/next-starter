@@ -1,6 +1,7 @@
 "use client";
 
 import type { api } from "@repo/convex/_generated/api";
+import { cn } from "@repo/ui/lib/utils";
 import {
 	Avatar,
 	AvatarFallback,
@@ -27,13 +28,18 @@ import {
 	UserXIcon,
 } from "@repo/ui/registry/web/icons";
 import { type Preloaded, usePreloadedQuery } from "convex/react";
+import { authClient } from "@/lib/auth-client";
 
 interface PlayersListProps {
 	preloadedQuery: Preloaded<typeof api.domains.players.queries.listPlayers>;
+	hostId?: string;
 }
 
-export function PlayersList({ preloadedQuery }: PlayersListProps) {
+export function PlayersList({ preloadedQuery, hostId }: PlayersListProps) {
 	const players = usePreloadedQuery(preloadedQuery);
+	const { data: session } = authClient.useSession();
+
+	const isHost = hostId === session?.user?.id;
 
 	return (
 		<Table>
@@ -73,16 +79,21 @@ export function PlayersList({ preloadedQuery }: PlayersListProps) {
 								{player.score}
 							</TableCell>
 							<TableCell className="text-right">
-								<PlayerActionsMenu
-									userId={player.userId}
-									canManage={player.isHost}
-								>
-									<PlayerActionsMenuTrigger asChild>
-										<Button variant="ghost" size="icon">
-											<MoreHorizontalIcon className="size-4" />
-										</Button>
-									</PlayerActionsMenuTrigger>
-								</PlayerActionsMenu>
+								{isHost && (
+									<PlayerActionsMenu userId={player.userId}>
+										<PlayerActionsMenuTrigger asChild>
+											<Button
+												variant="ghost"
+												size="icon"
+												className={cn(
+													player.isHost && "pointer-events-none opacity-0",
+												)}
+											>
+												<MoreHorizontalIcon className="size-4" />
+											</Button>
+										</PlayerActionsMenuTrigger>
+									</PlayerActionsMenu>
+								)}
 							</TableCell>
 						</TableRow>
 					);
@@ -104,19 +115,15 @@ export function PlayersList({ preloadedQuery }: PlayersListProps) {
 
 interface PlayerActionsMenuProps {
 	userId: string;
-	canManage?: boolean;
 	children: React.ReactNode;
 }
 
-function PlayerActionsMenu({
-	canManage = true,
-	children,
-}: PlayerActionsMenuProps) {
+function PlayerActionsMenu({ children }: PlayerActionsMenuProps) {
 	return (
 		<DropdownMenu>
 			{children}
 			<DropdownMenuContent align="end">
-				<DropdownMenuItem variant="destructive" disabled={!canManage}>
+				<DropdownMenuItem variant="destructive">
 					<UserXIcon className="mr-2 size-4" />
 					Kick
 				</DropdownMenuItem>
