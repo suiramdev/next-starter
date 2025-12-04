@@ -117,9 +117,9 @@ export function RoomPreviewCard({
 					onClick={onJoin}
 					className="w-full gap-2"
 					size="lg"
-					disabled={room.status !== "waiting" || !room.code}
+					disabled={!room.code}
 				>
-					{room.status === "waiting" ? "Join Room" : "Game in Progress"}
+					Join Room
 				</Button>
 			</div>
 		</div>

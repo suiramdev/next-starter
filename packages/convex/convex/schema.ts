@@ -19,7 +19,7 @@ export default defineSchema({
 		playlistTotalTracks: v.optional(v.number()),
 	})
 		.index("by_status", ["status"])
-		.index("by_code_and_status", ["code", "status"]),
+		.index("by_code", ["code"]),
 	players: defineTable({
 		roomId: v.id("rooms"),
 		userId: v.string(),

@@ -101,10 +101,10 @@ export function RoomsList({ preloadedQuery }: RoomsListProps) {
 								<TableCell>
 									<span className="text-muted-foreground">
 										{room.status === "waiting"
-											? "Waiting for players"
+											? "Waiting for the host"
 											: room.status === "playing"
-												? "Playing"
-												: "Finished"}
+												? "Game in progress"
+												: "Game finished"}
 									</span>
 								</TableCell>
 								<TableCell>

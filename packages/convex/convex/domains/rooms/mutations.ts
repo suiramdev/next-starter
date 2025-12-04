@@ -60,9 +60,7 @@ export const joinRoom = mutation({
 
 		const room = await ctx.db
 			.query("rooms")
-			.withIndex("by_code_and_status", (q) =>
-				q.eq("code", args.code).eq("status", "waiting"),
-			)
+			.withIndex("by_code", (q) => q.eq("code", args.code))
 			.unique();
 
 		if (!room) {

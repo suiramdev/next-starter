@@ -126,7 +126,7 @@ export function SpotifyPlaylistSelector({
 					<DashedSelectorPlaceholder
 						icon={<DiscIcon className="size-5 text-muted-foreground" />}
 					>
-						Choose a playlist to start
+						Choose a playlist
 					</DashedSelectorPlaceholder>
 				)}
 			</DashedSelectorTrigger>
