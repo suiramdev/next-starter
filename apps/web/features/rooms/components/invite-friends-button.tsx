@@ -20,7 +20,7 @@ export function InviteFriendsButton({ roomId }: InviteFriendsButtonProps) {
 	return (
 		<Button onClick={handleShare}>
 			<ShareIcon className="size-4" />
-			Invite friends
+			Invite Friends
 		</Button>
 	);
 }

@@ -28,7 +28,7 @@ export function LeaveRoomButton({ roomId }: LeaveRoomButtonProps) {
 	return (
 		<Button variant="outline" onClick={handleLeaveRoom}>
 			<LogOutIcon className="size-4" />
-			Leave room
+			Leave Room
 		</Button>
 	);
 }
