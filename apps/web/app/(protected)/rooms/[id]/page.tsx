@@ -33,40 +33,46 @@ export default async function RoomPage({ params }: RoomPageProps) {
 		notFound();
 	}
 
-	// Preload room data for client-side
-	const roomPreloadedQuery = await preloadQuery(
-		api.domains.rooms.queries.getRoom,
-		{
-			roomId: id,
-		},
-		{ token: token },
-	);
-
+	// Preload data for client-side
 	const playersPreloadedQuery = await preloadQuery(
 		api.domains.players.queries.listPlayers,
-		{
-			roomId: id,
-		},
-		{ token: token },
+		{ roomId: id },
+		{ token },
+	);
+
+	const messagesPreloadedQuery = await preloadQuery(
+		api.domains.messages.queries.listMessages,
+		{ roomId: id },
+		{ token },
 	);
 
 	return (
-		<div className="container mx-auto flex h-full flex-col overflow-hidden pb-6">
-			<div className="flex items-center justify-between py-8">
-				<h1 className="font-bold text-2xl tracking-tight">{room.name}</h1>
+		<div className="container mx-auto flex min-h-0 flex-1 flex-col overflow-hidden px-4 pb-4 md:px-6 md:pb-6">
+			{/* Header */}
+			<header className="flex shrink-0 items-center justify-between py-4 md:py-6">
+				<h1 className="font-bold text-xl tracking-tight md:text-2xl">
+					{room.name}
+				</h1>
 				<div className="flex items-center gap-2">
 					<InviteFriendsButton roomId={id} />
 					<LeaveRoomButton roomId={id} />
 				</div>
-			</div>
-			<div className="flex h-full flex-col gap-8 md:flex-row">
-				<PlayersList
-					preloadedQuery={playersPreloadedQuery}
-					hostId={room.hostId}
-				/>
-				<div className="flex h-full flex-col md:w-2/3">
-					<ChatBox />
-				</div>
+			</header>
+
+			{/* Content - stacked on mobile, 50/50 on desktop */}
+			<div className="flex min-h-0 flex-1 flex-col gap-4 md:flex-row md:gap-6">
+				{/* Players - full width on mobile, half on desktop */}
+				<aside className="min-h-0 shrink-0 overflow-auto md:w-1/2">
+					<PlayersList
+						preloadedQuery={playersPreloadedQuery}
+						hostId={room.hostId}
+					/>
+				</aside>
+
+				{/* Chat - full width on mobile, half on desktop */}
+				<main className="min-h-0 min-w-0 flex-1 md:w-1/2">
+					<ChatBox preloadedQuery={messagesPreloadedQuery} roomId={id} />
+				</main>
 			</div>
 		</div>
 	);

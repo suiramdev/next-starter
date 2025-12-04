@@ -4,7 +4,7 @@ import type * as React from "react";
 import { cn } from "#src/lib/utils";
 import { Button } from "#src/registry/new-york-v4/ui/button";
 import { Input } from "#src/registry/new-york-v4/ui/input";
-import { SendIcon, SmileIcon } from "#src/registry/web/icons";
+import { SendIcon } from "#src/registry/web/icons";
 
 export interface ChatInputProps
 	extends Omit<React.ComponentProps<"div">, "onChange"> {
@@ -31,14 +31,6 @@ export function ChatInput({
 	return (
 		<div className={cn("border-t p-3", className)} {...props}>
 			<div className="flex items-center gap-2">
-				<Button
-					type="button"
-					variant="ghost"
-					size="icon"
-					className="size-9 shrink-0 text-muted-foreground hover:text-foreground"
-				>
-					<SmileIcon className="size-5" />
-				</Button>
 				<Input
 					ref={inputRef}
 					value={value}
@@ -61,4 +53,3 @@ export function ChatInput({
 		</div>
 	);
 }
-

@@ -1,5 +1,7 @@
 "use client";
 
+import { api } from "@repo/convex/_generated/api";
+import type { Id } from "@repo/convex/_generated/dataModel";
 import {
 	ChatBubble,
 	ChatContainer,
@@ -7,65 +9,26 @@ import {
 	ChatInput,
 	ChatMessageList,
 } from "@repo/ui/registry/web/chat";
+import { type Preloaded, useMutation, usePreloadedQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
-interface Message {
-	id: string;
-	content: string;
-	senderId: string;
-	senderName: string;
-	senderImage?: string;
-	timestamp: number;
+interface ChatBoxProps {
+	preloadedQuery: Preloaded<typeof api.domains.messages.queries.listMessages>;
+	roomId: Id<"rooms">;
 }
 
-// Mock messages for demonstration - will be replaced with Convex query
-const MOCK_MESSAGES: Message[] = [
-	{
-		id: "1",
-		content: "Hey everyone! Ready for some music trivia? 🎵",
-		senderId: "user-1",
-		senderName: "Alex",
-		timestamp: Date.now() - 300000,
-	},
-	{
-		id: "2",
-		content: "Absolutely! Let's go 🔥",
-		senderId: "user-2",
-		senderName: "Jordan",
-		timestamp: Date.now() - 240000,
-	},
-	{
-		id: "3",
-		content: "I've been practicing my 80s rock knowledge",
-		senderId: "user-3",
-		senderName: "Sam",
-		timestamp: Date.now() - 180000,
-	},
-	{
-		id: "4",
-		content: "Oh no, 80s rock is my weakness 😅",
-		senderId: "user-2",
-		senderName: "Jordan",
-		timestamp: Date.now() - 120000,
-	},
-	{
-		id: "5",
-		content: "Don't worry, we've got a good mix in the playlist!",
-		senderId: "user-1",
-		senderName: "Alex",
-		timestamp: Date.now() - 60000,
-	},
-];
-
-export function ChatBox() {
+export function ChatBox({ preloadedQuery, roomId }: ChatBoxProps) {
 	const { data: session } = authClient.useSession();
-	const [messages, setMessages] = useState<Message[]>(MOCK_MESSAGES);
+	const messages = usePreloadedQuery(preloadedQuery);
+	const sendMessage = useMutation(api.domains.messages.mutations.sendMessage);
+
 	const [newMessage, setNewMessage] = useState("");
+	const [isSending, setIsSending] = useState(false);
 	const bottomRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const currentUserId = session?.user?.id ?? "user-1";
+	const currentUserId = session?.user?.id;
 
 	// Auto-scroll to bottom when new messages arrive
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Intentionally scroll when message count changes
@@ -73,21 +36,23 @@ export function ChatBox() {
 		bottomRef.current?.scrollIntoView({ behavior: "smooth" });
 	}, [messages.length]);
 
-	const handleSendMessage = () => {
-		if (!newMessage.trim()) return;
+	const handleSendMessage = async () => {
+		if (!newMessage.trim() || isSending) return;
 
-		const message: Message = {
-			id: crypto.randomUUID(),
-			content: newMessage.trim(),
-			senderId: currentUserId,
-			senderName: session?.user?.name ?? "You",
-			senderImage: session?.user?.image ?? undefined,
-			timestamp: Date.now(),
-		};
-
-		setMessages((prev) => [...prev, message]);
-		setNewMessage("");
-		inputRef.current?.focus();
+		setIsSending(true);
+		try {
+			await sendMessage({
+				roomId,
+				content: newMessage.trim(),
+			});
+			setNewMessage("");
+		} finally {
+			setIsSending(false);
+			// Focus after state updates are processed
+			requestAnimationFrame(() => {
+				inputRef.current?.focus();
+			});
+		}
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -104,21 +69,20 @@ export function ChatBox() {
 					<ChatEmptyState />
 				) : (
 					messages.map((message, index) => {
-						const isOwnMessage = message.senderId === currentUserId;
+						const isOwnMessage = message.userId === currentUserId;
 						const showAvatar =
 							!isOwnMessage &&
-							(index === 0 ||
-								messages[index - 1]?.senderId !== message.senderId);
+							(index === 0 || messages[index - 1]?.userId !== message.userId);
 						const showName = showAvatar;
 
 						return (
 							<ChatBubble
-								key={message.id}
+								key={message._id}
 								content={message.content}
 								isOwn={isOwnMessage}
-								senderName={message.senderName}
-								senderImage={message.senderImage}
-								timestamp={message.timestamp}
+								senderName={message.user?.name ?? "Unknown"}
+								senderImage={message.user?.image ?? undefined}
+								timestamp={message._creationTime}
 								showAvatar={showAvatar}
 								showName={showName}
 							/>
@@ -134,6 +98,7 @@ export function ChatBox() {
 				onSend={handleSendMessage}
 				onKeyDown={handleKeyDown}
 				inputRef={inputRef}
+				disabled={isSending}
 			/>
 		</ChatContainer>
 	);

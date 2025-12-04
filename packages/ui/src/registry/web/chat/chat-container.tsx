@@ -11,7 +11,7 @@ export function ChatContainer({
 	return (
 		<div
 			className={cn(
-				"flex h-full flex-col rounded-xl border bg-card/50 backdrop-blur-sm",
+				"flex h-full min-h-0 flex-col overflow-hidden rounded-xl border bg-card/50 backdrop-blur-sm",
 				className,
 			)}
 			{...props}
@@ -20,4 +20,3 @@ export function ChatContainer({
 		</div>
 	);
 }
-

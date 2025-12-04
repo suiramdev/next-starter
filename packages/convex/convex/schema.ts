@@ -27,4 +27,9 @@ export default defineSchema({
 		.index("by_roomId", ["roomId"])
 		.index("by_userId", ["userId"])
 		.index("by_roomId_and_userId", ["roomId", "userId"]),
+	messages: defineTable({
+		roomId: v.id("rooms"),
+		userId: v.string(),
+		content: v.string(),
+	}).index("by_roomId", ["roomId"]),
 });

@@ -16,7 +16,7 @@ export function ChatMessageList({
 	scrollRef,
 }: ChatMessageListProps) {
 	return (
-		<ScrollArea className={cn("flex-1 px-4", className)}>
+		<ScrollArea className={cn("min-h-0 flex-1 px-4", className)}>
 			<div ref={scrollRef} className="flex flex-col gap-4 py-4">
 				{children}
 			</div>
