@@ -3,7 +3,6 @@
 import { useConvexAction } from "@convex-dev/react-query";
 import { useSize } from "@radix-ui/react-use-size";
 import { api } from "@repo/convex/_generated/api";
-import { SpotifyPlaylistItem } from "@repo/ui/registry/app/ui/spotify-playlist-item";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
 import {
 	Command,
@@ -20,6 +19,7 @@ import {
 } from "@repo/ui/registry/new-york-v4/ui/popover";
 import { Spinner } from "@repo/ui/registry/new-york-v4/ui/spinner";
 import { ChevronsUpDownIcon } from "@repo/ui/registry/web/icons";
+import { SpotifyPlaylistItem } from "@repo/ui/registry/web/spotify-playlist-item";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useRef, useState } from "react";
 import { useDebouncedCallback } from "../../../hooks/use-debounce";

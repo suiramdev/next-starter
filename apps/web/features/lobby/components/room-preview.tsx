@@ -9,6 +9,7 @@ import {
 } from "@repo/ui/registry/web/room-preview-card";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface RoomPreviewProps {
