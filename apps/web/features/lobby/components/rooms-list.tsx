@@ -117,7 +117,10 @@ export function RoomsList({ preloadedQuery }: RoomsListProps) {
 									</div>
 								</TableCell>
 								<TableCell className="text-right">
-									<Button onClick={(e) => handleJoin(e, room.code)}>
+									<Button
+										onClick={(e) => handleJoin(e, room.code)}
+										disabled={room.isPrivate}
+									>
 										Join
 									</Button>
 								</TableCell>
