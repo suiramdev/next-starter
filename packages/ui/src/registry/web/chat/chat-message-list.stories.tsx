@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ChatBubble } from "./chat-bubble";
-import { ChatEmptyState } from "./chat-empty-state";
 import { ChatMessageList } from "./chat-message-list";
 
 const meta: Meta<typeof ChatMessageList> = {
@@ -87,11 +86,7 @@ export const WithMessages: Story = {
 };
 
 export const Empty: Story = {
-	render: () => (
-		<ChatMessageList>
-			<ChatEmptyState />
-		</ChatMessageList>
-	),
+	render: () => <ChatMessageList></ChatMessageList>,
 };
 
 export const SingleMessage: Story = {
@@ -108,4 +103,3 @@ export const SingleMessage: Story = {
 		</ChatMessageList>
 	),
 };
-

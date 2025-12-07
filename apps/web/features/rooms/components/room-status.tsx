@@ -2,15 +2,8 @@
 
 import { api } from "@repo/convex/_generated/api";
 import type { Id } from "@repo/convex/_generated/dataModel";
-import { Badge } from "@repo/ui/registry/new-york-v4/ui/badge";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
-import {
-	CircleDotIcon,
-	DiscIcon,
-	MusicIcon,
-	PlayIcon,
-	TrophyIcon,
-} from "@repo/ui/registry/web/icons";
+import { DiscIcon, PlayIcon } from "@repo/ui/registry/web/icons";
 import {
 	type Preloaded,
 	useMutation,
@@ -28,22 +21,10 @@ interface RoomStatusProps {
 	roomId: Id<"rooms">;
 }
 
-const STATUS_CONFIG = {
-	waiting: {
-		label: "Waiting for the host",
-		icon: CircleDotIcon,
-		variant: "secondary" as const,
-	},
-	playing: {
-		label: "Game in progress",
-		icon: MusicIcon,
-		variant: "default" as const,
-	},
-	finished: {
-		label: "Game finished",
-		icon: TrophyIcon,
-		variant: "outline" as const,
-	},
+const STATUS_LABELS = {
+	waiting: "Waiting for the host",
+	playing: "Game in progress",
+	finished: "Game finished",
 };
 
 export function RoomStatus({ preloadedQuery, roomId }: RoomStatusProps) {
@@ -77,8 +58,7 @@ export function RoomStatus({ preloadedQuery, roomId }: RoomStatusProps) {
 	const hasPlaylist = !!room.playlistId;
 	const canStart = isHost && hasPlaylist && room.status === "waiting";
 
-	const statusConfig = STATUS_CONFIG[room.status];
-	const StatusIcon = statusConfig.icon;
+	const statusLabel = STATUS_LABELS[room.status];
 
 	const handleStartGame = async () => {
 		setIsStarting(true);
@@ -92,15 +72,7 @@ export function RoomStatus({ preloadedQuery, roomId }: RoomStatusProps) {
 	return (
 		<div className="flex flex-col gap-4 rounded-xl border bg-card/50 p-4 backdrop-blur-sm">
 			{/* Status Badge */}
-			<div className="flex items-center justify-between">
-				<Badge variant={statusConfig.variant} className="gap-1.5">
-					<StatusIcon className="size-3" />
-					{statusConfig.label}
-				</Badge>
-				<span className="text-muted-foreground text-xs">
-					{room.playerCount} player{room.playerCount !== 1 ? "s" : ""}
-				</span>
-			</div>
+			<p className="font-medium text-sm">{statusLabel}</p>
 
 			{/* Playlist Section - Host can select, others just view */}
 			{isHost && room.status === "waiting" ? (

@@ -11,6 +11,7 @@ interface RoomPreviewCardProps {
 		playlistName?: string;
 		playlistImage?: string;
 		playlistAuthor?: string;
+		playlistTotalTracks?: number;
 		playerCount?: number;
 		status?: string;
 		code?: string;
@@ -51,8 +52,11 @@ export function RoomPreviewCard({
 							)}
 							<div className="flex-1 overflow-hidden">
 								<p className="truncate font-medium">{room.playlistName}</p>
-								<p className="text-muted-foreground text-sm">
-									{room.playlistAuthor ?? "Unknown"}
+								<p className="truncate text-muted-foreground text-xs">
+									{room.playlistTotalTracks &&
+										`${room.playlistTotalTracks} tracks`}
+									{room.playlistTotalTracks && room.playlistAuthor && " • "}
+									{room.playlistAuthor}
 								</p>
 							</div>
 						</div>

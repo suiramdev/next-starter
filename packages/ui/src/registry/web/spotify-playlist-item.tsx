@@ -5,7 +5,7 @@ interface SpotifyPlaylistItemProps {
 	playlist: {
 		name: string;
 		image?: string;
-		totalTracks: number;
+		totalTracks?: number;
 		ownerName?: string;
 	};
 }
@@ -27,11 +27,13 @@ export function SpotifyPlaylistItem({ playlist }: SpotifyPlaylistItemProps) {
 				</div>
 			)}
 			<div className="flex min-w-0 flex-col">
-				<span className="truncate font-medium">{playlist.name}</span>
-				<span className="truncate text-muted-foreground text-xs">
-					{playlist.totalTracks} tracks
-					{playlist.ownerName && ` • ${playlist.ownerName}`}
-				</span>
+				<p className="truncate font-medium">{playlist.name}</p>
+				<p className="truncate text-muted-foreground text-xs">
+					{playlist.totalTracks !== undefined &&
+						`${playlist.totalTracks} tracks`}
+					{playlist.totalTracks !== undefined && playlist.ownerName && " • "}
+					{playlist.ownerName}
+				</p>
 			</div>
 		</div>
 	);

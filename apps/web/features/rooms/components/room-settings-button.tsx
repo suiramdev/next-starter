@@ -57,6 +57,7 @@ const formSchema = z.object({
 	playlistId: z.string().optional(),
 	playlistName: z.string().optional(),
 	playlistImage: z.string().optional(),
+	playlistAuthor: z.string().optional(),
 	playlistTotalTracks: z.number().optional(),
 });
 
@@ -90,6 +91,7 @@ export function RoomSettingsButton({
 			playlistId: room.playlistId ?? undefined,
 			playlistName: room.playlistName ?? undefined,
 			playlistImage: room.playlistImage ?? undefined,
+			playlistAuthor: room.playlistAuthor ?? undefined,
 			playlistTotalTracks: room.playlistTotalTracks ?? undefined,
 		},
 	});
@@ -103,6 +105,7 @@ export function RoomSettingsButton({
 				playlistId: room.playlistId ?? undefined,
 				playlistName: room.playlistName ?? undefined,
 				playlistImage: room.playlistImage ?? undefined,
+				playlistAuthor: room.playlistAuthor ?? undefined,
 				playlistTotalTracks: room.playlistTotalTracks ?? undefined,
 			});
 		}
@@ -216,6 +219,7 @@ export function RoomSettingsButton({
 									? {
 											name: form.watch("playlistName") ?? "Unknown Playlist",
 											image: form.watch("playlistImage") ?? undefined,
+											author: form.watch("playlistAuthor") ?? undefined,
 											totalTracks: form.watch("playlistTotalTracks"),
 										}
 									: undefined
