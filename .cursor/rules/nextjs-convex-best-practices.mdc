@@ -1,7 +1,6 @@
 ---
 description: Best practices for Next.js apps using Server Components and Convex for data fetching
-globs: apps/**/*.ts,apps/**/*.tsx
-alwaysApply: false
+globs: apps/**/*
 ---
 # Next.js & Convex Best Practices
 

@@ -1,11 +1,31 @@
 ---
 description: Component organization guidelines for Next.js apps using the features/ and apps/ folder structure
-globs: apps/**/*.ts,apps/**/*.tsx
+globs: apps/**/*
 ---
-
 # Component Organization Guidelines
 
 This project uses a **Hybrid Component Architecture** optimized for Next.js + Convex. It balances clean UI separation with the developer velocity of Convex's reactive data fetching.
+
+## Core Principle: Atomic Decomposition
+
+> **ALWAYS split components into atoms and molecules wherever possible.**
+
+This is the foundational rule of the architecture. Before writing any UI:
+1.  **Identify reusable primitives** — Can any part of this UI be an atom (Button, Avatar, Badge, Icon)?
+2.  **Compose into molecules** — Can groups of atoms form a reusable molecule (UserBadge, RoomCard, MessageBubble)?
+3.  **Only then build organisms** — Smart components should compose atoms/molecules, not contain raw markup.
+
+**Why this matters:**
+*   **Consistency**: Atoms enforce design system constraints across the entire app.
+*   **Testability**: Pure atoms/molecules are trivial to unit test in isolation.
+*   **Reusability**: A well-designed atom is used dozens of times; duplicated markup is used once.
+*   **Maintainability**: Changing a design token in one atom propagates everywhere.
+
+**Red flags that indicate missing decomposition:**
+*   A component file has more than ~50 lines of JSX.
+*   The same `className` patterns appear in multiple files.
+*   A "smart" component renders raw HTML elements (`<div>`, `<button>`) instead of UI primitives.
+*   Copy-pasting UI snippets between components.
 
 ## Directory Structure
 
@@ -34,11 +54,20 @@ packages/
 
 ## 1. Pure UI Components ("Atoms/Molecules")
 
-Low-level components must remain **strictly presentational** and **must reside in the shared UI package**.
+**This is where decomposition lives.** Low-level components must remain **strictly presentational** and **must reside in the shared UI package**. When in doubt, create a new atom/molecule here rather than embedding markup in a feature component.
+
 *   **Location**: `packages/ui/src/registry/[style-system]/ui/` (imported as `@repo/ui/registry/[style-system]/ui/...`)
 *   **Responsibilities**: Rendering UI based on props.
 *   **Restrictions**: No data fetching hooks (`useQuery`, etc.). No backend dependencies.
 *   **Props**: Primitives, simple objects, or callback functions.
+
+### Atom vs. Molecule Decision Guide
+| Type | Definition | Examples |
+|------|------------|----------|
+| **Atom** | Single-purpose, indivisible UI element | `Button`, `Avatar`, `Badge`, `Input`, `Icon` |
+| **Molecule** | Composition of 2+ atoms forming a cohesive unit | `UserBadge` (Avatar + Text), `SearchInput` (Input + Icon), `RoomCard` (multiple atoms) |
+
+**Rule of thumb**: If a piece of UI appears (or *could* appear) in more than one place, extract it.
 
 ### Style Systems & Inheritance
 *   **Base Registry (`new-york-v4`)**: This is the source of truth for atomic primitives (Button, Input, etc.).
@@ -63,12 +92,20 @@ export function RoomCard({ name, playerCount, onClick }: RoomCardProps) {
 ## 2. Smart Feature Components ("Organisms")
 
 High-level feature components act as **containers** for their domain. They "own" the data requirements for that feature.
+
+> **Organisms must compose atoms/molecules — they should contain minimal raw markup.**
+
+If you find yourself writing `<div className="...">` or `<button>` inside an organism, stop and ask: *should this be an atom/molecule in the UI package?*
+
 *   **Location**: `features/<feature>/components/`
 *   **Responsibilities**:
     *   Accepting `Preloaded` query references or ID props.
     *   Calling `usePreloadedQuery`, `useQuery`, or `useMutation`.
     *   Managing complex local state.
-    *   Composing Pure UI components from `@repo/ui` using the **app-appropriate style system registry**.
+    *   **Composing** Pure UI components from `@repo/ui` — NOT rendering raw HTML elements.
+*   **Restrictions**:
+    *   Avoid inline styles and complex `className` logic — push that into atoms/molecules.
+    *   Layout wrappers (`<div className="grid gap-4">`) are acceptable; styled content is not.
 *   **Benefit**: Encapsulates the feature completely. You can drop `<RoomsList />` on any page, pass it the query ref, and it works.
 
 ### Example: Smart Component
@@ -139,3 +176,14 @@ The `_components/` folder (colocated with `page.tsx`) is optional. Use it only f
 2.  **Velocity**: No need to create a `_components` wrapper for every single feature.
 3.  **Performance**: Components subscribe to exactly the data they need.
 4.  **Reusability**: "Smart" components are self-contained and easy to reuse across pages.
+
+## Pre-Commit Checklist: Component Decomposition
+
+Before committing any component, verify:
+
+- [ ] **No duplicated UI patterns** — If similar markup exists elsewhere, extract to a shared atom/molecule.
+- [ ] **Organisms use atoms/molecules** — Smart components import from `@repo/ui`, not render raw `<div>`/`<button>`.
+- [ ] **Atoms are truly atomic** — Each atom does ONE thing. If it has multiple responsibilities, split it.
+- [ ] **Molecules are composed** — Molecules import and compose atoms, not duplicate their internals.
+- [ ] **No styling in organisms** — Complex `className` logic belongs in the UI package, not feature components.
+- [ ] **Props are primitive** — Atoms/molecules receive simple props, not Convex documents or query results.
