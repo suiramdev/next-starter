@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { components } from "../../_generated/api";
 import { query } from "../../_generated/server";
 import { NotFoundError } from "../../shared/errors";
+import { authComponent } from "../auth/setup";
 
 export const listRooms = query({
 	args: {},
@@ -32,7 +33,7 @@ export const listRooms = query({
 		}),
 	),
 	handler: async (ctx) => {
-		const user = await ctx.auth.getUserIdentity();
+		const user = await authComponent.safeGetAuthUser(ctx);
 
 		const rooms = await ctx.db.query("rooms").collect();
 
@@ -105,9 +106,10 @@ export const getRoom = query({
 		playlistAuthor: v.optional(v.union(v.string(), v.null())),
 		playlistTotalTracks: v.optional(v.number()),
 		playerCount: v.number(),
+		isPlayer: v.boolean(),
 	}),
 	handler: async (ctx, args) => {
-		const user = await ctx.auth.getUserIdentity();
+		const user = await authComponent.safeGetAuthUser(ctx);
 
 		const room = await ctx.db.get(args.roomId);
 
@@ -135,6 +137,7 @@ export const getRoom = query({
 			playlistAuthor: room.playlistAuthor,
 			playlistTotalTracks: room.playlistTotalTracks,
 			playerCount: players.length,
+			isPlayer,
 		};
 	},
 });
