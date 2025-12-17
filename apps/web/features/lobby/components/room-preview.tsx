@@ -48,13 +48,14 @@ export function RoomPreview({ roomId }: RoomPreviewProps) {
 				name: room.name,
 				playlistName: room.playlistName,
 				playlistImage: room.playlistImage,
+				playlistTotalTracks: room.playlistTotalTracks,
 				playlistAuthor: room.playlistAuthor ?? "Unknown",
 				playerCount: room.playerCount,
 				status: room.status,
 				code: room.code,
 			}}
 			players={players?.map((player) => ({
-				id: player._id,
+				id: player.id,
 				name: player.user?.name,
 				score: player.score,
 				isHost: player.isHost,

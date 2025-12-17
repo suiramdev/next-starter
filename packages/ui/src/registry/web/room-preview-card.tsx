@@ -36,7 +36,7 @@ export function RoomPreviewCard({
 				<h2 className="font-bold text-lg">{room.name}</h2>
 				<div>
 					{room.playlistName ? (
-						<div className="flex items-center gap-3 rounded-lg border bg-card/50 p-3">
+						<div className="flex items-center gap-3 rounded-lg border bg-card p-3">
 							{room.playlistImage ? (
 								<Image
 									src={room.playlistImage}
@@ -87,7 +87,7 @@ export function RoomPreviewCard({
 						{players?.map((player, index) => (
 							<div
 								key={player.id}
-								className="flex items-center gap-3 rounded-lg border bg-card/50 p-2.5"
+								className="flex items-center gap-3 rounded-lg border bg-card p-2.5"
 							>
 								<Avatar className="size-9">
 									<AvatarFallback className="bg-linear-to-br from-primary/20 to-primary/10 text-xs">
@@ -138,7 +138,7 @@ export function RoomPreviewCardSkeleton() {
 				<Skeleton className="h-7 w-3/4" />
 
 				{/* Playlist card skeleton */}
-				<div className="flex items-center gap-3 rounded-lg border bg-card/50 p-3">
+				<div className="flex items-center gap-3 rounded-lg border bg-card p-3">
 					<Skeleton className="size-14 rounded-md" />
 					<div className="flex-1 space-y-2">
 						<Skeleton className="h-4 w-2/3" />

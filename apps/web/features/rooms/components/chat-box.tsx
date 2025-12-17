@@ -2,25 +2,35 @@
 
 import { api } from "@repo/convex/_generated/api";
 import type { Id } from "@repo/convex/_generated/dataModel";
+import { Skeleton } from "@repo/ui/registry/new-york-v4/ui/skeleton";
 import {
 	ChatBubble,
 	ChatContainer,
 	ChatInput,
 	ChatMessageList,
 } from "@repo/ui/registry/web/chat";
-import { type Preloaded, useMutation, usePreloadedQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
 interface ChatBoxProps {
-	preloadedQuery: Preloaded<typeof api.domains.messages.queries.listMessages>;
 	roomId: Id<"rooms">;
+	messages?: Array<{
+		id: string;
+		creationTime: number;
+		content: string;
+		userId: string;
+		user?: {
+			id: string;
+			name: string;
+			image?: string;
+		};
+	}>;
+	isLoading?: boolean;
 }
 
-export function ChatBox({ preloadedQuery, roomId }: ChatBoxProps) {
+export function ChatBox({ roomId, messages = [], isLoading }: ChatBoxProps) {
 	const { data: session } = authClient.useSession();
-	const messages = usePreloadedQuery(preloadedQuery);
-
 	const currentUserId = session?.user?.id;
 
 	const sendMessage = useMutation(
@@ -34,17 +44,17 @@ export function ChatBox({ preloadedQuery, roomId }: ChatBoxProps) {
 		if (existingMessages !== undefined) {
 			const now = Date.now();
 			const newMessage = {
-				_id: crypto.randomUUID() as Id<"messages">,
-				_creationTime: now,
+				id: crypto.randomUUID() as Id<"messages">,
+				creationTime: now,
 				content: args.content,
 				userId: currentUserId ?? "",
 				user: session?.user
 					? {
-							_id: session.user.id,
+							id: session.user.id,
 							name: session.user.name ?? "Unknown",
-							image: session.user.image ?? null,
+							image: session.user.image ?? undefined,
 						}
-					: null,
+					: undefined,
 			};
 
 			localStore.setQuery(
@@ -85,6 +95,30 @@ export function ChatBox({ preloadedQuery, roomId }: ChatBoxProps) {
 		}
 	};
 
+	if (isLoading) {
+		return (
+			<ChatContainer>
+				<ChatMessageList>
+					{Array.from({ length: 3 }, (_, i) => `skeleton-chat-${i}`).map(
+						(key) => (
+							<div key={key} className="flex gap-2 p-2">
+								<Skeleton className="h-8 w-8 shrink-0 rounded-full" />
+								<div className="flex flex-1 flex-col gap-1">
+									<Skeleton className="h-3 w-16" />
+									<Skeleton className="h-12 w-48 rounded-lg" />
+								</div>
+							</div>
+						),
+					)}
+				</ChatMessageList>
+				<div className="flex gap-2 p-2">
+					<Skeleton className="h-10 flex-1" />
+					<Skeleton className="h-10 w-10" />
+				</div>
+			</ChatContainer>
+		);
+	}
+
 	return (
 		<ChatContainer>
 			<ChatMessageList>
@@ -97,12 +131,12 @@ export function ChatBox({ preloadedQuery, roomId }: ChatBoxProps) {
 
 					return (
 						<ChatBubble
-							key={message._id}
+							key={message.id}
 							content={message.content}
 							isOwn={isOwnMessage}
 							senderName={message.user?.name ?? "Unknown"}
 							senderImage={message.user?.image ?? undefined}
-							timestamp={message._creationTime}
+							timestamp={message.creationTime}
 							showAvatar={showAvatar}
 							showName={showName}
 						/>

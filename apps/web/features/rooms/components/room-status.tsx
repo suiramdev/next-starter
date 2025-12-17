@@ -3,13 +3,9 @@
 import { api } from "@repo/convex/_generated/api";
 import type { Id } from "@repo/convex/_generated/dataModel";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
+import { Skeleton } from "@repo/ui/registry/new-york-v4/ui/skeleton";
 import { DiscIcon, PlayIcon } from "@repo/ui/registry/web/icons";
-import {
-	type Preloaded,
-	useMutation,
-	usePreloadedQuery,
-	useQuery,
-} from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import Image from "next/image";
 import { useState } from "react";
 import { LinkSpotifyButton } from "@/features/spotify/components/link-spotify-button";
@@ -17,8 +13,17 @@ import { SpotifyPlaylistSelector } from "@/features/spotify/components/spotify-p
 import { authClient } from "@/lib/auth-client";
 
 interface RoomStatusProps {
-	preloadedQuery: Preloaded<typeof api.domains.rooms.queries.getRoom>;
 	roomId: Id<"rooms">;
+	room?: {
+		status: "waiting" | "playing" | "finished";
+		hostId: string;
+		playlistId?: string | null;
+		playlistName?: string | null;
+		playlistImage?: string | null;
+		playlistAuthor?: string | null;
+		playlistTotalTracks?: number | null;
+	} | null;
+	isLoading?: boolean;
 }
 
 const STATUS_LABELS = {
@@ -27,9 +32,8 @@ const STATUS_LABELS = {
 	finished: "Game finished",
 };
 
-export function RoomStatus({ preloadedQuery, roomId }: RoomStatusProps) {
+export function RoomStatus({ roomId, room, isLoading }: RoomStatusProps) {
 	const { data: session } = authClient.useSession();
-	const room = usePreloadedQuery(preloadedQuery);
 	const hasSpotifyLinked = useQuery(
 		api.domains.spotify.queries.hasSpotifyAccount,
 	);
@@ -54,6 +58,18 @@ export function RoomStatus({ preloadedQuery, roomId }: RoomStatusProps) {
 		});
 	};
 
+	if (isLoading || !room) {
+		return (
+			<div className="flex flex-col gap-4 rounded-xl border bg-card p-4 backdrop-blur-sm">
+				<Skeleton className="h-5 w-32" />
+				<div className="flex flex-col gap-2">
+					<Skeleton className="h-10 w-full" />
+					<Skeleton className="h-10 w-full" />
+				</div>
+			</div>
+		);
+	}
+
 	const isHost = session?.user?.id === room.hostId;
 	const hasPlaylist = !!room.playlistId;
 	const canStart = isHost && hasPlaylist && room.status === "waiting";
@@ -70,7 +86,7 @@ export function RoomStatus({ preloadedQuery, roomId }: RoomStatusProps) {
 	};
 
 	return (
-		<div className="flex flex-col gap-4 rounded-xl border bg-card/50 p-4 backdrop-blur-sm">
+		<div className="flex flex-col gap-4 rounded-xl border bg-card p-4 backdrop-blur-sm">
 			{/* Status Badge */}
 			<p className="font-medium text-sm">{statusLabel}</p>
 
@@ -86,7 +102,7 @@ export function RoomStatus({ preloadedQuery, roomId }: RoomStatusProps) {
 											name: room.playlistName ?? "Unknown Playlist",
 											image: room.playlistImage ?? undefined,
 											author: room.playlistAuthor ?? undefined,
-											totalTracks: room.playlistTotalTracks,
+											totalTracks: room.playlistTotalTracks ?? undefined,
 										}
 									: undefined
 							}

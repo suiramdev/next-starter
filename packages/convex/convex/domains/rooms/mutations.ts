@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { internal } from "../../_generated/api";
 import { mutation } from "../../_generated/server";
 import {
 	ForbiddenError,
@@ -11,8 +12,8 @@ export const createRoom = mutation({
 	args: {
 		name: v.string(),
 		isPrivate: v.boolean(),
-		playlistId: v.optional(v.string()),
-		playlistName: v.optional(v.string()),
+		playlistId: v.string(),
+		playlistName: v.string(),
 		playlistImage: v.optional(v.string()),
 		playlistAuthor: v.optional(v.union(v.string(), v.null())),
 		playlistTotalTracks: v.optional(v.number()),
@@ -22,6 +23,10 @@ export const createRoom = mutation({
 
 		if (!user) {
 			throw new UnauthorizedError();
+		}
+
+		if (!args.playlistId || !args.playlistName) {
+			throw new ForbiddenError("Playlist is required to create a room");
 		}
 
 		const roomId = await ctx.db.insert("rooms", {
@@ -172,7 +177,9 @@ export const kickUser = mutation({
 export const start = mutation({
 	args: {
 		roomId: v.id("rooms"),
+		totalRounds: v.optional(v.number()),
 	},
+	returns: v.null(),
 	handler: async (ctx, args) => {
 		const user = await authComponent.safeGetAuthUser(ctx);
 
@@ -190,9 +197,21 @@ export const start = mutation({
 			throw new ForbiddenError();
 		}
 
-		await ctx.db.patch(args.roomId, {
-			status: "playing",
+		if (!room.playlistId || !room.playlistName) {
+			throw new ForbiddenError();
+		}
+
+		// Schedule the game start action with playlist info
+		await ctx.scheduler.runAfter(0, internal.domains.game.actions.startGame, {
+			roomId: args.roomId,
+			playlistId: room.playlistId,
+			playlistName: room.playlistName,
+			playlistImage: room.playlistImage,
+			playlistAuthor: room.playlistAuthor,
+			totalRounds: args.totalRounds ?? 10,
 		});
+
+		return null;
 	},
 });
 

@@ -34,12 +34,7 @@ import {
 import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
 import { Switch } from "@repo/ui/registry/new-york-v4/ui/switch";
 import { SettingsIcon } from "@repo/ui/registry/web/icons";
-import {
-	type Preloaded,
-	useMutation,
-	usePreloadedQuery,
-	useQuery,
-} from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -64,16 +59,28 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 interface RoomSettingsButtonProps {
-	preloadedQuery: Preloaded<typeof api.domains.rooms.queries.getRoom>;
+	room: {
+		_id: Id<"rooms">;
+		name: string;
+		isPrivate: boolean;
+		status: "waiting" | "playing" | "finished";
+		hostId: string;
+		code?: string;
+		playlistId?: string;
+		playlistName?: string;
+		playlistImage?: string;
+		playlistAuthor?: string | null;
+		playlistTotalTracks?: number;
+		playerCount: number;
+	};
 	roomId: Id<"rooms">;
 }
 
 export function RoomSettingsButton({
-	preloadedQuery,
+	room,
 	roomId,
 }: RoomSettingsButtonProps) {
 	const { data: session } = authClient.useSession();
-	const room = usePreloadedQuery(preloadedQuery);
 	const hasSpotifyLinked = useQuery(
 		api.domains.spotify.queries.hasSpotifyAccount,
 	);

@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { components } from "../../_generated/api";
 import { query } from "../../_generated/server";
 import { NotFoundError } from "../../shared/errors";
 
@@ -21,6 +22,13 @@ export const listRooms = query({
 			playlistAuthor: v.optional(v.union(v.string(), v.null())),
 			playlistTotalTracks: v.optional(v.number()),
 			playerCount: v.number(),
+			players: v.array(
+				v.object({
+					userId: v.string(),
+					name: v.string(),
+					image: v.optional(v.string()),
+				}),
+			),
 		}),
 	),
 	handler: async (ctx) => {
@@ -37,6 +45,23 @@ export const listRooms = query({
 
 				const isPlayer = players.some((p) => p.userId === user?._id);
 
+				// Get user data for first 3 players
+				const playerUsers = await Promise.all(
+					players.slice(0, 3).map(async (player) => {
+						const userData = await ctx.runQuery(
+							components.betterAuth.queries.users.getUser,
+							{
+								userId: player.userId,
+							},
+						);
+						return {
+							userId: player.userId,
+							name: userData?.name ?? "Unknown",
+							image: userData?.image ?? undefined,
+						};
+					}),
+				);
+
 				return {
 					_id: room._id,
 					name: room.name,
@@ -50,6 +75,7 @@ export const listRooms = query({
 					playlistAuthor: room.playlistAuthor,
 					playlistTotalTracks: room.playlistTotalTracks,
 					playerCount: players.length,
+					players: playerUsers,
 				};
 			}),
 		);

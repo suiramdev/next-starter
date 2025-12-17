@@ -1,6 +1,6 @@
 "use client";
 
-import type { api } from "@repo/convex/_generated/api";
+import type { Id } from "@repo/convex/_generated/dataModel";
 import { cn } from "@repo/ui/lib/utils";
 import {
 	Avatar,
@@ -14,6 +14,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@repo/ui/registry/new-york-v4/ui/dropdown-menu";
+import { Skeleton } from "@repo/ui/registry/new-york-v4/ui/skeleton";
 import {
 	Table,
 	TableBody,
@@ -27,19 +28,67 @@ import {
 	MoreHorizontalIcon,
 	UserXIcon,
 } from "@repo/ui/registry/web/icons";
-import { type Preloaded, usePreloadedQuery } from "convex/react";
 import { authClient } from "@/lib/auth-client";
 
 interface PlayersListProps {
-	preloadedQuery: Preloaded<typeof api.domains.players.queries.listPlayers>;
-	hostId?: string;
+	roomId: Id<"rooms">;
+	players?: Array<{
+		id: string;
+		userId: string;
+		isHost: boolean;
+		score: number;
+		user?: {
+			id: string;
+			name: string;
+			image?: string;
+		};
+	}>;
+	isLoading?: boolean;
 }
 
-export function PlayersList({ preloadedQuery, hostId }: PlayersListProps) {
-	const players = usePreloadedQuery(preloadedQuery);
+export function PlayersList({
+	roomId: _roomId,
+	players = [],
+	isLoading,
+}: PlayersListProps) {
 	const { data: session } = authClient.useSession();
 
+	// Get hostId from first player that is host
+	const hostId = players.find((p) => p.isHost)?.userId;
 	const isHost = hostId === session?.user?.id;
+
+	if (isLoading) {
+		return (
+			<div className="flex flex-col gap-3 rounded-xl border bg-card p-4">
+				<Skeleton className="h-5 w-24" />
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead>Player</TableHead>
+							<TableHead>Score</TableHead>
+							<TableHead />
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{Array.from({ length: 3 }, (_, i) => `skeleton-${i}`).map((key) => (
+							<TableRow key={key}>
+								<TableCell>
+									<div className="flex items-center gap-3">
+										<Skeleton className="h-8 w-8 rounded-full" />
+										<Skeleton className="h-4 w-24" />
+									</div>
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-4 w-12" />
+								</TableCell>
+								<TableCell />
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</div>
+		);
+	}
 
 	return (
 		<Table>
@@ -51,9 +100,9 @@ export function PlayersList({ preloadedQuery, hostId }: PlayersListProps) {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{players.map((player, index) => {
+				{players.map((player) => {
 					return (
-						<TableRow key={player._id} className="group">
+						<TableRow key={player.id} className="group">
 							<TableCell>
 								<div className="flex items-center gap-3">
 									<Avatar className="size-8">
@@ -62,12 +111,12 @@ export function PlayersList({ preloadedQuery, hostId }: PlayersListProps) {
 											alt={player.user?.name ?? undefined}
 										/>
 										<AvatarFallback className="text-xs">
-											{player.user?.name[0]?.toUpperCase() ?? index + 1}
+											{player.user?.name?.[0]?.toUpperCase() ?? "?"}
 										</AvatarFallback>
 									</Avatar>
 									<div className="flex items-center gap-2">
 										<span className="font-medium text-sm">
-											{player.user?.name ?? `Player ${index + 1}`}
+											{player.user?.name ?? "Unknown"}
 										</span>
 										{player.isHost && (
 											<CrownIcon className="size-3.5 text-yellow-500" />

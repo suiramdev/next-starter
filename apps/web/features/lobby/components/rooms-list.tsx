@@ -1,39 +1,38 @@
 "use client";
 
 import { api } from "@repo/convex/_generated/api";
-import type { Id } from "@repo/convex/_generated/dataModel";
-import { cn } from "@repo/ui/lib/utils";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@repo/ui/registry/new-york-v4/ui/table";
-import { DiscIcon, Users } from "@repo/ui/registry/web/icons";
+import { RoomCard } from "@repo/ui/registry/web/room-card";
 import { type Preloaded, useMutation, usePreloadedQuery } from "convex/react";
-import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { toast } from "sonner";
-import { RoomPreview } from "./room-preview";
+import { JoinRoomDialog, JoinRoomDialogTrigger } from "./join-room-dialog";
 
 type RoomsListProps = {
 	preloadedQuery: Preloaded<typeof api.domains.rooms.queries.listRooms>;
 };
 
 export function RoomsList({ preloadedQuery }: RoomsListProps) {
-	const [selectedRoomId, setSelectedRoomId] = useState<Id<"rooms"> | undefined>(
-		undefined,
-	);
 	const rooms = usePreloadedQuery(preloadedQuery);
 	const joinRoom = useMutation(api.domains.rooms.mutations.joinRoom);
 	const router = useRouter();
 
-	const handleJoin = async (e: React.MouseEvent, code: string | undefined) => {
-		e.stopPropagation();
+	// Filter for public rooms only and sort by status (available games first)
+	const publicRooms =
+		rooms
+			?.filter((room) => !room.isPrivate)
+			.sort((a, b) => {
+				// Priority: waiting (0) > playing (1) > finished (2)
+				const statusPriority = {
+					waiting: 0,
+					playing: 1,
+					finished: 2,
+				};
+				return statusPriority[a.status] - statusPriority[b.status];
+			}) ?? [];
+
+	const handleJoin = async (code: string | undefined) => {
 		if (!code) return;
 		try {
 			const roomId = await joinRoom({ code });
@@ -44,96 +43,55 @@ export function RoomsList({ preloadedQuery }: RoomsListProps) {
 		}
 	};
 
-	return (
-		<div className="flex h-full w-full">
-			<Table>
-				<TableHeader>
-					<TableRow>
-						<TableHead>Room</TableHead>
-						<TableHead>Playlist</TableHead>
-						<TableHead>Status</TableHead>
-						<TableHead>Players</TableHead>
-						<TableHead />
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{rooms?.map((room) => {
-						const isSelected = selectedRoomId === room._id;
+	const header = (
+		<div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+			<h2 className="font-semibold text-xl">Play with others</h2>
+			<div className="flex items-center gap-2">
+				<JoinRoomDialog>
+					<JoinRoomDialogTrigger asChild>
+						<Button variant="secondary">Join with Code</Button>
+					</JoinRoomDialogTrigger>
+				</JoinRoomDialog>
+				<Button asChild>
+					<Link href="/rooms/new">Create Room</Link>
+				</Button>
+			</div>
+		</div>
+	);
 
-						return (
-							<TableRow
-								key={room._id}
-								className={cn(
-									"group cursor-pointer transition-colors",
-									isSelected && "bg-accent",
-								)}
-								onClick={() => setSelectedRoomId(room._id)}
-							>
-								<TableCell>
-									<span className="font-medium">{room.name}</span>
-								</TableCell>
-								<TableCell>
-									{room.playlistName ? (
-										<div className="flex items-center gap-2">
-											{room.playlistImage ? (
-												<Image
-													src={room.playlistImage}
-													alt={room.playlistName}
-													className="rounded object-cover"
-													width={24}
-													height={24}
-												/>
-											) : (
-												<div className="relative aspect-square size-6 rounded-xs bg-primary/20">
-													<DiscIcon className="absolute inset-0 m-auto size-3 text-muted-foreground" />
-												</div>
-											)}
-											<span className="text-muted-foreground">
-												{room.playlistName}
-											</span>
-										</div>
-									) : (
-										<span className="text-muted-foreground">
-											Host is choosing a playlist...
-										</span>
-									)}
-								</TableCell>
-								<TableCell>
-									<span className="text-muted-foreground">
-										{room.status === "waiting"
-											? "Waiting for the host"
-											: room.status === "playing"
-												? "Game in progress"
-												: "Game finished"}
-									</span>
-								</TableCell>
-								<TableCell>
-									<div className="flex items-center gap-2 text-muted-foreground">
-										<Users className="h-4 w-4" />
-										<span>
-											{room.playerCount} player
-											{room.playerCount !== 1 ? "s" : ""}
-										</span>
-									</div>
-								</TableCell>
-								<TableCell className="text-right">
-									<Button
-										onClick={(e) => handleJoin(e, room.code)}
-										disabled={room.isPrivate}
-									>
-										Join
-									</Button>
-								</TableCell>
-							</TableRow>
-						);
-					})}
-				</TableBody>
-			</Table>
-			{selectedRoomId && (
-				<div className="ml-8 hidden w-1/3 md:block">
-					<RoomPreview roomId={selectedRoomId} />
-				</div>
-			)}
+	if (publicRooms.length === 0) {
+		return (
+			<div className="flex flex-col gap-4">
+				{header}
+				<p className="text-muted-foreground">
+					No public rooms available at the moment. Create your own room to get
+					started!
+				</p>
+			</div>
+		);
+	}
+
+	return (
+		<div className="flex flex-col gap-4">
+			{header}
+			<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+				{publicRooms.map((room) => (
+					<RoomCard
+						key={room._id}
+						name={room.name}
+						playlistName={room.playlistName}
+						playlistImage={room.playlistImage}
+						playerCount={room.playerCount}
+						players={room.players}
+						disabled={room.status === "finished"}
+						onClick={() => {
+							if (room.status !== "finished") {
+								handleJoin(room.code);
+							}
+						}}
+					/>
+				))}
+			</div>
 		</div>
 	);
 }

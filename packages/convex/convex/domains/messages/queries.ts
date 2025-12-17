@@ -9,16 +9,15 @@ export const listMessages = query({
 	},
 	returns: v.array(
 		v.object({
-			_id: v.id("messages"),
-			_creationTime: v.number(),
+			id: v.id("messages"),
+			creationTime: v.number(),
 			content: v.string(),
 			userId: v.string(),
-			user: v.union(
-				v.null(),
+			user: v.optional(
 				v.object({
-					_id: v.string(),
+					id: v.string(),
 					name: v.string(),
-					image: v.optional(v.union(v.null(), v.string())),
+					image: v.optional(v.string()),
 				}),
 			),
 		}),
@@ -46,17 +45,17 @@ export const listMessages = query({
 				);
 
 				return {
-					_id: message._id,
-					_creationTime: message._creationTime,
+					id: message._id,
+					creationTime: message._creationTime,
 					content: message.content,
 					userId: message.userId,
 					user: user
 						? {
-								_id: user._id,
+								id: user._id,
 								name: user.name,
-								image: user.image,
+								image: user.image ?? undefined,
 							}
-						: null,
+						: undefined,
 				};
 			}),
 		);
@@ -64,4 +63,3 @@ export const listMessages = query({
 		return enrichedMessages;
 	},
 });
-

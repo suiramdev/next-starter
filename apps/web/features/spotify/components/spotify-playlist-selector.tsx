@@ -22,7 +22,7 @@ import { useDebouncedCallback } from "../../../hooks/use-debounce";
 interface SpotifyPlaylist {
 	id: string;
 	name: string;
-	images: { url: string; height?: number | null; width?: number | null }[];
+	images?: { url: string; height?: number | null; width?: number | null }[] | null;
 	tracks: { total: number };
 	owner?: { display_name?: string | null };
 }
@@ -60,7 +60,7 @@ export function SpotifyPlaylistSelector({
 	const displayPlaylist = selectedPlaylist
 		? {
 				name: selectedPlaylist.name,
-				image: selectedPlaylist.images[0]?.url,
+				image: selectedPlaylist.images?.[0]?.url,
 				totalTracks: selectedPlaylist.tracks.total,
 				ownerName: selectedPlaylist.owner?.display_name ?? undefined,
 			}
@@ -98,7 +98,7 @@ export function SpotifyPlaylistSelector({
 			onValueChange?.(
 				playlist.id,
 				playlist.name,
-				playlist.images[0]?.url,
+				playlist.images?.[0]?.url,
 				playlist.owner?.display_name ?? null,
 				playlist.tracks.total,
 			);
@@ -110,7 +110,7 @@ export function SpotifyPlaylistSelector({
 	// Transform raw Spotify API playlist to SpotifyPlaylistItem format
 	const toPlaylistItemProps = (playlist: SpotifyPlaylist) => ({
 		name: playlist.name,
-		image: playlist.images[0]?.url,
+		image: playlist.images?.[0]?.url,
 		totalTracks: playlist.tracks.total,
 		ownerName: playlist.owner?.display_name ?? undefined,
 	});

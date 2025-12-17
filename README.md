@@ -48,7 +48,7 @@ The admin app features a modern sidebar navigation, breadcrumb navigation, and a
 
 ### Web App (`apps/web`)
 
-The **Web App** serves as an example application demonstrating how to build interactive, engaging experiences with the Next Starter boilerplate. Currently, it's planned to be a **Spotify Blind Test Game** - an interactive music guessing game where players listen to song snippets and try to identify the track, artist, or album.
+The **Web App** serves as an example application demonstrating how to build interactive, engaging experiences with the Next Starter boilerplate. Currently, it's planned to be a **Spotify Blind Test Game** - an interactive music guessing game where players listen to track snippets and try to identify the track, artist, or album.
 
 This application will showcase:
 

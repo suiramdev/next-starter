@@ -35,4 +35,3 @@ export class NotFoundError extends ConvexError<{
 		});
 	}
 }
-

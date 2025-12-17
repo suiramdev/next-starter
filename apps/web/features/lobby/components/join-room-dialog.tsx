@@ -15,10 +15,11 @@ import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
 import { Label } from "@repo/ui/registry/new-york-v4/ui/label";
 import { useMutation } from "convex/react";
 import { useRouter } from "next/navigation";
+import type React from "react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export function JoinRoomDialog() {
+export function JoinRoomDialog({ children }: React.PropsWithChildren) {
 	const [open, setOpen] = useState(false);
 	const [code, setCode] = useState("");
 	const joinRoom = useMutation(api.domains.rooms.mutations.joinRoom);
@@ -39,9 +40,7 @@ export function JoinRoomDialog() {
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button variant="outline">Join with Code</Button>
-			</DialogTrigger>
+			{children}
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Join a Room</DialogTitle>
@@ -70,3 +69,5 @@ export function JoinRoomDialog() {
 		</Dialog>
 	);
 }
+
+export const JoinRoomDialogTrigger = DialogTrigger;

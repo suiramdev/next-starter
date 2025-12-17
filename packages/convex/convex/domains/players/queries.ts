@@ -1,7 +1,7 @@
-import { NotFoundError } from "convex/shared/errors";
 import { v } from "convex/values";
 import { components } from "../../_generated/api";
 import { query } from "../../_generated/server";
+import { NotFoundError } from "../../shared/errors";
 
 export const listPlayers = query({
 	args: {
@@ -9,16 +9,15 @@ export const listPlayers = query({
 	},
 	returns: v.array(
 		v.object({
-			_id: v.id("players"),
+			id: v.id("players"),
 			userId: v.string(),
 			isHost: v.boolean(),
 			score: v.number(),
-			user: v.union(
-				v.null(),
+			user: v.optional(
 				v.object({
-					_id: v.string(),
+					id: v.string(),
 					name: v.string(),
-					image: v.optional(v.union(v.null(), v.string())),
+					image: v.optional(v.string()),
 				}),
 			),
 		}),
@@ -45,17 +44,17 @@ export const listPlayers = query({
 				);
 
 				return {
-					_id: player._id,
+					id: player._id,
 					userId: player.userId,
 					isHost: player.userId === room.hostId,
 					score: player.score,
 					user: user
 						? {
-								_id: user._id,
+								id: user._id,
 								name: user.name,
-								image: user.image,
+								image: user.image ?? undefined,
 							}
-						: null,
+						: undefined,
 				};
 			}),
 		);
