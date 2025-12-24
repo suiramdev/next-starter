@@ -18,16 +18,17 @@ export function RoomsList({ preloadedQuery }: RoomsListProps) {
 	const joinRoom = useMutation(api.domains.rooms.mutations.joinRoom);
 	const router = useRouter();
 
-	// Filter for public rooms only and sort by status (available games first)
+	// Filter for public rooms that are open to join (waiting or playing) and sort by status
 	const publicRooms =
 		rooms
-			?.filter((room) => !room.isPrivate)
+			?.filter(
+				(room) => !room.isPrivate && (room.status === "waiting" || room.status === "playing"),
+			)
 			.sort((a, b) => {
-				// Priority: waiting (0) > playing (1) > finished (2)
+				// Priority: waiting (0) > playing (1)
 				const statusPriority = {
 					waiting: 0,
 					playing: 1,
-					finished: 2,
 				};
 				return statusPriority[a.status] - statusPriority[b.status];
 			}) ?? [];
@@ -83,11 +84,8 @@ export function RoomsList({ preloadedQuery }: RoomsListProps) {
 						playlistImage={room.playlistImage}
 						playerCount={room.playerCount}
 						players={room.players}
-						disabled={room.status === "finished"}
 						onClick={() => {
-							if (room.status !== "finished") {
-								handleJoin(room.code);
-							}
+							handleJoin(room.code);
 						}}
 					/>
 				))}
