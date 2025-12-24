@@ -2,10 +2,13 @@
 
 import { api } from "@repo/convex/_generated/api";
 import type { Id } from "@repo/convex/_generated/dataModel";
-import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
-import { Input } from "@repo/ui/registry/new-york-v4/ui/input";
-import { GuessFeedback } from "@repo/ui/registry/web/guess-feedback";
-import { SendIcon } from "@repo/ui/registry/web/icons";
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupButton,
+	InputGroupInput,
+} from "@repo/ui/registry/new-york-v4/ui/input-group";
+import { ArrowRightIcon } from "@repo/ui/registry/web/icons";
 import { useMutation } from "convex/react";
 import { useRef, useState } from "react";
 
@@ -108,7 +111,6 @@ export function GuessInput({
 
 	// If user has guessed both, they're done for this round
 	const hasGuessedBoth = userGuessedArtist && userGuessedTitle;
-	const isFullyDisabled = disabled || hasGuessedBoth;
 
 	// Dynamic placeholder based on what's left to guess
 	const getPlaceholder = () => {
@@ -120,32 +122,29 @@ export function GuessInput({
 	};
 
 	return (
-		<div className="flex flex-col gap-2">
-			{feedback && (
-				<GuessFeedback type={feedback.type} message={feedback.message} />
-			)}
-
-			{/* Input form */}
-			<form onSubmit={handleSubmit} className="flex gap-2">
-				<Input
+		<form onSubmit={handleSubmit}>
+			<InputGroup>
+				<InputGroupInput
 					ref={inputRef}
 					type="text"
 					value={guess}
 					onChange={(e) => setGuess(e.target.value)}
 					onKeyDown={handleKeyDown}
 					placeholder={getPlaceholder()}
-					disabled={isFullyDisabled || isSubmitting}
-					className="flex-1"
+					disabled={disabled || isSubmitting}
 					autoComplete="off"
 				/>
-				<Button
-					type="submit"
-					disabled={!guess.trim() || isSubmitting || isFullyDisabled}
-					size="icon"
-				>
-					<SendIcon className="size-4" />
-				</Button>
-			</form>
-		</div>
+				<InputGroupAddon align="inline-end">
+					<InputGroupButton
+						type="submit"
+						size="icon-xs"
+						disabled={!guess.trim() || isSubmitting}
+						aria-label="Send guess"
+					>
+						<ArrowRightIcon className="size-4" />
+					</InputGroupButton>
+				</InputGroupAddon>
+			</InputGroup>
+		</form>
 	);
 }

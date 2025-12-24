@@ -4,8 +4,7 @@ import type { Id } from "@repo/convex/_generated/dataModel";
 import { createAuth } from "@repo/convex/domains/auth/setup";
 import { fetchQuery, preloadQuery } from "convex/nextjs";
 import { notFound } from "next/navigation";
-import { RoomGameView } from "@/features/rooms/components/room-game-view";
-import { RoomLobbyView } from "@/features/rooms/components/room-lobby-view";
+import { RoomPageContainer } from "./_components/room-page-container";
 
 interface RoomPageProps {
 	params: Promise<{ id: string }>;
@@ -26,7 +25,13 @@ export default async function RoomPage({ params }: RoomPageProps) {
 		{ token },
 	);
 
-	if (!room || !room.isPlayer) {
+	// If room is not found, redirect to 404
+	if (!room) {
+		notFound();
+	}
+
+	// If user is not a player in the room, redirect to 404
+	if (!room.isPlayer) {
 		notFound();
 	}
 
@@ -43,58 +48,17 @@ export default async function RoomPage({ params }: RoomPageProps) {
 		{ token },
 	);
 
-	const messagesQuery = await preloadQuery(
-		api.domains.messages.queries.listMessages,
+	const gameQuery = await preloadQuery(
+		api.domains.game.queries.getCurrentGame,
 		{ roomId: id as Id<"rooms"> },
 		{ token },
 	);
 
-	// Preload game data if room is playing or finished
-	let gameQuery = null;
-	let currentRoundQuery = null;
-
-	if (room.status === "playing" || room.status === "finished") {
-		const game = await fetchQuery(
-			api.domains.game.queries.getCurrentGame,
-			{ roomId: id as Id<"rooms"> },
-			{ token },
-		).catch(() => null);
-
-		if (game?._id) {
-			gameQuery = await preloadQuery(
-				api.domains.game.queries.getCurrentGame,
-				{ roomId: id as Id<"rooms"> },
-				{ token },
-			).catch(() => null);
-
-			if (gameQuery) {
-				currentRoundQuery = await preloadQuery(
-					api.domains.game.queries.getCurrentRound,
-					{ gameId: game._id },
-					{ token },
-				).catch(() => null);
-			}
-		}
-	}
-
-	// Render appropriate view based on room status
-	if (room.status === "waiting") {
-		return (
-			<RoomLobbyView
-				preloadedRoom={roomQuery}
-				preloadedPlayers={playersQuery}
-				preloadedMessages={messagesQuery}
-			/>
-		);
-	}
-
 	return (
-		<RoomGameView
+		<RoomPageContainer
 			preloadedRoom={roomQuery}
 			preloadedPlayers={playersQuery}
-			preloadedMessages={messagesQuery}
 			preloadedGame={gameQuery}
-			preloadedCurrentRound={currentRoundQuery}
 		/>
 	);
 }

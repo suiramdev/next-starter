@@ -8,6 +8,7 @@ import {
 	AvatarImage,
 } from "@repo/ui/registry/new-york-v4/ui/avatar";
 import { Button } from "@repo/ui/registry/new-york-v4/ui/button";
+import { Card, CardContent } from "@repo/ui/registry/new-york-v4/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -58,36 +59,7 @@ export function PlayersList({
 	const isHost = hostId === session?.user?.id;
 
 	if (isLoading) {
-		return (
-			<div className="flex flex-col gap-3 rounded-xl border bg-card p-4">
-				<Skeleton className="h-5 w-24" />
-				<Table>
-					<TableHeader>
-						<TableRow>
-							<TableHead>Player</TableHead>
-							<TableHead>Score</TableHead>
-							<TableHead />
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{Array.from({ length: 3 }, (_, i) => `skeleton-${i}`).map((key) => (
-							<TableRow key={key}>
-								<TableCell>
-									<div className="flex items-center gap-3">
-										<Skeleton className="h-8 w-8 rounded-full" />
-										<Skeleton className="h-4 w-24" />
-									</div>
-								</TableCell>
-								<TableCell>
-									<Skeleton className="h-4 w-12" />
-								</TableCell>
-								<TableCell />
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</div>
-		);
+		return <PlayersListSkeleton />;
 	}
 
 	return (
@@ -182,3 +154,38 @@ function PlayerActionsMenu({ children }: PlayerActionsMenuProps) {
 }
 
 const PlayerActionsMenuTrigger = DropdownMenuTrigger;
+
+export function PlayersListSkeleton() {
+	return (
+		<Card>
+			<CardContent className="flex flex-col gap-3 pt-6">
+				<Skeleton className="h-5 w-24" />
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead>Player</TableHead>
+							<TableHead>Score</TableHead>
+							<TableHead />
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{Array.from({ length: 3 }, (_, i) => `skeleton-${i}`).map((key) => (
+							<TableRow key={key}>
+								<TableCell>
+									<div className="flex items-center gap-3">
+										<Skeleton className="h-8 w-8 rounded-full" />
+										<Skeleton className="h-4 w-24" />
+									</div>
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-4 w-12" />
+								</TableCell>
+								<TableCell />
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</CardContent>
+		</Card>
+	);
+}
