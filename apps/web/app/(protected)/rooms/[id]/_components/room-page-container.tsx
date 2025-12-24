@@ -17,8 +17,9 @@ export function RoomPageContainer({
 	preloadedGame,
 }: RoomPageContainerProps) {
 	const room = usePreloadedQuery(preloadedRoom);
+	const game = usePreloadedQuery(preloadedGame);
 
-	if (room.status === "playing") {
+	if (room.status === "playing" || room.status === "finished") {
 		return (
 			<Game
 				preloadedRoom={preloadedRoom}

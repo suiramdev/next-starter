@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { Preloaded } from "convex/react";
 import { usePreloadedQuery } from "convex/react";
 import { GameView } from "./game-view";
+import { PostGameLeaderboard } from "./post-game-leaderboard";
 
 interface GameProps {
 	preloadedRoom: Preloaded<typeof api.domains.rooms.queries.getRoom>;
@@ -26,8 +27,18 @@ export function Game({
 		...convexQuery(api.domains.game.queries.getCurrentRound, {
 			gameId: game?._id ?? ("skip" as Id<"games">),
 		}),
-		enabled: !!game?._id,
+		enabled: !!game?._id && game?.status === "playing",
 	});
+
+	// If game is finished, show post-game leaderboard
+	if (game?.status === "finished" || room.status === "finished") {
+		return (
+			<PostGameLeaderboard
+				gameId={game?._id ?? ("skip" as Id<"games">)}
+				roomId={room._id}
+			/>
+		);
+	}
 
 	const isLoading = !game || isLoadingRound || !round;
 

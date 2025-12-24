@@ -3,6 +3,10 @@
 import { CountdownOverlay } from "@repo/ui/registry/web/countdown-overlay";
 
 export function CountdownView() {
-	return <CountdownOverlay />;
+	return (
+		<div className="relative flex h-full flex-col">
+			<CountdownOverlay />
+		</div>
+	);
 }
 

@@ -39,9 +39,14 @@ interface CreateRoomFormValues {
 	playlistTotalTracks?: number;
 }
 
-export function CreateRoomForm() {
+interface CreateRoomFormProps {
+	router?: ReturnType<typeof useRouter>;
+}
+
+export function CreateRoomForm({ router: routerProp }: CreateRoomFormProps = {}) {
 	const session = authClient.useSession();
-	const router = useRouter();
+	const routerFromHook = useRouter();
+	const router = routerProp ?? routerFromHook;
 	const [searchQuery, setSearchQuery] = useState("");
 	const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
 
@@ -91,11 +96,16 @@ export function CreateRoomForm() {
 		}
 	};
 
+	const handleCancel = () => {
+		router.back();
+	};
+
 	return (
-		<div className="w-full">
-			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-					<FieldGroup>
+		<>
+			<div className="w-full pb-24">
+				<Form {...form}>
+					<form id="create-room-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+						<FieldGroup>
 						<Controller
 							name="name"
 							control={form.control}
@@ -249,21 +259,41 @@ export function CreateRoomForm() {
 								</Field>
 							)}
 						/>
-					</FieldGroup>
-					<div className="flex justify-end gap-2">
-						<Button
-							type="button"
-							variant="outline"
-							onClick={() => router.back()}
-						>
-							Cancel
-						</Button>
-						<Button type="submit" disabled={!isValid || isSubmitting}>
-							Create
-						</Button>
-					</div>
-				</form>
-			</Form>
+						</FieldGroup>
+					</form>
+				</Form>
+			</div>
+			<CreateRoomFormActions
+				isValid={isValid}
+				isSubmitting={isSubmitting}
+				onCancel={handleCancel}
+				formId="create-room-form"
+			/>
+		</>
+	);
+}
+
+export function CreateRoomFormActions({
+	isValid,
+	isSubmitting,
+	onCancel,
+	formId,
+}: {
+	isValid: boolean;
+	isSubmitting: boolean;
+	onCancel: () => void;
+	formId: string;
+}) {
+	return (
+		<div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background p-4">
+			<div className="container mx-auto flex justify-end gap-2">
+				<Button type="button" variant="outline" onClick={onCancel}>
+					Cancel
+				</Button>
+				<Button type="submit" form={formId} disabled={!isValid || isSubmitting}>
+					Create
+				</Button>
+			</div>
 		</div>
 	);
 }
