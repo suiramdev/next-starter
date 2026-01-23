@@ -1,0 +1,502 @@
+---
+description: Component organization guidelines for Next.js apps using the features/ and apps/ folder structure
+globs: apps/**/*
+---
+# Component Organization Guidelines
+
+This project uses a **Hybrid Component Architecture** optimized for Next.js + Convex. It balances clean UI separation with the developer velocity of Convex's reactive data fetching.
+
+## Core Principle: Atomic Decomposition
+
+> **Extract reusable patterns into atoms and molecules, but keep simple, context-specific layouts inline.**
+
+This is the foundational rule of the architecture. Before writing any UI:
+1.  **Identify reusable primitives** — Can any part of this UI be an atom (Button, Avatar, Badge, Icon)?
+2.  **Compose into molecules** — Can groups of atoms form a reusable molecule (UserBadge, RoomCard, MessageBubble)?
+3.  **Only then build organisms** — Smart components should compose atoms/molecules for **shared design patterns**, but can use raw HTML for layout and simple elements.
+4.  **Keep simple layouts inline** — Don't extract trivial, context-specific patterns that won't be reused.
+
+**Why this matters:**
+*   **Consistency**: Atoms enforce design system constraints across the entire app.
+*   **Testability**: Pure atoms/molecules are trivial to unit test in isolation.
+*   **Reusability**: A well-designed atom is used dozens of times; duplicated markup is used once.
+*   **Maintainability**: Changing a design token in one atom propagates everywhere.
+
+**Red flags that indicate missing decomposition:**
+*   A component file has more than ~50 lines of JSX (may indicate missing molecules).
+*   The same `className` patterns appear in **multiple files** (indicates a reusable pattern).
+*   A "smart" component uses raw HTML elements (`<button>`, `<input>`, etc.) **when you need shared design/behavior** that a UI primitive provides (e.g., using raw `<button>` instead of `Button` when you need the design system styling).
+*   Copy-pasting UI snippets between components (the same pattern in 2+ places should be extracted).
+*   Complex conditional rendering logic that could be a molecule.
+
+**Note:** Raw HTML elements (`<div>`, `<span>`, `<h1>`, `<p>`, etc.) are perfectly fine for:
+*   **Layout structure** — Grid, flexbox, positioning containers
+*   **Simple text elements** — Headings, paragraphs, spans
+*   **Component-specific markup** — Elements that don't need shared design system styling
+
+Use UI primitives (Button, Card, Input, etc.) when you need:
+*   **Shared design system styling** — Consistent appearance across the app
+*   **Shared behavior** — Interactive elements with standardized functionality
+*   **Reusable patterns** — Components that appear in multiple places
+
+**Note:** Not every pattern needs extraction. Simple, context-specific layouts that appear only once are fine to keep inline. The key is identifying **reusable patterns** vs. **one-off layouts**.
+
+## Directory Structure
+
+```
+apps/
+├── web/                              # Next.js application (uses 'new-york-v4')
+│   ├── app/
+│   │   └── (protected)/
+│   │       └── rooms/
+│   │           └── [id]/
+│   │               └── page.tsx      # Server component (preloads data)
+│   └── features/
+│       └── rooms/
+│           └── components/
+│               └── rooms-list.tsx    # Smart Feature (Organism) - handles data
+packages/
+└── ui/
+    └── src/
+        └── registry/
+            ├── new-york-v4/          # BASE Style System (Primitives)
+            ├── admin/                # Derived Style System (e.g., for admin apps)
+            └── [style-system]/       # Other style systems
+                └── ui/
+                    └── room-card.tsx # Pure UI (Atom/Molecule)
+```
+
+## 1. Pure UI Components ("Atoms/Molecules")
+
+**This is where decomposition lives.** Low-level components must remain **strictly presentational** and **must reside in the shared UI package**. When in doubt, create a new atom/molecule here rather than embedding markup in a feature component.
+
+*   **Location**: `packages/ui/src/registry/[style-system]/ui/` (imported as `@repo/ui/registry/[style-system]/ui/...`)
+*   **Responsibilities**: Rendering UI based on props.
+*   **Restrictions**: No data fetching hooks (`useQuery`, etc.). No backend dependencies.
+*   **Props**: Primitives, simple objects, or callback functions.
+
+### When to Use UI Primitives vs Raw HTML
+
+**Use UI primitives (Button, Card, Input, etc.) when:**
+*   You need **shared design system styling** that should be consistent across the app.
+*   You need **shared behavior** (e.g., Button with loading states, Input with validation styling).
+*   The element represents a **reusable pattern** that appears in multiple places.
+
+**Use raw HTML (`<div>`, `<h1>`, `<p>`, `<span>`, etc.) when:**
+*   It's for **layout structure** (grid, flexbox, positioning containers).
+*   It's a **simple text element** (headings, paragraphs) without special styling needs.
+*   It's **component-specific markup** that doesn't need shared design system styling.
+
+**Examples:**
+
+```tsx
+// ✅ Fine to use raw HTML for layout
+function RoomView({ room }: RoomViewProps) {
+  return (
+    <div className="grid h-full grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="flex flex-col gap-6 lg:col-span-2">
+        <h1 className="font-bold text-3xl">{room.name}</h1>
+        <p className="text-muted-foreground">Description</p>
+      </div>
+    </div>
+  );
+}
+
+// ✅ Use UI primitives for shared design/behavior
+function RoomView({ room }: RoomViewProps) {
+  return (
+    <div className="grid gap-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>{room.name}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={handleAction}>Start Game</Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// ❌ Don't use raw <button> when you need shared Button styling
+function RoomView({ room }: RoomViewProps) {
+  return (
+    <button onClick={handleAction} className="..."> {/* Should use <Button> */}
+      Start Game
+    </button>
+  );
+}
+```
+
+### Atom vs. Molecule Decision Guide
+| Type | Definition | Examples |
+|------|------------|----------|
+| **Atom** | Single-purpose, indivisible UI element | `Button`, `Avatar`, `Badge`, `Input`, `Icon` |
+| **Molecule** | Composition of 2+ atoms forming a cohesive unit | `UserBadge` (Avatar + Text), `SearchInput` (Input + Icon), `RoomCard` (multiple atoms) |
+
+**Rule of thumb**: If a piece of UI appears (or *could* appear) in more than one place, extract it.
+
+### When to Create Components
+
+**Extract to UI package (atoms/molecules) when:**
+*   **Might be shared** — Could be reused across multiple features or pages.
+*   **Can be agnostic** — Doesn't depend on specific parent context or layout structure.
+*   **Has meaningful complexity** — Contains multiple atoms, conditional logic, or non-trivial styling patterns.
+*   **Represents a distinct feature** — A cohesive UI pattern that stands on its own (e.g., `UserBadge`, `RoomCard`, `PlaylistSelector`).
+
+**When NOT to create a component:**
+*   **Simple, context-specific layouts** — A header section that's unique to one view and unlikely to be reused elsewhere.
+*   **Trivial markup wrappers** — Simple structural elements that don't add abstraction (e.g., a `<div>` with a single `<h1>`).
+*   **Tightly coupled to parent** — Elements that only make sense within a specific parent's context and have no reusable value.
+*   **One-off patterns** — UI that appears in only one place and is unlikely to be duplicated.
+
+**Examples of what NOT to extract:**
+```tsx
+// ❌ Don't create a component for this - too simple, context-specific
+function PageHeader({ title }: { title: string }) {
+  return <h1>{title}</h1>;
+}
+
+// ❌ Don't extract this - it's a simple layout unique to this view
+function RoomView({ room }: RoomViewProps) {
+  return (
+    <div className="grid h-full grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="flex flex-col gap-6 lg:col-span-2">
+        {/* Room Header - simple, context-specific, not reusable */}
+        <div className="flex flex-col gap-2">
+          <h1 className="font-bold text-3xl tracking-tight">{room.name}</h1>
+          <p className="text-muted-foreground">
+            Waiting for players to join and the host to start the game
+          </p>
+        </div>
+        {/* ... rest of component */}
+      </div>
+    </div>
+  );
+}
+```
+
+**Examples of what SHOULD be extracted:**
+```tsx
+// ✅ Extract this - it's a feature that might be shared and is agnostic
+function UserProfileCard({ user, onEdit }: UserProfileCardProps) {
+  return (
+    <Card>
+      <Avatar src={user.avatar} />
+      <h3>{user.name}</h3>
+      <Button onClick={onEdit}>Edit</Button>
+    </Card>
+  );
+}
+
+// ✅ Extract this - reusable pattern with meaningful complexity
+function PlaylistDisplayCard({ 
+  name, 
+  image, 
+  author, 
+  isLoading 
+}: PlaylistDisplayCardProps) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg border border-dashed bg-muted/30 p-3">
+      {image ? (
+        <Image src={image} alt={name} width={40} height={40} />
+      ) : (
+        <div className="flex size-10 items-center justify-center rounded-md bg-muted">
+          <DiscIcon className="size-5 text-muted-foreground" />
+        </div>
+      )}
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-medium text-sm">{name}</p>
+        <p className="truncate text-muted-foreground text-xs">{author}</p>
+      </div>
+    </div>
+  );
+}
+```
+
+**Decision framework:**
+1. **Will this appear in 2+ places?** → Extract it
+2. **Is it a complex, cohesive UI pattern?** → Extract it
+3. **Is it simple and unique to one context?** → Keep it inline
+4. **Does extracting it add meaningful abstraction?** → Extract it
+5. **Would it just be a trivial wrapper?** → Keep it inline
+
+### Style Systems & Inheritance
+*   **Base Registry (`new-york-v4`)**: This is the source of truth for atomic primitives (Button, Input, etc.).
+*   **Derived Registries (e.g., `admin`)**: These may import and compose base primitives from `new-york-v4` to build higher-order components (e.g., `admin` might use `new-york-v4/ui/button`).
+*   **Usage Rule**: Apps should import from their **specific assigned registry** to ensure consistency.
+    *   Example: The `admin` app should import from `@repo/ui/registry/admin`.
+    *   Example: The `web` app should import from `@repo/ui/registry/new-york-v4/ui`.
+
+### Example: Pure Component
+```tsx
+// packages/ui/src/registry/new-york-v4/ui/room-card.tsx
+export function RoomCard({ name, playerCount, onClick }: RoomCardProps) {
+  return (
+    <div onClick={onClick} className="border p-4 rounded">
+      <h3>{name}</h3>
+      <span>{playerCount} players</span>
+    </div>
+  );
+}
+```
+
+## 2. Smart Feature Components ("Containers" & "Views")
+
+High-level feature components act as **containers** for their domain. They "own" the data requirements for that feature.
+
+### Styling in Feature Components
+
+Feature components (Views and Containers) **can and should** use styling for:
+*   **Component-specific layout** — Grid, flexbox, or positioning unique to that component's structure.
+*   **Component-specific design** — CSS that's particular to that feature and not shared across pages.
+*   **One-off styling patterns** — Styles that appear only in that component.
+
+**Extract styling to UI package when:**
+*   The same styling pattern appears in **2+ components** (indicates reusability).
+*   The styling represents a **design system pattern** (e.g., card styles, button variants).
+
+**Example: Component-specific layout (keep in feature component)**
+```tsx
+// ✅ Fine to keep layout styling in feature component
+function RoomView({ room }: RoomViewProps) {
+  return (
+    <div className="grid h-full grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="flex flex-col gap-6 lg:col-span-2">
+        {/* Component-specific layout */}
+      </div>
+    </div>
+  );
+}
+```
+
+**Example: Reusable styling pattern (extract to UI package)**
+```tsx
+// ❌ If this pattern appears in multiple places, extract it
+<div className="rounded-xl border bg-card p-4">
+  {/* This should become a Card component */}
+</div>
+```
+
+### The Container + View Pattern
+
+A common pitfall is passing `preloadedQuery` deep into the component tree. This makes components:
+1.  **Hard to test** (requires mocking Convex queries).
+2.  **Hard to reuse** (can't use with simple `useQuery` or static data).
+3.  **Tightly coupled** to specific backend queries.
+
+**The Solution**: Separate **data fetching** (Container) from **rendering** (View).
+
+#### 1. Presentational Component (View)
+*   **Responsibilities**: Pure UI rendering.
+*   **Props**: Plain data (Arrays, Objects, Primitives).
+*   **Agnostic**: No knowledge of Convex, `preloadedQuery`, or backend logic.
+*   **Reusable**: Easy to use in Storybook, tests, or with different data sources.
+
+#### 2. Container Component (Convex-Aware)
+*   **Responsibilities**:
+    *   Accepts `preloadedQuery` or Query References.
+    *   Calls `usePreloadedQuery` or `useQuery`.
+    *   Passes **plain data** to the View.
+
+### Example: Separation
+
+**The View (Reusable)**
+```tsx
+// features/rooms/components/rooms-list-view.tsx
+import { RoomCard } from "@repo/ui/registry/new-york-v4/ui/room-card";
+import type { Doc } from "@repo/convex/_generated/dataModel";
+
+interface RoomsListViewProps {
+  rooms: Doc<"rooms">[];
+}
+
+export function RoomsListView({ rooms }: RoomsListViewProps) {
+  return (
+    <div className="grid gap-4">
+      {rooms.map(room => (
+        <RoomCard
+          key={room._id}
+          name={room.name}
+          playerCount={room.playerCount}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+**The Container (Convex Adapter)**
+```tsx
+// features/rooms/components/rooms-list.tsx
+"use client";
+import { usePreloadedQuery, type Preloaded } from "convex/react";
+import { api } from "@repo/convex/_generated/api";
+import { RoomsListView } from "./rooms-list-view";
+
+interface RoomsListProps {
+  preloadedQuery: Preloaded<typeof api.domains.rooms.queries.listRooms>;
+}
+
+export function RoomsList({ preloadedQuery }: RoomsListProps) {
+  const rooms = usePreloadedQuery(preloadedQuery); // Reactive data!
+  return <RoomsListView rooms={rooms} />;
+}
+```
+
+### Sharing Data (Page as Container)
+
+If multiple components need the same data, the **Page** or a top-level **Container** should fetch it and pass it down as plain data:
+
+```tsx
+function RoomPageContent({ preloaded }) {
+  const rooms = usePreloadedQuery(preloaded); // Fetch once
+  
+  return (
+    <>
+      <RoomsStats count={rooms.length} />      {/* Receives number */}
+      <RoomsListView rooms={rooms} />          {/* Receives array */}
+    </>
+  );
+}
+```
+
+### Alternative: Hook Wrapper (For Flexibility)
+
+If you need a component to work with *either* `useQuery` (client-side) or `usePreloadedQuery` (server-side), use a hook wrapper:
+
+```tsx
+function useRooms(preloaded?: Preloaded<typeof api.rooms.list>) {
+  return preloaded
+    ? usePreloadedQuery(preloaded)
+    : useQuery(api.rooms.list);
+}
+```
+
+### Loading States and Skeleton Components
+
+**All components that accept loaded data or a loading state must provide a skeleton component.**
+
+When a View component accepts data that might be loading, it must handle the loading state by rendering a skeleton that matches the structure of the loaded content. This ensures a smooth user experience and prevents layout shifts.
+
+**Requirements:**
+*   Components with `isLoading?: boolean` prop **must** render a skeleton when `isLoading === true`.
+*   Components that accept optional data (e.g., `data?: SomeType`) **should** render a skeleton when data is `undefined` or `null`.
+*   Skeleton components should **match the structure** of the loaded content (same layout, similar dimensions).
+*   Use the `Skeleton` component from `@repo/ui/registry/new-york-v4/ui/skeleton` for skeleton elements.
+*   **Skeleton components must be separate functional components within the same file** as the main component, named with the pattern `[ComponentName]Skeleton`.
+
+**Required Pattern: Separate Skeleton Component in Same File**
+```tsx
+// features/game/components/game-view.tsx
+import { Skeleton } from "@repo/ui/registry/new-york-v4/ui/skeleton";
+
+interface GameViewProps {
+  gameId: Id<"games">;
+  roomId: Id<"rooms">;
+  round?: RoundData;
+  isLoading?: boolean;
+}
+
+export function GameView({ gameId, roomId, round, isLoading }: GameViewProps) {
+  if (isLoading || !round) {
+    return <GameViewSkeleton />;
+  }
+
+  // ... render actual content
+}
+
+export function GameViewSkeleton() {
+  return (
+    <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-between gap-8">
+      {/* Round Leaderboard Skeleton */}
+      <div className="flex justify-center gap-4">
+        {Array.from({ length: 3 }, (_, i) => `skeleton-avatar-${i}`).map(
+          (key) => (
+            <Skeleton key={key} className="size-16 rounded-full" />
+          ),
+        )}
+      </div>
+
+      {/* Game View Skeleton */}
+      <div className="flex w-full flex-col items-center gap-4">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-32 w-32 rounded-lg" />
+        <Skeleton className="h-10 w-full max-w-xs" />
+      </div>
+    </div>
+  );
+}
+```
+
+**Why separate skeleton components?**
+*   **Separation of concerns** — Loading state logic is isolated from main component logic.
+*   **Reusability** — Skeleton can be used independently (e.g., in Storybook, tests, or by parent components).
+*   **Maintainability** — Easier to update skeleton structure without touching main component logic.
+*   **Readability** — Main component focuses on rendering loaded data, skeleton focuses on loading state.
+
+**Best Practices:**
+*   Skeleton should match the **visual structure** of the loaded content (same number of elements, similar sizes).
+*   Use appropriate skeleton shapes (rounded-full for avatars, rectangles for text, etc.).
+*   Keep skeleton animations subtle (use `Skeleton` component which handles this).
+*   Name skeleton components with the pattern `[ComponentName]Skeleton` (e.g., `GameViewSkeleton`, `RoomViewSkeleton`).
+*   Export skeleton components so they can be used independently if needed.
+
+### Rule of Thumb
+*   ✔ **Pages** know about `preloadedQuery` (routing/boundary concern).
+*   ✔ **Containers** know about `preloadedQuery` (fetching concern).
+*   ✔ **Leaf Components** know about **plain data** (rendering concern).
+*   ❌ **Don't pass `preloadedQuery` deeply** unless the component is explicitly a container.
+
+## 3. Page Components (Server)
+
+Pages serve as the **data entry point** and **layout composer**.
+*   **Location**: `app/.../page.tsx`
+*   **Responsibilities**:
+    *   **Server-Side Preloading**: Use `preloadQuery` to fetch initial data.
+    *   **Routing**: Access route params.
+    *   **Composition**: Pass preloaded references to Smart Feature components.
+
+### Example: Page Component
+```tsx
+// app/(protected)/rooms/page.tsx
+import { preloadQuery } from "convex/nextjs";
+import { api } from "@repo/convex/_generated/api";
+import { RoomsList } from "@/features/rooms/components/rooms-list";
+
+export default async function RoomsPage() {
+  const preloadedRooms = await preloadQuery(api.domains.rooms.queries.listRooms);
+
+  return (
+    <main>
+      <h1>Active Rooms</h1>
+      <RoomsList preloadedQuery={preloadedRooms} />
+    </main>
+  );
+}
+```
+
+## When to use `_components/`?
+The `_components/` folder (colocated with `page.tsx`) is optional. Use it only for:
+*   Page-specific layout parts that aren't reusable features.
+*   One-off wrappers if a feature component *can't* accept a preloaded query for some reason (rare).
+
+## Benefits of Hybrid Approach
+1.  **Colocation**: Data logic sits with the feature that uses it.
+2.  **Velocity**: No need to create a `_components` wrapper for every single feature.
+3.  **Performance**: Components subscribe to exactly the data they need.
+4.  **Reusability**: "Smart" components are self-contained and easy to reuse across pages.
+
+## Pre-Commit Checklist: Component Decomposition
+
+Before committing any component, verify:
+
+- [ ] **No duplicated UI patterns** — If similar markup exists in **2+ places**, extract to a shared atom/molecule.
+- [ ] **UI primitives when needed** — Use UI primitives (Button, Card, Input, etc.) when you need **shared design/behavior**. Raw HTML (`<div>`, `<h1>`, `<p>`, etc.) is fine for layout and simple elements.
+- [ ] **Atoms are truly atomic** — Each atom does ONE thing. If it has multiple responsibilities, split it.
+- [ ] **Molecules are composed** — Molecules import and compose atoms, not duplicate their internals.
+- [ ] **Styling separation** — **Reusable** styling patterns (appearing in 2+ places) belong in the UI package. Component-specific layout and design styling is fine in feature components.
+- [ ] **Props are primitive** — Atoms/molecules receive simple props, not Convex documents or query results.
+- [ ] **Query Separation** — `preloadedQuery` is handled in a Container, passed as plain data to Views.
+- [ ] **Skeleton components** — All components that accept loaded data or a loading state must provide a separate skeleton component (named `[ComponentName]Skeleton`) within the same file that matches the structure of the loaded content.
+- [ ] **Extraction is justified** — Only extract patterns that are **reusable** or have **meaningful complexity**. Don't extract simple, one-off layouts.

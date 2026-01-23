@@ -1,58 +1,37 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "ui": "tui",
-  "tasks": {
-    "check-types": {
-      "dependsOn": ["^check-types"]
-    },
-    "lint": {
-      "dependsOn": ["^lint"]
-    },
-    "format": {
-      "dependsOn": ["^format"]
-    },
-    "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env"],
-      "outputs": [".next/**", "!.next/cache/**", "storybook-static/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true,
-      "env": [
-        "DATABASE_URL",
-        "BETTER_AUTH_SECRET",
-        "NEXT_PUBLIC_BETTER_AUTH_BASE_URL",
-        "CORS_ALLOWED_ORIGINS"
-      ]
-    },
-    "auth:generate": {
-      "dependsOn": ["^auth:generate"],
-      "env": ["BETTER_AUTH_SECRET", "DATABASE_URL"]
-    },
-    "db:generate": {
-      "dependsOn": ["^auth:generate", "^db:generate"],
-      "env": ["DATABASE_URL"]
-    },
-    "db:migrate": {
-      "persistent": true,
-      "env": ["DATABASE_URL"]
-    },
-    "db:studio": {
-      "persistent": true,
-      "env": ["DATABASE_URL"]
-    },
-    "db:reset": {
-      "persistent": true,
-      "env": ["DATABASE_URL"]
-    },
-    "db:deploy": {
-      "dependsOn": ["^db:deploy"],
-      "env": ["DATABASE_URL"]
-    },
-    "db:push": {
-      "dependsOn": ["^db:push"],
-      "env": ["DATABASE_URL"]
-    }
-  }
+	"$schema": "https://turbo.build/schema.json",
+	"ui": "tui",
+	"tasks": {
+		"//#format-and-lint": {},
+		"//#format-and-lint:fix": {
+			"cache": false
+		},
+		"check-types": {
+			"dependsOn": ["^check-types"]
+		},
+		"lint": {
+			"dependsOn": ["^lint"]
+		},
+		"format": {
+			"dependsOn": ["^format"]
+		},
+		"build": {
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", ".env"],
+			"outputs": [".next/**", "!.next/cache/**", "storybook-static/**"]
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true
+		},
+		"deploy": {
+			"cache": false
+		},
+		"db:reset": {
+			"cache": false
+		},
+		"auth:generate": {
+			"cache": false
+		}
+	}
 }

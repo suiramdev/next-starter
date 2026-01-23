@@ -1,0 +1,63 @@
+{
+	"name": "@repo/convex",
+	"version": "0.0.0",
+	"private": true,
+	"exports": {
+		"./_generated/api": {
+			"types": "./convex/_generated/api.d.ts",
+			"default": "./convex/_generated/api.js"
+		},
+		"./_generated/server": {
+			"types": "./convex/_generated/server.d.ts",
+			"default": "./convex/_generated/server.js"
+		},
+		"./_generated/dataModel": {
+			"types": "./convex/_generated/dataModel.d.ts",
+			"default": "./convex/_generated/dataModel.js"
+		},
+		"./domains/auth/setup": {
+			"types": "./convex/domains/auth/setup.ts",
+			"default": "./convex/domains/auth/setup.ts"
+		},
+		"./helpers/auth-client": {
+			"types": "./src/helpers/auth-client.ts",
+			"default": "./src/helpers/auth-client.ts"
+		},
+		"./helpers/react/components/sign-in-form": {
+			"types": "./src/helpers/react/components/sign-in-form.tsx",
+			"default": "./src/helpers/react/components/sign-in-form.tsx"
+		},
+		"./helpers/react/components/sign-up-form": {
+			"types": "./src/helpers/react/components/sign-up-form.tsx",
+			"default": "./src/helpers/react/components/sign-up-form.tsx"
+		}
+	},
+	"scripts": {
+		"dev": "convex dev",
+		"deploy": "convex deploy",
+		"db:reset": "bash scripts/reset-data.sh",
+		"auth:generate": "cd convex/domains/auth/betterAuth && npx @better-auth/cli generate -y --output ./generatedSchema.ts"
+	},
+	"dependencies": {
+		"@convex-dev/better-auth": "^0.9.11",
+		"@hookform/resolvers": "^5.2.2",
+		"@repo/ui": "workspace:^",
+		"better-auth": "1.3.34",
+		"convex": "^1.30.0",
+		"convex-helpers": "^0.1.106",
+		"jose": "^6.1.0",
+		"next": "^16.0.7",
+		"react": "^19.2.1",
+		"react-dom": "^19.2.1",
+		"react-hook-form": "^7.68.0",
+		"spotify-find-preview": "^3.0.0",
+		"zod": "^4.1.13"
+	},
+	"devDependencies": {
+		"@better-auth/cli": "1.3.34",
+		"@repo/typescript-config": "workspace:^",
+		"@types/node": "^24.10.1",
+		"@types/react": "^19.2.7",
+		"typescript": "^5.9.3"
+	}
+}

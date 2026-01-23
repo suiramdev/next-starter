@@ -1,0 +1,43 @@
+---
+description: Folder structure and guidelines for the @convex package
+globs: packages/convex/**/*
+---
+
+# @convex Package Folder Structure
+
+The `@convex` package (`packages/convex`) houses the backend logic (Convex) and shared client helpers for the application.
+
+## Directory Structure
+
+### `convex/` (Backend Logic)
+This directory contains the server-side Convex functions and configuration.
+
+- **`domains/`**: Feature-based modules. All business logic should be organized here.
+  - Structure: `convex/domains/<feature-name>/`
+  - **Naming Convention**:
+    - `queries.ts`: For `query` functions.
+    - `mutations.ts`: For `mutation` functions.
+    - `actions.ts`: For `action` functions.
+    - **Convex Components**: Some domains (e.g., `auth/betterAuth`) may be implemented as [Convex Components](https://docs.convex.dev/components). These directories contain their own `convex.config.ts`, `schema.ts`, and function files.
+- **`schema.ts`**: The central database schema definition for the application.
+- **`http.ts`**: HTTP endpoint definitions.
+- **`shared/`**: Shared utilities and constants used across multiple domains (e.g., `errors.ts`).
+- **`_generated/`**: Auto-generated files by Convex. **Do not edit.**
+
+### `src/` (Client Exports)
+This directory contains code intended to be imported by other packages or apps (e.g., `web`, `admin`).
+
+- **`helpers/`**: Utility functions and classes (e.g., `auth-client.ts`).
+- **`react/`**: Reusable React components and hooks specific to Convex features (e.g., auth forms).
+
+## Guidelines
+
+1.  **Domain-Driven Design**: Group related queries, mutations, and actions into a domain folder under `convex/domains/`.
+2.  **File Naming**: Use `queries.ts`, `mutations.ts`, and `actions.ts` within domains to clearly distinguish function types.
+3.  **Components**: If a domain requires encapsulation or is a reusable piece of logic, consider implementing it as a Convex Component (requires `convex.config.ts`).
+4.  **Schema**: Define application tables in `convex/schema.ts`. Component schemas live within their respective component directories.
+5.  **Client Code**: Put React components and client-side helpers in `src/` to make them available to the frontend applications.
+6.  **Authentication (`better-auth`)**:
+    - The `better-auth` component is **internal** and has its own isolated data model.
+    - **Access Restriction**: Its data cannot be accessed directly from outside the `convex/domains/auth/betterAuth` folder. You must use the component's exposed queries/mutations.
+    - **Best Practice**: Prefer using the **`better-auth` library auth client API** for all authentication and user management operations whenever possible, rather than manually querying the component.

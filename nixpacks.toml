@@ -1,0 +1,53 @@
+# Nixpacks configuration for Next.js monorepo deployment
+# This configuration supports deploying individual apps from the monorepo
+#
+# REQUIRED ENVIRONMENT VARIABLES:
+# - NIXPACKS_TURBO_APP_NAME: The name of the app to deploy (e.g., "web", "admin", "common")
+#   OR set the root directory in your platform's service settings to the app directory
+# - PORT: The port to run the app on (usually set automatically by the platform)
+#
+# OPTIONAL ENVIRONMENT VARIABLES:
+# - NODE_ENV: Set to "production" for production builds
+# - NEXT_TELEMETRY_DISABLED: Set to "1" to disable Next.js telemetry
+
+[phases.setup]
+nixPkgs = ["nodejs_22"]
+
+[phases.install]
+# Optimize install phase by only including necessary files for caching
+onlyIncludeFiles = [
+  ".npmrc",
+  "package.json",
+  "pnpm-lock.yaml",
+  "pnpm-workspace.yaml",
+  "turbo.json",
+  "apps/*/package.json",
+  "packages/*/package.json",
+  "packages/*/tsconfig.json",
+  "apps/*/tsconfig.json",
+  "apps/*/next.config.*",
+  "apps/*/postcss.config.*",
+  "apps/*/tailwind.config.*",
+]
+
+cmds = [
+  "corepack enable",
+  "corepack prepare pnpm@10.25.0 --activate",
+  "pnpm install --frozen-lockfile"
+]
+
+[phases.build]
+# Build using Turborepo - NIXPACKS_TURBO_APP_NAME should be set to the app name
+# If not set, you can specify the app directory in platform settings
+cmds = [
+  "pnpm build"
+]
+
+[start]
+# Start the app
+# If deploying from root with NIXPACKS_TURBO_APP_NAME set, this will start the specified app
+# If deploying from an app directory (root directory set to apps/web, etc.), 
+# Nixpacks will auto-detect and use the app's start script
+# The PORT environment variable is typically set by the deployment platform
+cmd = "pnpm start"
+

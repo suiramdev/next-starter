@@ -1,36 +1,47 @@
+import { getToken } from "@convex-dev/better-auth/nextjs";
+import { api } from "@repo/convex/_generated/api";
+import { createAuth } from "@repo/convex/domains/auth/setup";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator,
 } from "@repo/ui/registry/new-york-v4/ui/breadcrumb";
-import { prisma } from "@repo/db";
+import Link from "next/link";
+import { convexClient } from "@/lib/convex-server";
 
-export default async function BreadcrumbSlot({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const user = await prisma.user.findUnique({
-    where: {
-      id,
-    },
-  });
+type BreadcrumbSlotProps = {
+	params: Promise<{ id: string }>;
+};
 
-  return (
-    <Breadcrumb>
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/users">Users</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage>{user?.name ?? id}</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
-  );
+export default async function BreadcrumbSlot({ params }: BreadcrumbSlotProps) {
+	const { id } = await params;
+	const token = await getToken(createAuth);
+
+	let user = null;
+	if (token) {
+		convexClient.setAuth(token);
+
+		user = await convexClient.query(api.domains.users.queries.getUser, {
+			userId: id,
+		});
+	}
+
+	return (
+		<Breadcrumb>
+			<BreadcrumbList>
+				<BreadcrumbItem>
+					<BreadcrumbLink asChild>
+						<Link href="/users">Users</Link>
+					</BreadcrumbLink>
+				</BreadcrumbItem>
+				<BreadcrumbSeparator />
+				<BreadcrumbItem>
+					<BreadcrumbPage>{user?.name ?? id}</BreadcrumbPage>
+				</BreadcrumbItem>
+			</BreadcrumbList>
+		</Breadcrumb>
+	);
 }

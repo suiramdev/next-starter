@@ -1,0 +1,30 @@
+{
+	"$schema": "https://openapi.vercel.sh/microfrontends.json",
+	"applications": {
+		"web": {},
+		"admin": {
+			"routing": [
+				{
+					"paths": ["/admin", "/admin/:path*"]
+				}
+			]
+		},
+		"common": {
+			"routing": [
+				{
+					"paths": ["/common", "/common/:path*"]
+				}
+			]
+		},
+		"docs": {
+			"routing": [
+				{
+					"paths": ["/docs", "/docs/:path*"]
+				}
+			]
+		}
+	},
+	"options": {
+		"localProxyPort": 3024
+	}
+}

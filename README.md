@@ -1,206 +1,79 @@
-> [!IMPORTANT]
-> This project is currently under active development.
+# Next Starter
 
-# Next.js Starter Kit
+A modern, production-ready boilerplate for building full-stack applications with Next.js, Convex, and TypeScript. This monorepo provides a solid foundation for rapid development with authentication, admin panels, and example applications.
 
-Welcome to the Next.js Starter Kit—a comprehensive, production-ready monorepo template designed to accelerate the development of modern web applications. This template integrates essential features such as authentication, database management, and a complete design system, enabling you to focus on building your unique business logic.
+## Overview
 
-## Table of Contents
+**Next Starter** is a comprehensive boilerplate that combines the power of Next.js 16, Convex backend, and modern React patterns to help you kickstart your projects quickly. It includes:
 
-1. [Project Overview](#project-overview)
-2. [Features](#features)
-3. [Tech Stack](#tech-stack)
-4. [Getting Started](#getting-started)
-   - [Prerequisites](#prerequisites)
-   - [Installation](#installation)
-   - [Environment Variables](#environment-variables)
-   - [Database Setup](#database-setup)
-   - [Running the Application](#running-the-application)
-5. [Project Structure](#project-structure)
-6. [Available Scripts](#available-scripts)
-7. [Contributing](#contributing)
-8. [License](#license)
-
-## Project Overview
-
-The Next.js Starter Kit is crafted to provide developers with a solid foundation for building scalable and maintainable web applications. By leveraging modern technologies and best practices in a monorepo architecture, this template reduces the time and effort required to launch your product.
-
-## Features
-
-- **Authentication**: Complete auth system with Better Auth supporting email/password authentication, session management, and middleware-based route protection
-- **Monorepo Architecture**: Turborepo-powered workspace with shared packages and optimized build caching
-- **Multiple Applications**: Web app, admin dashboard, documentation site, and Storybook component library
-- **Database Integration**: PostgreSQL with Prisma ORM and Kysely query builder for type-safe database operations
-- **UI Components**: Comprehensive component library built with shadcn/ui
-- **Modern Styling**: Tailwind CSS v4 with modern design tokens and theming support
-- **Type Safety**: Full TypeScript support across all packages with shared configurations
-- **Development Tools**: Biome for linting/formatting, Turbopack for fast development builds
-- **Documentation**: Nextra-powered documentation site with MDX support
+- **Monorepo architecture** using Turborepo for efficient builds and development
+- **Type-safe backend** with Convex for real-time data and serverless functions
+- **Authentication system** powered by Better Auth with Convex adapter
+- **Shared UI components** built with shadcn/ui and Tailwind CSS
+- **Multiple applications** ready for different use cases
 
 ## Tech Stack
 
-- **Frontend**: [Next.js 15](https://nextjs.org/) with App Router, [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Tailwind CSS v4](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/)
-- **Backend**: [Better Auth](https://github.com/ajonp/better-auth), [PostgreSQL](https://www.postgresql.org/) with [Docker](https://www.docker.com/)
-- **Database**: [Prisma ORM](https://www.prisma.io/), [Kysely query builder](https://kysely.dev/)
-- **Monorepo**: [Turborepo](https://turbo.build/) with [pnpm workspaces](https://pnpm.io/workspaces)
-- **Development**: [Biome](https://biomejs.dev/), [Turbopack](https://turbo.build/pack), [React Scan](https://github.com/biomejs/biome)
-- **Documentation**: [Nextra](https://nextra.site/) with [MDX](https://mdxjs.com/), [Storybook](https://storybook.js.org/)
+- **Framework**: Next.js 16 with App Router
+- **React**: 19.2.0
+- **Backend**: Convex
+- **Authentication**: Better Auth with Convex adapter
+- **Styling**: Tailwind CSS 4
+- **Type Safety**: TypeScript 5.9
+- **Code Quality**: Biome
+- **Package Manager**: pnpm 9.0.0
+- **Monorepo**: Turborepo
 
-## Getting Started
+## Applications
 
-### Prerequisites
+### Admin App (`apps/admin`)
 
-Before you begin, ensure you have the following installed:
+The **Admin App** is a comprehensive administration panel designed for managing your applications, users, and organizations. It provides a complete admin interface with:
 
-- **Node.js**: Version 22 or higher
-- **pnpm**: Version 9.0.0 or higher
-- **Docker**: For database setup and management
+- **User Management**: View, manage, and moderate users across your platform
+- **Organization Management**: Create and manage organizations with multi-tenant support
+- **Member Management**: Add, remove, and manage members within organizations
+- **Authentication**: Secure sign-in/sign-up flows with protected routes
+- **Dashboard**: Centralized overview of your platform's key metrics
 
-### Installation
+The admin app features a modern sidebar navigation, breadcrumb navigation, and a responsive design built with shadcn/ui components. It's fully integrated with Convex for real-time data updates and uses Better Auth for secure authentication.
 
-1. **Clone the Repository**:
+**Key Features:**
 
-   ```bash
-   git clone https://github.com/suiramdev/next-starter.git
-   cd next-starter
-   ```
+- Protected routes with authentication
+- Multi-organization support
+- User ban/moderation capabilities
+- Real-time data synchronization
+- Responsive admin interface
 
-2. **Install Dependencies**:
+### Web App (`apps/web`)
 
-   ```bash
-   pnpm install
-   ```
+The **Web App** serves as an example application demonstrating how to build interactive, engaging experiences with the Next Starter boilerplate. Currently, it's planned to be a **Spotify Blind Test Game** - an interactive music guessing game where players listen to track snippets and try to identify the track, artist, or album.
 
-### Environment Variables
+This application will showcase:
 
-Create a `.env` file in the root directory and populate it with the necessary environment variables:
+- Integration with external APIs (Spotify)
+- Real-time game mechanics
+- User interactions and scoring
+- Modern, engaging UI/UX
 
-| Variable Name                      | Description                                                    | Default Value                                                       |
-| ---------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `DATABASE_URL`                     | PostgreSQL connection string                                   | `postgresql://postgres:postgres@localhost:5432/postgres`            |
-| `BETTER_AUTH_SECRET`               | Secret key for authentication (use strong value in production) | `secret`                                                            |
-| `NEXT_PUBLIC_BETTER_AUTH_BASE_URL` | Base URL for auth service                                      | `http://localhost:3002`                                             |
-| `CORS_ALLOWED_ORIGINS`             | Comma-separated list of allowed origins for CORS               | `http://localhost:3000,http://localhost:3001,http://localhost:3002` |
-
-For a complete list of required environment variables and example values, refer to the [`.env.example`](./.env.example) file.
-
-### Database Setup
-
-1. **Start the Database**:
-
-   ```bash
-   docker compose up -d
-   ```
-
-2. **Generate Prisma Client and Run Migrations**:
-
-   ```bash
-   pnpm db:generate
-   pnpm db:migrate
-   ```
-
-3. **Generate Authentication Schema**:
-
-   ```bash
-   pnpm auth:generate
-   ```
-
-### Running the Application
-
-Start the development server:
-
-```bash
-pnpm dev
-```
-
-The applications will be accessible at:
-
-- **Web App**: http://localhost:3000
-- **Admin Dashboard**: http://localhost:3001
-- **Storybook**: http://localhost:4000
-- **Documentation**: http://localhost:4001
+The web app demonstrates how to leverage the shared UI components and Convex backend to build feature-rich applications quickly.
 
 ## Project Structure
 
-The project is organized into a monorepo architecture with the following structure:
-
 ```
-apps/
-├── web/                  # Main web application (port 3000)
-├── admin/                # Admin dashboard (port 3001)
-├── docs/                 # Documentation site (port 4001)
-├── storybook/            # Component library (port 4000)
-└── common/               # Shared API routes
-
-packages/
-├── auth/                 # Authentication system (Better Auth)
-├── db/                   # Database layer (Prisma + Kysely)
-├── ui/                   # Shared UI components
-├── env/                  # Environment variable validation
-├── biome-config/         # Shared linting configuration
-└── typescript-config/    # Shared TypeScript configurations
+next-starter/
+├── apps/
+│   ├── admin/          # Admin panel application
+│   ├── web/            # Example web application (Spotify Blind Test)
+│   ├── docs/           # Documentation site
+│   ├── common/         # Shared API routes
+│   └── storybook/      # Component documentation
+├── packages/
+│   ├── auth/           # Authentication utilities
+│   ├── convex/         # Convex backend schema and functions
+│   ├── ui/             # Shared UI components
+│   ├── biome-config/   # Shared Biome configuration
+│   └── typescript-config/ # Shared TypeScript configurations
+└── turbo.json          # Turborepo configuration
 ```
-
-This structure promotes modularity and reusability across the codebase.
-
-## Available Scripts
-
-### Development Commands
-
-```bash
-# Start all applications in development mode
-pnpm dev
-
-# Build all packages and applications
-pnpm build
-
-# Run linting across all packages
-pnpm lint
-
-# Format code across all packages
-pnpm format
-
-# Type check all packages
-pnpm check-types
-```
-
-### Database Commands
-
-```bash
-# Generate Prisma client and types
-pnpm db:generate
-
-# Run database migrations
-pnpm db:migrate
-
-# Open Prisma Studio
-pnpm db:studio
-
-# Reset database (caution: deletes all data)
-pnpm db:reset
-
-# Deploy migrations to production
-pnpm db:deploy
-
-# Push schema changes without migrations
-pnpm db:push
-```
-
-### Authentication Commands
-
-```bash
-# Generate authentication schema
-pnpm auth:generate
-```
-
-## Contributing
-
-Contributions are welcome! Please follow these steps to contribute:
-
-1. **Fork the Repository**: Click the "Fork" button at the top right of the repository page
-2. **Create a Branch**: Use a descriptive name for your branch (`git checkout -b feature/amazing-feature`)
-3. **Make Changes**: Implement your feature or fix
-4. **Test**: Ensure all tests pass and code follows the project standards
-5. **Submit a Pull Request**: Provide a clear description of your changes
-
-For detailed guidelines, please ensure your code follows the established patterns and includes appropriate tests.

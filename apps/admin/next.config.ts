@@ -1,8 +1,9 @@
-import "@repo/env";
 import type { NextConfig } from "next";
+import { basePath } from "./lib/constants";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+	basePath,
+	transpilePackages: ["@repo/convex"],
 };
 
 export default nextConfig;
